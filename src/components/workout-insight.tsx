@@ -54,7 +54,6 @@ export function InsightView({
   insight: WorkoutInsight;
   compact?: boolean;
 }) {
-  console.log({ insight });
   const { t } = useT();
   const { settings } = useSettings();
   const lang = settings?.language ?? "en";
