@@ -9,10 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkoutIndexRouteImport } from './routes/workout.index'
+import { Route as HistoryIndexRouteImport } from './routes/history.index'
 import { Route as WorkoutActiveRouteImport } from './routes/workout.active'
+import { Route as HistoryIdRouteImport } from './routes/history.$id'
 
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -23,44 +31,92 @@ const WorkoutIndexRoute = WorkoutIndexRouteImport.update({
   path: '/workout/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistoryIndexRoute = HistoryIndexRouteImport.update({
+  id: '/history/',
+  path: '/history/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorkoutActiveRoute = WorkoutActiveRouteImport.update({
   id: '/workout/active',
   path: '/workout/active',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistoryIdRoute = HistoryIdRouteImport.update({
+  id: '/history/$id',
+  path: '/history/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/history/$id': typeof HistoryIdRoute
   '/workout/active': typeof WorkoutActiveRoute
+  '/history/': typeof HistoryIndexRoute
   '/workout/': typeof WorkoutIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/history/$id': typeof HistoryIdRoute
   '/workout/active': typeof WorkoutActiveRoute
+  '/history': typeof HistoryIndexRoute
   '/workout': typeof WorkoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/history/$id': typeof HistoryIdRoute
   '/workout/active': typeof WorkoutActiveRoute
+  '/history/': typeof HistoryIndexRoute
   '/workout/': typeof WorkoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/workout/active' | '/workout/'
+  fullPaths:
+    | '/'
+    | '/analytics'
+    | '/history/$id'
+    | '/workout/active'
+    | '/history/'
+    | '/workout/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/workout/active' | '/workout'
-  id: '__root__' | '/' | '/workout/active' | '/workout/'
+  to:
+    | '/'
+    | '/analytics'
+    | '/history/$id'
+    | '/workout/active'
+    | '/history'
+    | '/workout'
+  id:
+    | '__root__'
+    | '/'
+    | '/analytics'
+    | '/history/$id'
+    | '/workout/active'
+    | '/history/'
+    | '/workout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  HistoryIdRoute: typeof HistoryIdRoute
   WorkoutActiveRoute: typeof WorkoutActiveRoute
+  HistoryIndexRoute: typeof HistoryIndexRoute
   WorkoutIndexRoute: typeof WorkoutIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -75,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkoutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/history/': {
+      id: '/history/'
+      path: '/history'
+      fullPath: '/history/'
+      preLoaderRoute: typeof HistoryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/workout/active': {
       id: '/workout/active'
       path: '/workout/active'
@@ -82,12 +145,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkoutActiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/history/$id': {
+      id: '/history/$id'
+      path: '/history/$id'
+      fullPath: '/history/$id'
+      preLoaderRoute: typeof HistoryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  HistoryIdRoute: HistoryIdRoute,
   WorkoutActiveRoute: WorkoutActiveRoute,
+  HistoryIndexRoute: HistoryIndexRoute,
   WorkoutIndexRoute: WorkoutIndexRoute,
 }
 export const routeTree = rootRouteImport
