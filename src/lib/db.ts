@@ -44,6 +44,7 @@ export interface WorkoutExercise {
   restPreset?: number;
   notes?: string;
   supersetGroup?: number;
+  targetSets?: number;
 }
 
 export interface Workout {
