@@ -140,6 +140,7 @@ function ActiveWorkoutPage() {
               muscleGroup={ex?.muscleGroup}
               sets={entrySets}
               defaultRest={entry.restPreset ?? settings?.defaultRest ?? 120}
+              targetSets={entry.targetSets}
               onRemove={() => removeExerciseFromWorkout(entry.id)}
             />
           );
