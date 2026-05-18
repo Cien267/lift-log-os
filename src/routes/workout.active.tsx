@@ -55,6 +55,7 @@ function ActiveWorkoutPage() {
 
   useEffect(() => {
     if (!workout) return;
+    setElapsed(Math.max(0, Math.floor((Date.now() - workout.startTime) / 1000)));
     const t = setInterval(() => setElapsed(Math.floor((Date.now() - workout.startTime) / 1000)), 1000);
     return () => clearInterval(t);
   }, [workout?.startTime]);
