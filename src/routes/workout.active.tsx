@@ -55,6 +55,7 @@ function ActiveWorkoutPage() {
 
   useEffect(() => {
     if (!workout) return;
+    setElapsed(Math.max(0, Math.floor((Date.now() - workout.startTime) / 1000)));
     const t = setInterval(() => setElapsed(Math.floor((Date.now() - workout.startTime) / 1000)), 1000);
     return () => clearInterval(t);
   }, [workout?.startTime]);
@@ -139,6 +140,7 @@ function ActiveWorkoutPage() {
               muscleGroup={ex?.muscleGroup}
               sets={entrySets}
               defaultRest={entry.restPreset ?? settings?.defaultRest ?? 120}
+              targetSets={entry.targetSets}
               onRemove={() => removeExerciseFromWorkout(entry.id)}
             />
           );
@@ -158,7 +160,7 @@ function ActiveWorkoutPage() {
 }
 
 function ExerciseCard({
-  workoutId, entryId, exerciseName, muscleGroup, sets, defaultRest, onRemove,
+  workoutId, entryId, exerciseName, muscleGroup, sets, defaultRest, targetSets, onRemove,
 }: {
   workoutId: string;
   entryId: string;
@@ -166,6 +168,7 @@ function ExerciseCard({
   muscleGroup?: string;
   sets: WorkoutSet[];
   defaultRest: number;
+  targetSets?: number;
   onRemove: () => void;
 }) {
   const [lastPrefilled, setLastPrefilled] = useState(false);
@@ -177,16 +180,14 @@ function ExerciseCard({
         const entry = await db.workoutExercises.get(entryId);
         if (!entry) return;
         const prev = await getLastPerformance(entry.exerciseId, workoutId);
-        if (prev) {
-          for (const s of prev.sets) {
-            await addSet(entryId, { weight: s.weight, reps: s.reps });
-          }
-        } else {
-          await addSet(entryId);
+        const count = Math.max(targetSets ?? 0, prev?.sets.length ?? 0, 1);
+        for (let i = 0; i < count; i++) {
+          const ref = prev?.sets[i] ?? prev?.sets[prev.sets.length - 1];
+          await addSet(entryId, ref ? { weight: ref.weight, reps: ref.reps } : {});
         }
       })();
     }
-  }, [sets.length, lastPrefilled, entryId, workoutId]);
+  }, [sets.length, lastPrefilled, entryId, workoutId, targetSets]);
 
   const sorted = [...sets].sort((a, b) => a.timestamp - b.timestamp);
 
