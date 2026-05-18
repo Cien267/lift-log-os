@@ -2,6 +2,7 @@ import { db, uid, type Workout, type WorkoutExercise, type WorkoutSet, type Work
 import { computeWorkoutAggregate, e1rm, estimateCalories } from "./analytics";
 
 const ACTIVE_KEY = "forge.activeWorkoutId";
+const REST_KEY = "forge.restTimer";
 
 export const getActiveWorkoutId = () =>
   typeof localStorage !== "undefined" ? localStorage.getItem(ACTIVE_KEY) : null;
@@ -11,6 +12,12 @@ export const setActiveWorkoutId = (id: string | null) => {
   if (id) localStorage.setItem(ACTIVE_KEY, id);
   else localStorage.removeItem(ACTIVE_KEY);
 };
+
+function clearRestTimer() {
+  if (typeof localStorage === "undefined") return;
+  localStorage.removeItem(REST_KEY);
+  try { window.dispatchEvent(new Event("forge:rest")); } catch {}
+}
 
 export async function startWorkout(opts: { location?: Workout["location"]; templateId?: string; name?: string } = {}) {
   const id = uid();
