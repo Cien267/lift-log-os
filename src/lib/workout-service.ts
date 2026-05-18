@@ -140,6 +140,7 @@ export async function discardWorkout(workoutId: string) {
   await db.workoutExercises.bulkDelete(entries.map((e) => e.id));
   await db.workouts.delete(workoutId);
   if (getActiveWorkoutId() === workoutId) setActiveWorkoutId(null);
+  clearRestTimer();
 }
 
 async function detectPRs(workoutId: string) {
