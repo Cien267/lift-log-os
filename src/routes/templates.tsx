@@ -113,12 +113,21 @@ function TemplatesPage() {
                         <p className="text-[11px] text-muted-foreground">{te.targetSets} sets</p>
                       </div>
                       <Input
-                        type="number"
-                        value={te.targetSets}
+                        type="text"
+                        inputMode="numeric"
+                        value={Number.isFinite(te.targetSets) ? String(te.targetSets) : ""}
                         onChange={(e) => {
+                          const raw = e.target.value.replace(/[^\d]/g, "");
                           const next = [...editing.exercises];
-                          next[idx] = { ...te, targetSets: Number(e.target.value) || 1 };
+                          next[idx] = { ...te, targetSets: raw === "" ? (NaN as any) : Number(raw) };
                           setEditing({ ...editing, exercises: next });
+                        }}
+                        onBlur={() => {
+                          if (!Number.isFinite(te.targetSets) || te.targetSets < 1) {
+                            const next = [...editing.exercises];
+                            next[idx] = { ...te, targetSets: 1 };
+                            setEditing({ ...editing, exercises: next });
+                          }
                         }}
                         className="num h-8 w-14 text-center"
                       />
