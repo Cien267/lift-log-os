@@ -128,6 +128,7 @@ export async function finishWorkout(workoutId: string) {
   });
   await detectPRs(workoutId);
   if (getActiveWorkoutId() === workoutId) setActiveWorkoutId(null);
+  clearRestTimer();
 }
 
 export async function discardWorkout(workoutId: string) {
