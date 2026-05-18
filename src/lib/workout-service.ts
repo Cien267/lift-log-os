@@ -35,6 +35,7 @@ export async function startWorkout(opts: { location?: Workout["location"]; templ
           order: te.order,
           restPreset: te.restPreset,
           supersetGroup: te.supersetGroup,
+          targetSets: te.targetSets,
         });
       }
     }
