@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Check, Plus, Trash2, MoreVertical, Minus, Copy, Flame, X, ArrowLeft } from "lucide-react";
 import { z } from "zod";
