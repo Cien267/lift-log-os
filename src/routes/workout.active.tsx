@@ -171,11 +171,11 @@ function ExerciseCard({
   targetSets?: number;
   onRemove: () => void;
 }) {
-  const [lastPrefilled, setLastPrefilled] = useState(false);
+  const prefillRef = useRef(false);
 
   useEffect(() => {
-    if (sets.length === 0 && !lastPrefilled) {
-      setLastPrefilled(true);
+    if (sets.length === 0 && !prefillRef.current) {
+      prefillRef.current = true;
       (async () => {
         const entry = await db.workoutExercises.get(entryId);
         if (!entry) return;
@@ -187,7 +187,7 @@ function ExerciseCard({
         }
       })();
     }
-  }, [sets.length, lastPrefilled, entryId, workoutId, targetSets]);
+  }, [sets.length, entryId, workoutId, targetSets]);
 
   const sorted = [...sets].sort((a, b) => a.timestamp - b.timestamp);
 
