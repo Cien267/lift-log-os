@@ -6,19 +6,35 @@ import { z } from "zod";
 import { db, type WorkoutSet } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import {
-  addExerciseToWorkout, addSet, deleteSet, discardWorkout, finishWorkout,
-  getLastPerformance, removeExerciseFromWorkout, updateSet,
+  addExerciseToWorkout,
+  addSet,
+  deleteSet,
+  discardWorkout,
+  finishWorkout,
+  getLastPerformance,
+  removeExerciseFromWorkout,
+  updateSet,
 } from "@/lib/workout-service";
 import { RestTimerBar, startRest } from "@/components/rest-timer";
 import { ExercisePicker } from "@/components/exercise-picker";
 import { formatDuration, formatWeight } from "@/lib/analytics";
 import { useSettings } from "@/hooks/use-settings";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 const search = z.object({ id: z.string() });
@@ -42,28 +58,33 @@ function ActiveWorkoutPage() {
   const [elapsed, setElapsed] = useState(0);
 
   const workout = useLiveQuery(() => db.workouts.get(id), [id]);
-  const entries = useLiveQuery(
-    () => db.workoutExercises.where("workoutId").equals(id).sortBy("order"),
-    [id],
-  ) ?? [];
-  const sets = useLiveQuery(
-    () => db.workoutSets.where("exerciseEntryId").anyOf(entries.map((e) => e.id)).toArray(),
-    [entries.map((e) => e.id).join(",")],
-  ) ?? [];
+  const entries =
+    useLiveQuery(() => db.workoutExercises.where("workoutId").equals(id).sortBy("order"), [id]) ??
+    [];
+  const sets =
+    useLiveQuery(
+      () =>
+        db.workoutSets
+          .where("exerciseEntryId")
+          .anyOf(entries.map((e) => e.id))
+          .toArray(),
+      [entries.map((e) => e.id).join(",")],
+    ) ?? [];
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
   const exMap = useMemo(() => new Map(exercises.map((e) => [e.id, e])), [exercises]);
 
   useEffect(() => {
     if (!workout) return;
     setElapsed(Math.max(0, Math.floor((Date.now() - workout.startTime) / 1000)));
-    const t = setInterval(() => setElapsed(Math.floor((Date.now() - workout.startTime) / 1000)), 1000);
+    const t = setInterval(
+      () => setElapsed(Math.floor((Date.now() - workout.startTime) / 1000)),
+      1000,
+    );
     return () => clearInterval(t);
   }, [workout?.startTime]);
 
   if (!workout) {
-    return (
-      <div className="p-8 text-center text-sm text-muted-foreground">Workout not found.</div>
-    );
+    return <div className="p-8 text-center text-sm text-muted-foreground">Workout not found.</div>;
   }
 
   const totalVolume = sets.filter((s) => s.completed).reduce((a, s) => a + s.weight * s.reps, 0);
@@ -91,9 +112,12 @@ function ActiveWorkoutPage() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{workout.name ?? `${workout.location} workout`}</p>
+            <p className="truncate text-sm font-semibold">
+              {workout.name ?? `${workout.location} workout`}
+            </p>
             <p className="num text-[11px] text-muted-foreground">
-              {formatDuration(elapsed)} · {completedSets} sets · {formatWeight(Math.round(totalVolume))}
+              {formatDuration(elapsed)} · {completedSets} sets ·{" "}
+              {formatWeight(Math.round(totalVolume))}
             </p>
           </div>
           <Button size="sm" onClick={onFinish} className="gap-1.5">
@@ -102,16 +126,25 @@ function ActiveWorkoutPage() {
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button size="icon" variant="ghost"><X className="h-5 w-5" /></Button>
+              <Button size="icon" variant="ghost">
+                <X className="h-5 w-5" />
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Discard workout?</AlertDialogTitle>
-                <AlertDialogDescription>This will permanently delete all sets logged in this session.</AlertDialogDescription>
+                <AlertDialogDescription>
+                  This will permanently delete all sets logged in this session.
+                </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Keep training</AlertDialogCancel>
-                <AlertDialogAction onClick={onDiscard} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Discard</AlertDialogAction>
+                <AlertDialogAction
+                  onClick={onDiscard}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Discard
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -160,7 +193,14 @@ function ActiveWorkoutPage() {
 }
 
 function ExerciseCard({
-  workoutId, entryId, exerciseName, muscleGroup, sets, defaultRest, targetSets, onRemove,
+  workoutId,
+  entryId,
+  exerciseName,
+  muscleGroup,
+  sets,
+  defaultRest,
+  targetSets,
+  onRemove,
 }: {
   workoutId: string;
   entryId: string;
@@ -195,7 +235,9 @@ function ExerciseCard({
     const next = !set.completed;
     await updateSet(set.id, { completed: next, timestamp: Date.now() });
     if (next) {
-      try { navigator.vibrate?.(40); } catch {}
+      try {
+        navigator.vibrate?.(40);
+      } catch {}
       startRest(defaultRest);
     }
   };
@@ -214,11 +256,15 @@ function ExerciseCard({
       <header className="flex items-center gap-2 px-3 py-2.5">
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-sm font-semibold">{exerciseName}</h3>
-          {muscleGroup && <p className="text-[11px] capitalize text-muted-foreground">{muscleGroup}</p>}
+          {muscleGroup && (
+            <p className="text-[11px] capitalize text-muted-foreground">{muscleGroup}</p>
+          )}
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="ghost" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
+            <Button size="icon" variant="ghost" className="h-8 w-8">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={onRemove} className="text-destructive">
@@ -251,7 +297,12 @@ function ExerciseCard({
           ))}
         </ul>
 
-        <Button onClick={onAdd} variant="ghost" size="sm" className="my-2 w-full justify-center gap-1.5 text-muted-foreground hover:text-foreground">
+        <Button
+          onClick={onAdd}
+          variant="ghost"
+          size="sm"
+          className="my-2 w-full justify-center gap-1.5 text-muted-foreground hover:text-foreground"
+        >
           <Plus className="h-4 w-4" /> Add set
         </Button>
       </div>
@@ -260,7 +311,12 @@ function ExerciseCard({
 }
 
 function SetRow({
-  index, set, onChange, onComplete, onDuplicate, onDelete,
+  index,
+  set,
+  onChange,
+  onComplete,
+  onDuplicate,
+  onDelete,
 }: {
   index: number;
   set: WorkoutSet;
@@ -285,11 +341,7 @@ function SetRow({
         step={2.5}
         suffix="kg"
       />
-      <NumberField
-        value={set.reps}
-        onChange={(v) => onChange({ reps: v })}
-        step={1}
-      />
+      <NumberField value={set.reps} onChange={(v) => onChange({ reps: v })} step={1} />
       <button
         onClick={onComplete}
         className={
@@ -304,17 +356,25 @@ function SetRow({
       </button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="grid h-9 w-9 place-items-center justify-self-center rounded-lg text-muted-foreground hover:text-foreground" aria-label="Set options">
+          <button
+            className="grid h-9 w-9 place-items-center justify-self-center rounded-lg text-muted-foreground hover:text-foreground"
+            aria-label="Set options"
+          >
             <MoreVertical className="h-4 w-4" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={onDuplicate}><Copy className="mr-2 h-4 w-4" />Duplicate</DropdownMenuItem>
+          <DropdownMenuItem onClick={onDuplicate}>
+            <Copy className="mr-2 h-4 w-4" />
+            Duplicate
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onChange({ isWarmup: !set.isWarmup })}>
-            <Flame className="mr-2 h-4 w-4" />{set.isWarmup ? "Unmark warmup" : "Mark as warmup"}
+            <Flame className="mr-2 h-4 w-4" />
+            {set.isWarmup ? "Unmark warmup" : "Mark as warmup"}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onDelete} className="text-destructive">
-            <Trash2 className="mr-2 h-4 w-4" />Delete
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -323,8 +383,16 @@ function SetRow({
 }
 
 function NumberField({
-  value, onChange, step = 1, suffix,
-}: { value: number; onChange: (v: number) => void; step?: number; suffix?: string }) {
+  value,
+  onChange,
+  step = 1,
+  suffix,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  step?: number;
+  suffix?: string;
+}) {
   return (
     <div className="relative flex items-center rounded-lg border border-border bg-secondary">
       <button
@@ -349,7 +417,11 @@ function NumberField({
       >
         <Plus className="h-3.5 w-3.5" />
       </button>
-      {suffix && <span className="pointer-events-none absolute bottom-0.5 right-9 text-[9px] uppercase text-muted-foreground">{suffix}</span>}
+      {suffix && (
+        <span className="pointer-events-none absolute bottom-0 right-6 text-[8px] uppercase text-muted-foreground">
+          {suffix}
+        </span>
+      )}
     </div>
   );
 }
