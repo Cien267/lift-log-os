@@ -227,7 +227,6 @@ export function ExercisePicker({
             <div>
               <Label className="mb-1 block text-xs">Name</Label>
               <Input
-                autoFocus
                 value={draft.name}
                 onChange={(e) => setDraft({ ...draft, name: e.target.value })}
                 placeholder="e.g. Bulgarian split squat"
