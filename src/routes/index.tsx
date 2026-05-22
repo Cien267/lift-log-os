@@ -11,7 +11,10 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Dashboard — Forge" },
-      { name: "description", content: "Your training overview: streaks, PRs, weekly volume, and what's next." },
+      {
+        name: "description",
+        content: "Your training overview: streaks, PRs, weekly volume, and what's next.",
+      },
     ],
   }),
   component: Dashboard,
@@ -19,10 +22,12 @@ export const Route = createFileRoute("/")({
 
 function Dashboard() {
   useSettings();
-  const workouts = useLiveQuery(() => db.workouts.orderBy("startTime").reverse().limit(50).toArray()) ?? [];
+  const workouts =
+    useLiveQuery(() => db.workouts.orderBy("startTime").reverse().limit(50).toArray()) ?? [];
   const prs = useLiveQuery(() => db.prs.orderBy("date").reverse().limit(5).toArray()) ?? [];
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
-  const measurements = useLiveQuery(() => db.measurements.orderBy("date").reverse().limit(2).toArray()) ?? [];
+  const measurements =
+    useLiveQuery(() => db.measurements.orderBy("date").reverse().limit(2).toArray()) ?? [];
 
   const weekStart = getWeekStart();
   const weekWorkouts = workouts.filter((w) => w.startTime >= weekStart.getTime() && w.endTime);
@@ -39,13 +44,42 @@ function Dashboard() {
         <HeroCard streak={streak} />
 
         <div className="grid grid-cols-2 gap-3">
-          <Stat label="This week" value={String(weekWorkouts.length)} sub="sessions" icon={Calendar} />
-          <Stat label="Volume" value={formatWeight(Math.round(weekVolume))} sub="this week" icon={TrendingUp} />
-          <Stat label="Last session" value={last ? formatDuration(last.durationSec ?? 0) : "—"} sub={last?.date ?? "no data"} icon={Dumbbell} />
-          <Stat label="Bodyweight" value={bw ? formatWeight(bw) : "—"} sub={bw && bwPrev ? `${bw > bwPrev ? "+" : ""}${(bw - bwPrev).toFixed(1)} kg` : "log it"} icon={TrendingUp} />
+          <Stat
+            label="This week"
+            value={String(weekWorkouts.length)}
+            sub="sessions"
+            icon={Calendar}
+          />
+          <Stat
+            label="Volume"
+            value={formatWeight(Math.round(weekVolume))}
+            sub="this week"
+            icon={TrendingUp}
+          />
+          <Stat
+            label="Last session"
+            value={last ? formatDuration(last.durationSec ?? 0) : "—"}
+            sub={last?.date ?? "no data"}
+            icon={Dumbbell}
+          />
+          <Stat
+            label="Bodyweight"
+            value={bw ? formatWeight(bw) : "—"}
+            sub={
+              bw && bwPrev ? `${bw > bwPrev ? "+" : ""}${(bw - bwPrev).toFixed(1)} kg` : "log it"
+            }
+            icon={TrendingUp}
+          />
         </div>
 
-        <Section title="Recent PRs" right={<Link to="/analytics" className="text-xs text-muted-foreground">View all</Link>}>
+        <Section
+          title="Recent PRs"
+          right={
+            <Link to="/analytics" className="text-xs text-muted-foreground">
+              View all
+            </Link>
+          }
+        >
           {prs.length === 0 ? (
             <Empty hint="Finish a workout to start logging PRs." />
           ) : (
@@ -56,11 +90,15 @@ function Dashboard() {
                     <Trophy className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{exMap.get(pr.exerciseId)?.name ?? "Exercise"}</p>
+                    <p className="truncate text-sm font-medium">
+                      {exMap.get(pr.exerciseId)?.name ?? "Exercise"}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      {pr.type === "weight" ? `${formatWeight(pr.value)} max` :
-                       pr.type === "e1rm" ? `${formatWeight(Math.round(pr.value))} e1RM` :
-                       `${formatWeight(Math.round(pr.value))} volume`}
+                      {pr.type === "weight"
+                        ? `${formatWeight(pr.value)} max`
+                        : pr.type === "e1rm"
+                          ? `${formatWeight(Math.round(pr.value))} e1RM`
+                          : `${formatWeight(Math.round(pr.value))} volume`}
                     </p>
                   </div>
                   <span className="num text-xs text-muted-foreground">{pr.date}</span>
@@ -81,10 +119,16 @@ function Dashboard() {
                     <Dumbbell className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{w.name ?? `${w.location} workout`}</p>
-                    <p className="text-xs text-muted-foreground">{w.date} · {w.endTime ? formatDuration(w.durationSec ?? 0) : "in progress"}</p>
+                    <p className="truncate text-sm font-medium">
+                      {w.name ?? `${w.location} workout`}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {w.date} · {w.endTime ? formatDuration(w.durationSec ?? 0) : "in progress"}
+                    </p>
                   </div>
-                  <span className="num text-xs text-muted-foreground">{w.totalVolume ? formatWeight(Math.round(w.totalVolume)) : ""}</span>
+                  <span className="num text-xs text-muted-foreground">
+                    {w.totalVolume ? formatWeight(Math.round(w.totalVolume)) : ""}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -103,7 +147,9 @@ function HeroCard({ streak }: { streak: number }) {
         <div className="relative flex items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-widest text-muted-foreground">Today</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-balance">Train with intent.</h2>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-balance">
+              Train with intent.
+            </h2>
             <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
               <Flame className="h-4 w-4 text-warning" />
               <span className="num">{streak}</span> day streak
@@ -119,7 +165,17 @@ function HeroCard({ streak }: { streak: number }) {
   );
 }
 
-function Stat({ label, value, sub, icon: Icon }: { label: string; value: string; sub?: string; icon: any }) {
+function Stat({
+  label,
+  value,
+  sub,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  icon: any;
+}) {
   return (
     <div className="rounded-xl border border-border bg-card p-3">
       <div className="flex items-center justify-between text-muted-foreground">
@@ -132,7 +188,15 @@ function Stat({ label, value, sub, icon: Icon }: { label: string; value: string;
   );
 }
 
-function Section({ title, children, right }: { title: string; children: React.ReactNode; right?: React.ReactNode }) {
+function Section({
+  title,
+  children,
+  right,
+}: {
+  title: string;
+  children: React.ReactNode;
+  right?: React.ReactNode;
+}) {
   return (
     <section className="rounded-xl border border-border bg-card px-4 pb-2 pt-3">
       <div className="mb-1 flex items-center justify-between">
