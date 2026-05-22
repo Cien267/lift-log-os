@@ -160,8 +160,44 @@ function TemplatesPage() {
                   {editing.exercises.map((te, idx) => (
                     <li
                       key={idx}
-                      className="flex items-center gap-2 rounded-lg border border-border bg-secondary p-2"
+                      draggable
+                      onDragStart={(e) => {
+                        setDragIndex(idx);
+                        e.dataTransfer.effectAllowed = "move";
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = "move";
+                        if (overIndex !== idx) setOverIndex(idx);
+                      }}
+                      onDragLeave={() => {
+                        if (overIndex === idx) setOverIndex(null);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        if (dragIndex !== null) reorder(dragIndex, idx);
+                        setDragIndex(null);
+                        setOverIndex(null);
+                      }}
+                      onDragEnd={() => {
+                        setDragIndex(null);
+                        setOverIndex(null);
+                      }}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg border bg-secondary p-2 transition-all",
+                        dragIndex === idx && "opacity-40",
+                        overIndex === idx && dragIndex !== idx
+                          ? "border-primary"
+                          : "border-border",
+                      )}
                     >
+                      <button
+                        type="button"
+                        className="cursor-grab touch-none p-1 text-muted-foreground active:cursor-grabbing"
+                        aria-label="Drag to reorder"
+                      >
+                        <GripVertical className="h-4 w-4" />
+                      </button>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm">{exMap.get(te.exerciseId)?.name ?? "?"}</p>
                         <p className="text-[11px] text-muted-foreground">{te.targetSets} sets</p>
