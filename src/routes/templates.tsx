@@ -41,6 +41,16 @@ function TemplatesPage() {
   const exMap = new Map(exercises.map((e) => [e.id, e]));
   const [editing, setEditing] = useState<WorkoutTemplate | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+
+  const reorder = (from: number, to: number) => {
+    if (!editing || from === to) return;
+    const next = [...editing.exercises];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    setEditing({ ...editing, exercises: next.map((e, i) => ({ ...e, order: i })) });
+  };
 
   const create = () => {
     const t: WorkoutTemplate = {
