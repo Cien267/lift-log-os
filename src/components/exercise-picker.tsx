@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Search, X, Plus } from "lucide-react";
+import { Search, X, Plus, Pencil, Trash2 } from "lucide-react";
 import { db, uid, type Equipment, type Exercise, type MuscleGroup } from "@/lib/db";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -10,6 +10,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -22,6 +32,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const GROUPS: ("all" | MuscleGroup)[] = [
   "all",
@@ -64,6 +75,20 @@ const EQUIPMENT_OPTIONS: Equipment[] = [
   "other",
 ];
 
+type Draft = {
+  name: string;
+  muscleGroup: MuscleGroup;
+  equipment: Equipment;
+  category: Exercise["category"];
+};
+
+const emptyDraft: Draft = {
+  name: "",
+  muscleGroup: "chest",
+  equipment: "barbell",
+  category: "compound",
+};
+
 export function ExercisePicker({
   open,
   onOpenChange,
@@ -78,18 +103,10 @@ export function ExercisePicker({
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
   const [q, setQ] = useState("");
   const [group, setGroup] = useState<"all" | MuscleGroup>("all");
-  const [createOpen, setCreateOpen] = useState(false);
-  const [draft, setDraft] = useState<{
-    name: string;
-    muscleGroup: MuscleGroup;
-    equipment: Equipment;
-    category: Exercise["category"];
-  }>({
-    name: "",
-    muscleGroup: "chest",
-    equipment: "barbell",
-    category: "compound",
-  });
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Draft>(emptyDraft);
+  const [confirmDelete, setConfirmDelete] = useState<Exercise | null>(null);
 
   const filtered = useMemo(() => {
     let list = exercises;
@@ -106,30 +123,58 @@ export function ExercisePicker({
   }, [exercises, q, group, filterEquipment]);
 
   const openCreate = () => {
+    setEditingId(null);
     setDraft({
+      ...emptyDraft,
       name: q.trim(),
       muscleGroup: group === "all" ? "chest" : group,
-      equipment: "barbell",
-      category: "compound",
     });
-    setCreateOpen(true);
+    setEditorOpen(true);
   };
 
-  const saveCustom = async () => {
+  const openEdit = (ex: Exercise) => {
+    setEditingId(ex.id);
+    setDraft({
+      name: ex.name,
+      muscleGroup: ex.muscleGroup,
+      equipment: ex.equipment,
+      category: ex.category,
+    });
+    setEditorOpen(true);
+  };
+
+  const saveExercise = async () => {
     const name = draft.name.trim();
     if (!name) return;
-    const ex: Exercise = {
-      id: uid(),
-      name,
-      muscleGroup: draft.muscleGroup,
-      equipment: draft.equipment,
-      category: draft.category,
-      custom: true,
-    };
-    await db.exercises.add(ex);
-    setCreateOpen(false);
-    onSelect(ex.id);
-    onOpenChange(false);
+    if (editingId) {
+      await db.exercises.update(editingId, {
+        name,
+        muscleGroup: draft.muscleGroup,
+        equipment: draft.equipment,
+        category: draft.category,
+      });
+      setEditorOpen(false);
+      toast.success("Exercise updated");
+    } else {
+      const ex: Exercise = {
+        id: uid(),
+        name,
+        muscleGroup: draft.muscleGroup,
+        equipment: draft.equipment,
+        category: draft.category,
+        custom: true,
+      };
+      await db.exercises.add(ex);
+      setEditorOpen(false);
+      onSelect(ex.id);
+      onOpenChange(false);
+    }
+  };
+
+  const deleteExercise = async (ex: Exercise) => {
+    await db.exercises.delete(ex.id);
+    setConfirmDelete(null);
+    toast.success(`Deleted "${ex.name}"`);
   };
 
   return (
@@ -180,13 +225,13 @@ export function ExercisePicker({
           <div className="h-[calc(85vh-12.5rem)] overflow-y-auto pb-8">
             <ul className="divide-y divide-border">
               {filtered.map((ex) => (
-                <li key={ex.id}>
+                <li key={ex.id} className="flex items-center gap-1 pr-2 hover:bg-surface">
                   <button
                     onClick={() => {
                       onSelect(ex.id);
                       onOpenChange(false);
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface"
+                    className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left"
                   >
                     <div className="grid h-9 w-9 place-items-center rounded-lg bg-secondary text-xs font-bold uppercase text-muted-foreground">
                       {ex.muscleGroup.slice(0, 2)}
@@ -206,6 +251,30 @@ export function ExercisePicker({
                       {ex.category}
                     </Badge>
                   </button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8 shrink-0 text-muted-foreground"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEdit(ex);
+                    }}
+                    aria-label={`Edit ${ex.name}`}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setConfirmDelete(ex);
+                    }}
+                    aria-label={`Delete ${ex.name}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </li>
               ))}
               {filtered.length === 0 && (
@@ -218,10 +287,10 @@ export function ExercisePicker({
         </SheetContent>
       </Sheet>
 
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+      <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>New exercise</DialogTitle>
+            <DialogTitle>{editingId ? "Edit exercise" : "New exercise"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
@@ -288,15 +357,39 @@ export function ExercisePicker({
             </div>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setCreateOpen(false)}>
+            <Button variant="ghost" onClick={() => setEditorOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={saveCustom} disabled={!draft.name.trim()}>
-              Create & add
+            <Button onClick={saveExercise} disabled={!draft.name.trim()}>
+              {editingId ? "Save" : "Create & add"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={!!confirmDelete}
+        onOpenChange={(v) => !v && setConfirmDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete "{confirmDelete?.name}"?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes the exercise from your library. Past workout history that
+              references it is kept, but the name may no longer display correctly.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmDelete && deleteExercise(confirmDelete)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
