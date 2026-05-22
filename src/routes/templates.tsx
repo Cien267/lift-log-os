@@ -184,11 +184,9 @@ function TemplatesPage() {
                         setOverIndex(null);
                       }}
                       className={cn(
-                        "flex items-center gap-2 rounded-lg border bg-secondary p-2 transition-all",
+                        "flex items-center gap-2 rounded-lg border bg-secondary p-2 transition-all draggable-element",
                         dragIndex === idx && "opacity-40",
-                        overIndex === idx && dragIndex !== idx
-                          ? "border-primary"
-                          : "border-border",
+                        overIndex === idx && dragIndex !== idx ? "border-primary" : "border-border",
                       )}
                     >
                       <button
