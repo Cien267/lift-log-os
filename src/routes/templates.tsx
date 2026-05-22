@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useState } from "react";
-import { Plus, Trash2, ChevronRight, X } from "lucide-react";
+import { Plus, Trash2, ChevronRight, X, GripVertical } from "lucide-react";
 import { db, uid, type WorkoutTemplate, type TemplateExercise } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
