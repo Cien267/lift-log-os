@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useState } from "react";
-import { Plus, Trash2, ChevronRight, X } from "lucide-react";
+import { Plus, Trash2, ChevronRight, X, GripVertical } from "lucide-react";
 import { db, uid, type WorkoutTemplate, type TemplateExercise } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,6 +41,16 @@ function TemplatesPage() {
   const exMap = new Map(exercises.map((e) => [e.id, e]));
   const [editing, setEditing] = useState<WorkoutTemplate | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+
+  const reorder = (from: number, to: number) => {
+    if (!editing || from === to) return;
+    const next = [...editing.exercises];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    setEditing({ ...editing, exercises: next.map((e, i) => ({ ...e, order: i })) });
+  };
 
   const create = () => {
     const t: WorkoutTemplate = {
@@ -149,8 +160,44 @@ function TemplatesPage() {
                   {editing.exercises.map((te, idx) => (
                     <li
                       key={idx}
-                      className="flex items-center gap-2 rounded-lg border border-border bg-secondary p-2"
+                      draggable
+                      onDragStart={(e) => {
+                        setDragIndex(idx);
+                        e.dataTransfer.effectAllowed = "move";
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = "move";
+                        if (overIndex !== idx) setOverIndex(idx);
+                      }}
+                      onDragLeave={() => {
+                        if (overIndex === idx) setOverIndex(null);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        if (dragIndex !== null) reorder(dragIndex, idx);
+                        setDragIndex(null);
+                        setOverIndex(null);
+                      }}
+                      onDragEnd={() => {
+                        setDragIndex(null);
+                        setOverIndex(null);
+                      }}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg border bg-secondary p-2 transition-all",
+                        dragIndex === idx && "opacity-40",
+                        overIndex === idx && dragIndex !== idx
+                          ? "border-primary"
+                          : "border-border",
+                      )}
                     >
+                      <button
+                        type="button"
+                        className="cursor-grab touch-none p-1 text-muted-foreground active:cursor-grabbing"
+                        aria-label="Drag to reorder"
+                      >
+                        <GripVertical className="h-4 w-4" />
+                      </button>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm">{exMap.get(te.exerciseId)?.name ?? "?"}</p>
                         <p className="text-[11px] text-muted-foreground">{te.targetSets} sets</p>
