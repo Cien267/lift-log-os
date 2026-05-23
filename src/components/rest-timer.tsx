@@ -33,8 +33,7 @@ export const startRest = (duration: number) => {
 };
 export const stopRest = () => write(null);
 
-const fmt = (s: number) =>
-  `${String(Math.floor(s / 60))}:${String(s % 60).padStart(2, "0")}`;
+const fmt = (s: number) => `${String(Math.floor(s / 60))}:${String(s % 60).padStart(2, "0")}`;
 
 export function RestTimerBar() {
   const [state, setState] = useState<RestState | null>(null);
@@ -89,9 +88,7 @@ export function RestTimerBar() {
           />
           <div className="relative flex items-center gap-2 px-3 py-2.5">
             <Timer className="h-4 w-4 text-primary" />
-            <span className="num text-base font-semibold tracking-tight">
-              {fmt(remaining)}
-            </span>
+            <span className="num text-base font-semibold tracking-tight">{fmt(remaining)}</span>
             <span className="text-xs text-muted-foreground">rest</span>
             <div className="ml-auto flex items-center gap-1">
               <Button
@@ -103,7 +100,13 @@ export function RestTimerBar() {
               >
                 <Maximize2 className="h-4 w-4" />
               </Button>
-              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={stopRest} aria-label="Stop">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-7 w-7"
+                onClick={stopRest}
+                aria-label="Stop"
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -120,7 +123,7 @@ export function RestTimerBar() {
   const c = 2 * Math.PI * r;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-xl">
+    <div className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-xl py-6">
       <div className="flex items-center justify-between px-4 pt-safe pt-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Timer className="h-4 w-4 text-primary" />
