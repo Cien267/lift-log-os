@@ -14,7 +14,7 @@ export function AppShell({
 }) {
   return (
     <div className="mx-auto flex min-h-screen max-w-2xl flex-col">
-      {title && (
+      {(title || header) && (
         <header className="sticky top-0 z-30 glass border-b border-border pt-safe">
           {header ? (
             header

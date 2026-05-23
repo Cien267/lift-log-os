@@ -24,6 +24,7 @@ export const Route = createFileRoute("/")({
 function Dashboard() {
   const { t } = useT();
   useSettings();
+  const { settings } = useSettings();
   const workouts =
     useLiveQuery(() => db.workouts.orderBy("startTime").reverse().limit(50).toArray()) ?? [];
   const prs = useLiveQuery(() => db.prs.orderBy("date").reverse().limit(5).toArray()) ?? [];
@@ -41,7 +42,7 @@ function Dashboard() {
   const bwPrev = measurements[1]?.weight;
 
   return (
-    <AppShell title="Forge" header={<Welcome />}>
+    <AppShell title="Forge" header={settings?.userName && <Welcome userName={settings.userName} />}>
       <div className="space-y-4">
         <HeroCard streak={streak} />
 
@@ -141,8 +142,7 @@ function Dashboard() {
   );
 }
 
-function Welcome() {
-  const { settings } = useSettings();
+function Welcome({ userName }: { userName: string }) {
   const hour = new Date().getHours();
 
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
@@ -150,10 +150,7 @@ function Welcome() {
   return (
     <div className="flex items-center justify-start px-4 py-3 text-lg font-semibold tracking-tight">
       {greeting}
-      <span className="truncate max-w-1/2">
-        {settings?.userName ? `, ${settings.userName}` : ""}
-      </span>{" "}
-      👋
+      <span className="truncate max-w-1/2">{`, ${userName}`}</span> 👋
     </div>
   );
 }
