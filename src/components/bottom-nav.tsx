@@ -1,5 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Dumbbell, History, BarChart3, User, Settings as SettingsIcon, LayoutTemplate } from "lucide-react";
+import {
+  Home,
+  Dumbbell,
+  History,
+  BarChart3,
+  User,
+  Settings as SettingsIcon,
+  LayoutTemplate,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT, type TKey } from "@/lib/i18n";
 
@@ -28,10 +36,12 @@ export function BottomNav() {
                 to={it.to}
                 className={cn(
                   "flex flex-1 flex-col items-center gap-0.5 rounded-lg px-1 py-1.5 text-[10px] font-medium transition-colors",
-                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <Icon className={cn("h-5 w-5", active && "drop-shadow-[0_0_6px_var(--color-primary)]")} />
+                <Icon
+                  className={cn("h-5 w-5", active && "drop-shadow-[0_0_6px_var(--color-primary)]")}
+                />
                 <span>{t(it.key)}</span>
               </Link>
             </li>

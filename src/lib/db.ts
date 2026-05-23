@@ -1,12 +1,30 @@
 import Dexie, { type Table } from "dexie";
 
 export type MuscleGroup =
-  | "chest" | "back" | "shoulders" | "biceps" | "triceps"
-  | "quads" | "hamstrings" | "glutes" | "calves" | "core" | "forearms" | "cardio";
+  | "chest"
+  | "back"
+  | "shoulders"
+  | "biceps"
+  | "triceps"
+  | "quads"
+  | "hamstrings"
+  | "glutes"
+  | "calves"
+  | "core"
+  | "forearms"
+  | "cardio";
 
 export type Equipment =
-  | "barbell" | "dumbbell" | "machine" | "cable" | "bodyweight"
-  | "kettlebell" | "band" | "pullup-bar" | "bench" | "other";
+  | "barbell"
+  | "dumbbell"
+  | "machine"
+  | "cable"
+  | "bodyweight"
+  | "kettlebell"
+  | "band"
+  | "pullup-bar"
+  | "bench"
+  | "other";
 
 export type Location = "gym" | "home" | "outdoor";
 
@@ -25,11 +43,11 @@ export interface Exercise {
 export interface WorkoutSet {
   id: string;
   exerciseEntryId: string; // FK -> WorkoutExercise.id
-  weight: number;          // kg
+  weight: number; // kg
   reps: number;
   rir?: number;
   rpe?: number;
-  restTime?: number;       // seconds actually taken
+  restTime?: number; // seconds actually taken
   completed: boolean;
   isWarmup?: boolean;
   notes?: string;
@@ -49,7 +67,7 @@ export interface WorkoutExercise {
 
 export interface Workout {
   id: string;
-  date: string;            // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
   startTime: number;
   endTime?: number;
   durationSec?: number;
@@ -112,7 +130,7 @@ export interface RecoveryLog {
   sorenessByGroup?: Partial<Record<MuscleGroup, number>>; // 0–5
   sleepHours?: number;
   sleepQuality?: number; // 1–5
-  fatigue?: number;      // 1–5
+  fatigue?: number; // 1–5
   notes?: string;
 }
 
@@ -137,6 +155,7 @@ export interface Settings {
   availableEquipment: Equipment[];
   weeklyGoal?: number;
   createdAt: number;
+  userName?: string;
 }
 
 class ForgeDB extends Dexie {
@@ -171,5 +190,5 @@ class ForgeDB extends Dexie {
 export const db = new ForgeDB();
 
 export const uid = () =>
-  (globalThis.crypto?.randomUUID?.() ??
-    `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`);
+  globalThis.crypto?.randomUUID?.() ??
+  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;

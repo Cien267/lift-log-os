@@ -40,6 +40,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ExercisePicker } from "@/components/exercise-picker";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/templates")({
   head: () => ({
@@ -116,6 +117,7 @@ function SortableExercise({
 }
 
 function TemplatesPage() {
+  const { t } = useT();
   const templates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray()) ?? [];
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
   const exMap = new Map(exercises.map((e) => [e.id, e]));
@@ -305,7 +307,7 @@ function TemplatesPage() {
               <Trash2 className="mr-1.5 h-4 w-4" />
               Delete
             </Button>
-            <Button onClick={save}>Save</Button>
+            <Button onClick={save}>{t("common.save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

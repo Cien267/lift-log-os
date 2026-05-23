@@ -1,4 +1,12 @@
-import { db, uid, type Workout, type WorkoutExercise, type WorkoutSet, type WorkoutTemplate, type PersonalRecord } from "./db";
+import {
+  db,
+  uid,
+  type Workout,
+  type WorkoutExercise,
+  type WorkoutSet,
+  type WorkoutTemplate,
+  type PersonalRecord,
+} from "./db";
 import { computeWorkoutAggregate, e1rm, estimateCalories } from "./analytics";
 
 const ACTIVE_KEY = "forge.activeWorkoutId";
@@ -16,10 +24,16 @@ export const setActiveWorkoutId = (id: string | null) => {
 function clearRestTimer() {
   if (typeof localStorage === "undefined") return;
   localStorage.removeItem(REST_KEY);
-  try { window.dispatchEvent(new Event("forge:rest")); } catch {}
+  try {
+    window.dispatchEvent(new Event("forge:rest"));
+  } catch (e: any) {
+    console.error(e);
+  }
 }
 
-export async function startWorkout(opts: { location?: Workout["location"]; templateId?: string; name?: string } = {}) {
+export async function startWorkout(
+  opts: { location?: Workout["location"]; templateId?: string; name?: string } = {},
+) {
   const id = uid();
   const now = Date.now();
   const w: Workout = {
@@ -105,7 +119,7 @@ export async function getLastPerformance(exerciseId: string, excludeWorkoutId?: 
       return { entry: e, workout: w };
     })
     .filter((x) => x.workout && x.workout.id !== excludeWorkoutId)
-    .sort((a, b) => (b.workout!.startTime - a.workout!.startTime));
+    .sort((a, b) => b.workout!.startTime - a.workout!.startTime);
   for (const x of sorted) {
     const sets = await db.workoutSets.where("exerciseEntryId").equals(x.entry.id).toArray();
     const completed = sets.filter((s) => s.completed && !s.isWarmup);
@@ -156,7 +170,12 @@ async function detectPRs(workoutId: string) {
     const bestE1rm = Math.max(...completed.map((s) => e1rm(s.weight, s.reps)));
     const totalVol = completed.reduce((a, s) => a + s.weight * s.reps, 0);
 
-    const checks: { type: PersonalRecord["type"]; value: number; weight?: number; reps?: number }[] = [
+    const checks: {
+      type: PersonalRecord["type"];
+      value: number;
+      weight?: number;
+      reps?: number;
+    }[] = [
       { type: "weight", value: bestWeight, weight: bestWeight },
       { type: "e1rm", value: bestE1rm },
       { type: "volume", value: totalVol },
@@ -180,12 +199,15 @@ async function detectPRs(workoutId: string) {
 }
 
 export async function createTemplateFromWorkout(workoutId: string, name: string) {
-  const entries = (await db.workoutExercises.where("workoutId").equals(workoutId).toArray())
-    .sort((a, b) => a.order - b.order);
-  const counts = await Promise.all(entries.map(async (e) => {
-    const sets = await db.workoutSets.where("exerciseEntryId").equals(e.id).count();
-    return sets;
-  }));
+  const entries = (await db.workoutExercises.where("workoutId").equals(workoutId).toArray()).sort(
+    (a, b) => a.order - b.order,
+  );
+  const counts = await Promise.all(
+    entries.map(async (e) => {
+      const sets = await db.workoutSets.where("exerciseEntryId").equals(e.id).count();
+      return sets;
+    }),
+  );
   const w = await db.workouts.get(workoutId);
   const t: WorkoutTemplate = {
     id: uid(),
@@ -205,15 +227,39 @@ export async function createTemplateFromWorkout(workoutId: string, name: string)
 }
 
 export async function exportAll() {
-  const [exercises, workouts, workoutExercises, workoutSets, templates, measurements, recovery, prs, settings] =
-    await Promise.all([
-      db.exercises.toArray(), db.workouts.toArray(), db.workoutExercises.toArray(),
-      db.workoutSets.toArray(), db.templates.toArray(), db.measurements.toArray(),
-      db.recovery.toArray(), db.prs.toArray(), db.settings.toArray(),
-    ]);
+  const [
+    exercises,
+    workouts,
+    workoutExercises,
+    workoutSets,
+    templates,
+    measurements,
+    recovery,
+    prs,
+    settings,
+  ] = await Promise.all([
+    db.exercises.toArray(),
+    db.workouts.toArray(),
+    db.workoutExercises.toArray(),
+    db.workoutSets.toArray(),
+    db.templates.toArray(),
+    db.measurements.toArray(),
+    db.recovery.toArray(),
+    db.prs.toArray(),
+    db.settings.toArray(),
+  ]);
   return {
-    version: 1, exportedAt: new Date().toISOString(),
-    exercises, workouts, workoutExercises, workoutSets, templates, measurements, recovery, prs, settings,
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    exercises,
+    workouts,
+    workoutExercises,
+    workoutSets,
+    templates,
+    measurements,
+    recovery,
+    prs,
+    settings,
   };
 }
 

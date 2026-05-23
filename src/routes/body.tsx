@@ -9,7 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -21,6 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/body")({
   head: () => ({
@@ -47,7 +53,9 @@ const emptyForm = (): Partial<BodyMeasurement> => ({
 });
 
 function BodyPage() {
-  const measurements = useLiveQuery(() => db.measurements.orderBy("date").reverse().toArray()) ?? [];
+  const { t } = useT();
+  const measurements =
+    useLiveQuery(() => db.measurements.orderBy("date").reverse().toArray()) ?? [];
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<BodyMeasurement>>(emptyForm());
@@ -83,64 +91,123 @@ function BodyPage() {
     setDeleteId(null);
   };
 
-  const weightSeries = [...measurements].reverse().filter((m) => m.weight).map((m) => ({ date: m.date.slice(5), v: m.weight }));
+  const weightSeries = [...measurements]
+    .reverse()
+    .filter((m) => m.weight)
+    .map((m) => ({ date: m.date.slice(5), v: m.weight }));
   const latest = measurements[0];
   const prev = measurements[1];
 
   return (
     <AppShell
-      title="Body"
+      title={t("title.body")}
       action={
         <Button size="sm" className="gap-1.5" onClick={openNew}>
-          <Plus className="h-4 w-4" />Log
+          <Plus className="h-4 w-4" />
+          {t("common.log")}
         </Button>
       }
     >
-      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditingId(null); setForm(emptyForm()); } }}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>{editingId ? "Edit measurement" : "New measurement"}</DialogTitle></DialogHeader>
+      <Dialog
+        open={open}
+        onOpenChange={(v) => {
+          setOpen(v);
+          if (!v) {
+            setEditingId(null);
+            setForm(emptyForm());
+          }
+        }}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto w-[95%]">
+          <DialogHeader>
+            <DialogTitle>
+              {editingId ? t("body.editMeasurement") : t("body.createMeasurement")}
+            </DialogTitle>
+          </DialogHeader>
           <div className="space-y-3">
             <div>
               <Label className="mb-1 block text-xs">Date</Label>
-              <Input type="date" value={form.date as string} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+              <Input
+                type="date"
+                value={form.date as string}
+                onChange={(e) => setForm({ ...form, date: e.target.value })}
+              />
             </div>
             <div className="grid grid-cols-2 gap-3">
               {FIELDS.map((f) => (
                 <div key={f.key as string}>
-                  <Label className="mb-1 block text-xs">{f.label} ({f.unit})</Label>
+                  <Label className="mb-1 block text-xs">
+                    {f.label} ({f.unit})
+                  </Label>
                   <Input
                     type="number"
                     inputMode="decimal"
                     value={(form as any)[f.key] ?? ""}
-                    onChange={(e) => setForm({ ...form, [f.key]: e.target.value ? Number(e.target.value) : undefined })}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        [f.key]: e.target.value ? Number(e.target.value) : undefined,
+                      })
+                    }
                   />
                 </div>
               ))}
             </div>
           </div>
-          <DialogFooter><Button onClick={save}>{editingId ? "Update" : "Save"}</Button></DialogFooter>
+          <DialogFooter>
+            <Button onClick={save}>{editingId ? t("common.update") : t("common.save")}</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <div className="space-y-4">
         <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Bodyweight</p>
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            {t("common.bodyWeight")}
+          </p>
           <p className="num mt-1 text-3xl font-semibold tracking-tight">
             {latest?.weight ? `${latest.weight} kg` : "—"}
           </p>
           {latest && prev && latest.weight && prev.weight && (
             <p className="num text-xs text-muted-foreground">
-              {latest.weight > prev.weight ? "+" : ""}{(latest.weight - prev.weight).toFixed(1)} kg since {prev.date}
+              {latest.weight > prev.weight ? "+" : ""}
+              {(latest.weight - prev.weight).toFixed(1)} kg {t("common.since")} {prev.date}
             </p>
           )}
           {weightSeries.length > 1 && (
             <div className="mt-3">
               <ResponsiveContainer width="100%" height={120}>
                 <LineChart data={weightSeries}>
-                  <XAxis dataKey="date" stroke="var(--color-muted-foreground)" fontSize={10} tickLine={false} axisLine={false} />
-                  <YAxis stroke="var(--color-muted-foreground)" fontSize={10} tickLine={false} axisLine={false} width={30} domain={["auto", "auto"]} />
-                  <Tooltip contentStyle={{ background: "var(--color-popover)", border: "1px solid var(--color-border)", borderRadius: 8, fontSize: 12 }} />
-                  <Line type="monotone" dataKey="v" stroke="var(--color-primary)" strokeWidth={2} dot={false} />
+                  <XAxis
+                    dataKey="date"
+                    stroke="var(--color-muted-foreground)"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="var(--color-muted-foreground)"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    width={30}
+                    domain={["auto", "auto"]}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: "var(--color-popover)",
+                      border: "1px solid var(--color-border)",
+                      borderRadius: 8,
+                      fontSize: 12,
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="v"
+                    stroke="var(--color-primary)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -148,7 +215,9 @@ function BodyPage() {
         </div>
 
         <section>
-          <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">History</h2>
+          <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            History
+          </h2>
           {measurements.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
               No measurements logged yet.
@@ -161,7 +230,13 @@ function BodyPage() {
                     <p className="num text-sm font-semibold">{m.date}</p>
                     <div className="flex items-center gap-1">
                       {m.weight && <p className="num mr-1 text-sm">{m.weight} kg</p>}
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(m)} aria-label="Edit">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => openEdit(m)}
+                        aria-label="Edit"
+                      >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
                       <Button
@@ -176,7 +251,9 @@ function BodyPage() {
                     </div>
                   </div>
                   <p className="num mt-1 text-xs text-muted-foreground">
-                    {FIELDS.filter((f) => f.key !== "weight" && (m as any)[f.key]).map((f) => `${f.label} ${(m as any)[f.key]}${f.unit}`).join(" · ") || "—"}
+                    {FIELDS.filter((f) => f.key !== "weight" && (m as any)[f.key])
+                      .map((f) => `${f.label} ${(m as any)[f.key]}${f.unit}`)
+                      .join(" · ") || "—"}
                   </p>
                 </li>
               ))}
@@ -193,7 +270,10 @@ function BodyPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

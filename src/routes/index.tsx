@@ -6,6 +6,7 @@ import { formatDuration, formatWeight, getWeekStart } from "@/lib/analytics";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/use-settings";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
+  const { t } = useT();
   useSettings();
   const workouts =
     useLiveQuery(() => db.workouts.orderBy("startTime").reverse().limit(50).toArray()) ?? [];
@@ -39,31 +41,31 @@ function Dashboard() {
   const bwPrev = measurements[1]?.weight;
 
   return (
-    <AppShell title="Forge">
+    <AppShell title="Forge" header={<Welcome />}>
       <div className="space-y-4">
         <HeroCard streak={streak} />
 
         <div className="grid grid-cols-2 gap-3">
           <Stat
-            label="This week"
+            label={t("home.thisWeek")}
             value={String(weekWorkouts.length)}
-            sub="sessions"
+            sub={t("home.sessions")}
             icon={Calendar}
           />
           <Stat
-            label="Volume"
+            label={t("common.volume")}
             value={formatWeight(Math.round(weekVolume))}
-            sub="this week"
+            sub={t("home.thisWeek")}
             icon={TrendingUp}
           />
           <Stat
-            label="Last session"
+            label={t("home.lastSession")}
             value={last ? formatDuration(last.durationSec ?? 0) : "—"}
             sub={last?.date ?? "no data"}
             icon={Dumbbell}
           />
           <Stat
-            label="Bodyweight"
+            label={t("common.bodyWeight")}
             value={bw ? formatWeight(bw) : "—"}
             sub={
               bw && bwPrev ? `${bw > bwPrev ? "+" : ""}${(bw - bwPrev).toFixed(1)} kg` : "log it"
@@ -73,15 +75,15 @@ function Dashboard() {
         </div>
 
         <Section
-          title="Recent PRs"
+          title={t("home.recentPRs")}
           right={
             <Link to="/analytics" className="text-xs text-muted-foreground">
-              View all
+              {t("home.viewAll")}
             </Link>
           }
         >
           {prs.length === 0 ? (
-            <Empty hint="Finish a workout to start logging PRs." />
+            <Empty hint={t("home.finishWorkoutHint")} />
           ) : (
             <ul className="divide-y divide-border">
               {prs.map((pr) => (
@@ -108,9 +110,9 @@ function Dashboard() {
           )}
         </Section>
 
-        <Section title="Recent activity">
+        <Section title={t("home.recentActivity")}>
           {workouts.length === 0 ? (
-            <Empty hint="Tap Start workout to begin." />
+            <Empty hint={t("home.recentActivityHint")} />
           ) : (
             <ul className="divide-y divide-border">
               {workouts.slice(0, 6).map((w) => (
@@ -139,25 +141,45 @@ function Dashboard() {
   );
 }
 
+function Welcome() {
+  const { settings } = useSettings();
+  const hour = new Date().getHours();
+
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
+  return (
+    <div className="flex items-center justify-start px-4 py-3 text-lg font-semibold tracking-tight">
+      {greeting}
+      <span className="truncate max-w-1/2">
+        {settings?.userName ? `, ${settings.userName}` : ""}
+      </span>{" "}
+      👋
+    </div>
+  );
+}
+
 function HeroCard({ streak }: { streak: number }) {
+  const { t } = useT();
   return (
     <Link to="/workout" className="block">
       <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-primary/20 via-surface-elevated to-surface p-5">
         <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary/20 blur-2xl" />
         <div className="relative flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Today</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              {t("home.today")}
+            </p>
             <h2 className="mt-1 text-2xl font-semibold tracking-tight text-balance">
-              Train with intent.
+              {t("home.slogan")}
             </h2>
             <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
               <Flame className="h-4 w-4 text-warning" />
-              <span className="num">{streak}</span> day streak
+              <span className="num">{streak}</span> {t("home.streak")}
             </p>
           </div>
           <Button size="lg" className="shrink-0 gap-2">
             <Play className="h-4 w-4 fill-current" />
-            Start
+            {t("common.start")}
           </Button>
         </div>
       </div>

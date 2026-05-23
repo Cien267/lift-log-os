@@ -7,6 +7,7 @@ import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { getActiveWorkoutId, startWorkout } from "@/lib/workout-service";
 import { useSettings } from "@/hooks/use-settings";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/workout/")({
   head: () => ({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/workout/")({
 });
 
 function WorkoutLanding() {
+  const { t } = useT();
   const nav = useNavigate();
   const [active, setActive] = useState<string | null>(null);
   const templates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray()) ?? [];
@@ -39,7 +41,7 @@ function WorkoutLanding() {
   };
 
   return (
-    <AppShell title="Start workout">
+    <AppShell title={t("title.startWorkout")}>
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <button
@@ -47,41 +49,49 @@ function WorkoutLanding() {
             className="group rounded-2xl border border-border bg-gradient-to-br from-primary/15 to-card p-4 text-left transition-transform active:scale-95"
           >
             <Building2 className="h-6 w-6 text-primary" />
-            <p className="mt-3 text-sm font-semibold">Empty · Gym</p>
-            <p className="text-xs text-muted-foreground">Start fresh</p>
+            <p className="mt-3 text-sm font-semibold">{t("common.empty")} · Gym</p>
+            <p className="text-xs text-muted-foreground">{t("workout.startFresh")}</p>
           </button>
           <button
             onClick={() => begin({ location: "home" })}
             className="group rounded-2xl border border-border bg-gradient-to-br from-accent/15 to-card p-4 text-left transition-transform active:scale-95"
           >
             <Home className="h-6 w-6 text-accent" />
-            <p className="mt-3 text-sm font-semibold">Empty · Home</p>
-            <p className="text-xs text-muted-foreground">Start fresh</p>
+            <p className="mt-3 text-sm font-semibold">{t("common.empty")} · Home</p>
+            <p className="text-xs text-muted-foreground">{t("workout.startFresh")}</p>
           </button>
         </div>
 
         <section>
-          <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">From template</h2>
+          <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {t("workout.fromTemplate")}
+          </h2>
           {templates.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
-              No templates yet. Create one in Plans.
+              {t("workout.emptyTemplate")}
             </div>
           ) : (
             <ul className="space-y-2">
-              {templates.map((t) => (
-                <li key={t.id}>
+              {templates.map((temp) => (
+                <li key={temp.id}>
                   <button
-                    onClick={() => begin({ location: t.location as "gym" | "home", templateId: t.id })}
+                    onClick={() =>
+                      begin({ location: temp.location as "gym" | "home", templateId: temp.id })
+                    }
                     className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-surface"
                   >
                     <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/15 text-primary">
                       <Play className="h-4 w-4 fill-current" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">{t.exercises.length} exercises · {t.location}</p>
+                      <p className="truncate text-sm font-semibold">{temp.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {temp.exercises.length} exercises · {temp.location}
+                      </p>
                     </div>
-                    <Button size="sm" variant="secondary">Start</Button>
+                    <Button size="sm" variant="secondary">
+                      {t("common.start")}
+                    </Button>
                   </button>
                 </li>
               ))}

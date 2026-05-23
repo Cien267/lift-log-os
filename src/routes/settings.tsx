@@ -26,7 +26,12 @@ function SettingsPage() {
   const { t } = useT();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  if (!settings) return <AppShell title={t("title.settings")}><div /></AppShell>;
+  if (!settings)
+    return (
+      <AppShell title={t("title.settings")}>
+        <div />
+      </AppShell>
+    );
 
   const doExport = async () => {
     const data = await exportAll();
@@ -54,9 +59,14 @@ function SettingsPage() {
     if (!confirm(t("settings.confirmClear"))) return;
     await db.transaction("rw", db.tables, async () => {
       await Promise.all([
-        db.workouts.clear(), db.workoutExercises.clear(), db.workoutSets.clear(),
-        db.templates.clear(), db.measurements.clear(), db.photos.clear(),
-        db.recovery.clear(), db.prs.clear(),
+        db.workouts.clear(),
+        db.workoutExercises.clear(),
+        db.workoutSets.clear(),
+        db.templates.clear(),
+        db.measurements.clear(),
+        db.photos.clear(),
+        db.recovery.clear(),
+        db.prs.clear(),
       ]);
     });
   };
@@ -68,17 +78,21 @@ function SettingsPage() {
       <div className="space-y-4">
         <Section title={t("settings.appearance")}>
           <div className="grid grid-cols-3 gap-2">
-            {([
-              ["dark", t("settings.theme.dark"), Moon],
-              ["light", t("settings.theme.light"), Sun],
-              ["system", t("settings.theme.auto"), Monitor],
-            ] as const).map(([val, label, Icon]) => (
+            {(
+              [
+                ["dark", t("settings.theme.dark"), Moon],
+                ["light", t("settings.theme.light"), Sun],
+                ["system", t("settings.theme.auto"), Monitor],
+              ] as const
+            ).map(([val, label, Icon]) => (
               <button
                 key={val}
                 onClick={() => update({ theme: val })}
                 className={cn(
                   "flex flex-col items-center gap-1.5 rounded-xl border p-3 text-xs font-medium",
-                  settings.theme === val ? "border-primary bg-primary/10 text-foreground" : "border-border bg-secondary text-muted-foreground"
+                  settings.theme === val
+                    ? "border-primary bg-primary/10 text-foreground"
+                    : "border-border bg-secondary text-muted-foreground",
                 )}
               >
                 <Icon className="h-5 w-5" />
@@ -88,7 +102,7 @@ function SettingsPage() {
           </div>
         </Section>
 
-        <Section title={t("settings.language")}>
+        {/* <Section title={t("settings.language")}>
           <div className="grid grid-cols-2 gap-2">
             {(["en", "vi"] as const).map((code) => (
               <button
@@ -96,7 +110,9 @@ function SettingsPage() {
                 onClick={() => update({ language: code })}
                 className={cn(
                   "flex items-center justify-center gap-2 rounded-xl border p-3 text-sm font-medium",
-                  lang === code ? "border-primary bg-primary/10 text-foreground" : "border-border bg-secondary text-muted-foreground"
+                  lang === code
+                    ? "border-primary bg-primary/10 text-foreground"
+                    : "border-border bg-secondary text-muted-foreground",
                 )}
               >
                 <Languages className="h-4 w-4" />
@@ -104,6 +120,17 @@ function SettingsPage() {
               </button>
             ))}
           </div>
+        </Section> */}
+
+        <Section title={t("settings.aboutMe")}>
+          <Row label={t("settings.userName")}>
+            <Input
+              type="text"
+              className="w-full"
+              value={settings.userName}
+              onChange={(e) => update({ userName: e.target.value })}
+            />
+          </Row>
         </Section>
 
         <Section title={t("settings.workout")}>
@@ -129,19 +156,33 @@ function SettingsPage() {
           <Button onClick={doExport} variant="secondary" className="w-full justify-start gap-2">
             <Download className="h-4 w-4" /> {t("settings.export")}
           </Button>
-          <Button onClick={() => fileRef.current?.click()} variant="secondary" className="w-full justify-start gap-2">
+          <Button
+            onClick={() => fileRef.current?.click()}
+            variant="secondary"
+            className="w-full justify-start gap-2"
+          >
             <Upload className="h-4 w-4" /> {t("settings.import")}
           </Button>
-          <input ref={fileRef} type="file" accept="application/json" hidden
-            onChange={(e) => { const f = e.target.files?.[0]; if (f) doImport(f); }} />
-          <Button onClick={clearAll} variant="ghost" className="w-full justify-start gap-2 text-destructive hover:text-destructive">
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/json"
+            hidden
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) doImport(f);
+            }}
+          />
+          <Button
+            onClick={clearAll}
+            variant="ghost"
+            className="w-full justify-start gap-2 text-destructive hover:text-destructive"
+          >
             <Trash2 className="h-4 w-4" /> {t("settings.deleteAll")}
           </Button>
         </Section>
 
-        <p className="px-1 text-center text-[11px] text-muted-foreground">
-          {t("settings.footer")}
-        </p>
+        <p className="px-1 text-center text-[11px] text-muted-foreground">{t("settings.footer")}</p>
       </div>
     </AppShell>
   );
@@ -150,7 +191,9 @@ function SettingsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-2">
-      <h2 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</h2>
+      <h2 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        {title}
+      </h2>
       <div className="space-y-2 rounded-2xl border border-border bg-card p-3">{children}</div>
     </section>
   );

@@ -33,6 +33,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n";
 
 const GROUPS: ("all" | MuscleGroup)[] = [
   "all",
@@ -101,6 +102,7 @@ export function ExercisePicker({
   filterEquipment?: Equipment[];
 }) {
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
+  const { t } = useT();
   const [q, setQ] = useState("");
   const [group, setGroup] = useState<"all" | MuscleGroup>("all");
   const [editorOpen, setEditorOpen] = useState(false);
@@ -361,22 +363,19 @@ export function ExercisePicker({
               Cancel
             </Button>
             <Button onClick={saveExercise} disabled={!draft.name.trim()}>
-              {editingId ? "Save" : "Create & add"}
+              {editingId ? t("common.save") : t("common.createAdd")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog
-        open={!!confirmDelete}
-        onOpenChange={(v) => !v && setConfirmDelete(null)}
-      >
+      <AlertDialog open={!!confirmDelete} onOpenChange={(v) => !v && setConfirmDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{confirmDelete?.name}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              This removes the exercise from your library. Past workout history that
-              references it is kept, but the name may no longer display correctly.
+              This removes the exercise from your library. Past workout history that references it
+              is kept, but the name may no longer display correctly.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

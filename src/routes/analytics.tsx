@@ -1,24 +1,49 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useMemo } from "react";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 import { db, type MuscleGroup } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
 import { e1rm, formatWeight, getWeekStart, setVolume } from "@/lib/analytics";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/analytics")({
   head: () => ({
     meta: [
       { title: "Analytics — Forge" },
-      { name: "description", content: "Strength progression, volume trends, muscle balance, and insights." },
+      {
+        name: "description",
+        content: "Strength progression, volume trends, muscle balance, and insights.",
+      },
     ],
   }),
   component: AnalyticsPage,
 });
 
-const MUSCLES: MuscleGroup[] = ["chest", "back", "shoulders", "biceps", "triceps", "quads", "hamstrings", "glutes", "calves", "core"];
+const MUSCLES: MuscleGroup[] = [
+  "chest",
+  "back",
+  "shoulders",
+  "biceps",
+  "triceps",
+  "quads",
+  "hamstrings",
+  "glutes",
+  "calves",
+  "core",
+];
 
 function AnalyticsPage() {
+  const { t } = useT();
   const workouts = useLiveQuery(() => db.workouts.orderBy("startTime").toArray()) ?? [];
   const entries = useLiveQuery(() => db.workoutExercises.toArray()) ?? [];
   const sets = useLiveQuery(() => db.workoutSets.toArray()) ?? [];
@@ -32,7 +57,8 @@ function AnalyticsPage() {
     const buckets = new Map<string, number>();
     const today = getWeekStart();
     for (let i = 11; i >= 0; i--) {
-      const d = new Date(today); d.setDate(d.getDate() - i * 7);
+      const d = new Date(today);
+      d.setDate(d.getDate() - i * 7);
       buckets.set(d.toISOString().slice(0, 10), 0);
     }
     for (const w of workouts) {
@@ -60,7 +86,9 @@ function AnalyticsPage() {
       if (!ex) continue;
       const v = setVolume(s);
       map[ex.muscleGroup] = (map[ex.muscleGroup] ?? 0) + v;
-      ex.secondaryMuscles?.forEach((m) => { map[m] = (map[m] ?? 0) + v * 0.5; });
+      ex.secondaryMuscles?.forEach((m) => {
+        map[m] = (map[m] ?? 0) + v * 0.5;
+      });
     }
     return MUSCLES.map((m) => ({ muscle: m.slice(0, 4), volume: Math.round(map[m] ?? 0) }));
   }, [sets, entryMap, workouts, exMap]);
@@ -87,7 +115,9 @@ function AnalyticsPage() {
       // best per date
       const map = new Map<string, number>();
       for (const p of t.points) map.set(p.date, Math.max(map.get(p.date) ?? 0, p.e1rm));
-      t.points = [...map.entries()].map(([date, v]) => ({ date, e1rm: Math.round(v) })).sort((a, b) => a.date.localeCompare(b.date));
+      t.points = [...map.entries()]
+        .map(([date, v]) => ({ date, e1rm: Math.round(v) }))
+        .sort((a, b) => a.date.localeCompare(b.date));
     }
     return top;
   }, [sets, entryMap, workouts, exMap]);
@@ -97,46 +127,93 @@ function AnalyticsPage() {
   const consistency = computeConsistency(workouts.map((w) => w.date));
 
   return (
-    <AppShell title="Analytics">
+    <AppShell title={t("title.analytics")}>
       <div className="space-y-4">
         <div className="grid grid-cols-3 gap-2">
-          <Mini label="Workouts" value={String(totalWorkouts)} />
-          <Mini label="Volume" value={formatWeight(Math.round(totalVolume))} />
-          <Mini label="Consistency" value={`${consistency}%`} />
+          <Mini label={t("analytics.workouts")} value={String(totalWorkouts)} />
+          <Mini label={t("common.volume")} value={formatWeight(Math.round(totalVolume))} />
+          <Mini label={t("analytics.consistency")} value={`${consistency}%`} />
         </div>
 
-        <Card title="Weekly volume" subtitle="last 12 weeks">
+        <Card title={t("analytics.weeklyVolume")} subtitle={t("analytics.last12Weeks")}>
           <ResponsiveContainer width="100%" height={170}>
             <BarChart data={weeklyVolume}>
-              <XAxis dataKey="week" stroke="var(--color-muted-foreground)" fontSize={10} tickLine={false} axisLine={false} />
-              <YAxis stroke="var(--color-muted-foreground)" fontSize={10} tickLine={false} axisLine={false} width={30} />
-              <Tooltip contentStyle={{ background: "var(--color-popover)", border: "1px solid var(--color-border)", borderRadius: 8, fontSize: 12 }} />
+              <XAxis
+                dataKey="week"
+                stroke="var(--color-muted-foreground)"
+                fontSize={10}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="var(--color-muted-foreground)"
+                fontSize={10}
+                tickLine={false}
+                axisLine={false}
+                width={30}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "var(--color-popover)",
+                  border: "1px solid var(--color-border)",
+                  borderRadius: 8,
+                  fontSize: 12,
+                }}
+              />
               <Bar dataKey="volume" fill="var(--color-primary)" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
 
-        <Card title="Muscle volume" subtitle="last 30 days">
+        <Card title={t("analytics.muscleVolume")} subtitle={t("analytics.last30Days")}>
           <ResponsiveContainer width="100%" height={170}>
             <BarChart data={muscleVol} layout="vertical">
               <XAxis type="number" hide />
-              <YAxis dataKey="muscle" type="category" stroke="var(--color-muted-foreground)" fontSize={10} tickLine={false} axisLine={false} width={42} />
-              <Tooltip contentStyle={{ background: "var(--color-popover)", border: "1px solid var(--color-border)", borderRadius: 8, fontSize: 12 }} />
+              <YAxis
+                dataKey="muscle"
+                type="category"
+                stroke="var(--color-muted-foreground)"
+                fontSize={10}
+                tickLine={false}
+                axisLine={false}
+                width={42}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "var(--color-popover)",
+                  border: "1px solid var(--color-border)",
+                  borderRadius: 8,
+                  fontSize: 12,
+                }}
+              />
               <Bar dataKey="volume" fill="var(--color-accent)" radius={[0, 6, 6, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
 
         {topLifts.length > 0 && (
-          <Card title="Top lifts" subtitle="estimated 1RM progression">
+          <Card title={t("analytics.topLifts")} subtitle={t("analytics.e1RM")}>
             <div className="space-y-3">
               {topLifts.map((t) => (
                 <div key={t.id}>
                   <p className="mb-1 text-xs font-semibold">{t.name}</p>
                   <ResponsiveContainer width="100%" height={90}>
                     <LineChart data={t.points}>
-                      <Tooltip contentStyle={{ background: "var(--color-popover)", border: "1px solid var(--color-border)", borderRadius: 8, fontSize: 12 }} />
-                      <Line type="monotone" dataKey="e1rm" stroke="var(--color-primary)" strokeWidth={2} dot={false} />
+                      <Tooltip
+                        contentStyle={{
+                          background: "var(--color-popover)",
+                          border: "1px solid var(--color-border)",
+                          borderRadius: 8,
+                          fontSize: 12,
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="e1rm"
+                        stroke="var(--color-primary)"
+                        strokeWidth={2}
+                        dot={false}
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -160,7 +237,15 @@ function Mini({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Card({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+function Card({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-2xl border border-border bg-card p-3">
       <div className="mb-2 flex items-baseline justify-between">
@@ -172,21 +257,36 @@ function Card({ title, subtitle, children }: { title: string; subtitle?: string;
   );
 }
 
-function Insights({ workouts, muscleVol }: { workouts: any[]; muscleVol: { muscle: string; volume: number }[] }) {
+function Insights({
+  workouts,
+  muscleVol,
+}: {
+  workouts: any[];
+  muscleVol: { muscle: string; volume: number }[];
+}) {
   const insights: string[] = [];
   const lastWeekStart = getWeekStart();
-  const prevWeekStart = new Date(lastWeekStart); prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+  const prevWeekStart = new Date(lastWeekStart);
+  prevWeekStart.setDate(prevWeekStart.getDate() - 7);
   const lastWeek = workouts.filter((w) => w.startTime >= lastWeekStart.getTime()).length;
-  const prevWeek = workouts.filter((w) => w.startTime >= prevWeekStart.getTime() && w.startTime < lastWeekStart.getTime()).length;
-  if (prevWeek > 0 && lastWeek < prevWeek) insights.push(`Training frequency dropped to ${lastWeek} from ${prevWeek} last week.`);
+  const prevWeek = workouts.filter(
+    (w) => w.startTime >= prevWeekStart.getTime() && w.startTime < lastWeekStart.getTime(),
+  ).length;
+  if (prevWeek > 0 && lastWeek < prevWeek)
+    insights.push(`Training frequency dropped to ${lastWeek} from ${prevWeek} last week.`);
   if (lastWeek >= 4) insights.push(`Strong week — ${lastWeek} sessions completed.`);
   const lows = muscleVol.filter((m) => m.volume === 0);
-  if (lows.length > 0) insights.push(`Not trained this month: ${lows.map((l) => l.muscle).join(", ")}.`);
+  if (lows.length > 0)
+    insights.push(`Not trained this month: ${lows.map((l) => l.muscle).join(", ")}.`);
   if (insights.length === 0) insights.push("Log a few workouts to unlock personalized insights.");
   return (
     <Card title="Insights">
       <ul className="space-y-1.5 text-sm">
-        {insights.map((i, k) => <li key={k} className="text-foreground/90">• {i}</li>)}
+        {insights.map((i, k) => (
+          <li key={k} className="text-foreground/90">
+            • {i}
+          </li>
+        ))}
       </ul>
     </Card>
   );
@@ -196,7 +296,8 @@ function computeConsistency(dates: string[]) {
   const set = new Set(dates);
   let hit = 0;
   for (let i = 0; i < 28; i++) {
-    const d = new Date(); d.setDate(d.getDate() - i);
+    const d = new Date();
+    d.setDate(d.getDate() - i);
     if (set.has(d.toISOString().slice(0, 10))) hit++;
   }
   return Math.round((hit / 12) * 100); // ~3x/wk goal over 4 wks
