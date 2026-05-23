@@ -65,7 +65,9 @@ export function RestTimerBar() {
         beeped.current = true;
         try {
           navigator.vibrate?.([180, 80, 180]);
-        } catch {}
+        } catch (e: any) {
+          console.error("error: ", e);
+        }
         // auto-close after brief moment so user notices it hit zero
         setTimeout(() => stopRest(), 600);
       }

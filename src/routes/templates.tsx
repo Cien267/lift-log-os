@@ -61,8 +61,18 @@ interface SortableExerciseProps {
   onRemove: (idx: number) => void;
 }
 
-function SortableExercise({ id, te, idx, name, onSetsChange, onSetsBlur, onRemove }: SortableExerciseProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+function SortableExercise({
+  id,
+  te,
+  idx,
+  name,
+  onSetsChange,
+  onSetsBlur,
+  onRemove,
+}: SortableExerciseProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -254,7 +264,11 @@ function TemplatesPage() {
                       No exercises yet.
                     </li>
                   )}
-                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={onDragEnd}
+                  >
                     <SortableContext
                       items={editing.exercises.map((_, i) => String(i))}
                       strategy={verticalListSortingStrategy}
