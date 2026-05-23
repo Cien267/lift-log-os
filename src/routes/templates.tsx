@@ -2,9 +2,26 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useState } from "react";
 import { Plus, Trash2, ChevronRight, X, GripVertical } from "lucide-react";
+import {
+  DndContext,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  closestCenter,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { db, uid, type WorkoutTemplate, type TemplateExercise } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +31,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -35,21 +51,102 @@ export const Route = createFileRoute("/templates")({
   component: TemplatesPage,
 });
 
+interface SortableExerciseProps {
+  id: string;
+  te: TemplateExercise;
+  idx: number;
+  name: string;
+  onSetsChange: (idx: number, value: number) => void;
+  onSetsBlur: (idx: number) => void;
+  onRemove: (idx: number) => void;
+}
+
+function SortableExercise({ id, te, idx, name, onSetsChange, onSetsBlur, onRemove }: SortableExerciseProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-2 rounded-lg border border-border bg-secondary p-2"
+    >
+      <button
+        type="button"
+        className="cursor-grab touch-none p-1 text-muted-foreground active:cursor-grabbing"
+        aria-label="Drag to reorder"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+      <div className="min-w-0 flex-1">
+        <p className="wrap-break-word text-sm">{name}</p>
+        <p className="text-[11px] text-muted-foreground">{te.targetSets} sets</p>
+      </div>
+      <Input
+        type="text"
+        inputMode="numeric"
+        value={Number.isFinite(te.targetSets) ? String(te.targetSets) : ""}
+        onChange={(e) => {
+          const raw = e.target.value.replace(/[^\d]/g, "");
+          onSetsChange(idx, raw === "" ? (NaN as any) : Number(raw));
+        }}
+        onBlur={() => onSetsBlur(idx)}
+        className="num h-8 w-14 text-center"
+      />
+      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onRemove(idx)}>
+        <X className="h-4 w-4" />
+      </Button>
+    </li>
+  );
+}
+
 function TemplatesPage() {
   const templates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray()) ?? [];
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
   const exMap = new Map(exercises.map((e) => [e.id, e]));
   const [editing, setEditing] = useState<WorkoutTemplate | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
-  const [overIndex, setOverIndex] = useState<number | null>(null);
 
-  const reorder = (from: number, to: number) => {
-    if (!editing || from === to) return;
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!editing || !over || active.id === over.id) return;
+    const from = Number(active.id);
+    const to = Number(over.id);
+    const next = arrayMove(editing.exercises, from, to).map((e, i) => ({ ...e, order: i }));
+    setEditing({ ...editing, exercises: next });
+  };
+
+  const updateSets = (idx: number, value: number) => {
+    if (!editing) return;
     const next = [...editing.exercises];
-    const [moved] = next.splice(from, 1);
-    next.splice(to, 0, moved);
-    setEditing({ ...editing, exercises: next.map((e, i) => ({ ...e, order: i })) });
+    next[idx] = { ...next[idx], targetSets: value };
+    setEditing({ ...editing, exercises: next });
+  };
+
+  const blurSets = (idx: number) => {
+    if (!editing) return;
+    const te = editing.exercises[idx];
+    if (!Number.isFinite(te.targetSets) || te.targetSets < 1) {
+      const next = [...editing.exercises];
+      next[idx] = { ...te, targetSets: 1 };
+      setEditing({ ...editing, exercises: next });
+    }
+  };
+
+  const removeAt = (idx: number) => {
+    if (!editing) return;
+    setEditing({ ...editing, exercises: editing.exercises.filter((_, i) => i !== idx) });
   };
 
   const create = () => {
