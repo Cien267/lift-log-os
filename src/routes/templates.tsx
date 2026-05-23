@@ -254,88 +254,25 @@ function TemplatesPage() {
                       No exercises yet.
                     </li>
                   )}
-                  {editing.exercises.map((te, idx) => (
-                    <li
-                      key={idx}
-                      draggable
-                      onDragStart={(e) => {
-                        setDragIndex(idx);
-                        e.dataTransfer.effectAllowed = "move";
-                      }}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        e.dataTransfer.dropEffect = "move";
-                        if (overIndex !== idx) setOverIndex(idx);
-                      }}
-                      onDragLeave={() => {
-                        if (overIndex === idx) setOverIndex(null);
-                      }}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        if (dragIndex !== null) reorder(dragIndex, idx);
-                        setDragIndex(null);
-                        setOverIndex(null);
-                      }}
-                      onDragEnd={() => {
-                        setDragIndex(null);
-                        setOverIndex(null);
-                      }}
-                      className={cn(
-                        "flex items-center gap-2 rounded-lg border bg-secondary p-2 transition-all draggable-element",
-                        dragIndex === idx && "opacity-40",
-                        overIndex === idx && dragIndex !== idx ? "border-primary" : "border-border",
-                      )}
+                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+                    <SortableContext
+                      items={editing.exercises.map((_, i) => String(i))}
+                      strategy={verticalListSortingStrategy}
                     >
-                      <button
-                        type="button"
-                        className="cursor-grab touch-none p-1 text-muted-foreground active:cursor-grabbing"
-                        aria-label="Drag to reorder"
-                      >
-                        <GripVertical className="h-4 w-4" />
-                      </button>
-                      <div className="min-w-0 flex-1">
-                        <p className="wrap-break-word text-sm">
-                          {exMap.get(te.exerciseId)?.name ?? "?"}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground">{te.targetSets} sets</p>
-                      </div>
-                      <Input
-                        type="text"
-                        inputMode="numeric"
-                        value={Number.isFinite(te.targetSets) ? String(te.targetSets) : ""}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/[^\d]/g, "");
-                          const next = [...editing.exercises];
-                          next[idx] = {
-                            ...te,
-                            targetSets: raw === "" ? (NaN as any) : Number(raw),
-                          };
-                          setEditing({ ...editing, exercises: next });
-                        }}
-                        onBlur={() => {
-                          if (!Number.isFinite(te.targetSets) || te.targetSets < 1) {
-                            const next = [...editing.exercises];
-                            next[idx] = { ...te, targetSets: 1 };
-                            setEditing({ ...editing, exercises: next });
-                          }
-                        }}
-                        className="num h-8 w-14 text-center"
-                      />
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8"
-                        onClick={() => {
-                          setEditing({
-                            ...editing,
-                            exercises: editing.exercises.filter((_, i) => i !== idx),
-                          });
-                        }}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </li>
-                  ))}
+                      {editing.exercises.map((te, idx) => (
+                        <SortableExercise
+                          key={`${te.exerciseId}-${idx}`}
+                          id={String(idx)}
+                          te={te}
+                          idx={idx}
+                          name={exMap.get(te.exerciseId)?.name ?? "?"}
+                          onSetsChange={updateSets}
+                          onSetsBlur={blurSets}
+                          onRemove={removeAt}
+                        />
+                      ))}
+                    </SortableContext>
+                  </DndContext>
                 </ul>
               </div>
             </div>
