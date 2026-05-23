@@ -107,7 +107,7 @@ function TemplatesPage() {
 
       <Dialog open={!!editing} onOpenChange={(v) => !v && setEditing(null)}>
         <DialogContent
-          className="max-h-[90vh] overflow-y-auto"
+          className="max-h-[90vh] overflow-y-auto overflow-x-hidden"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <DialogHeader>
@@ -197,7 +197,9 @@ function TemplatesPage() {
                         <GripVertical className="h-4 w-4" />
                       </button>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm">{exMap.get(te.exerciseId)?.name ?? "?"}</p>
+                        <p className="wrap-break-word text-sm">
+                          {exMap.get(te.exerciseId)?.name ?? "?"}
+                        </p>
                         <p className="text-[11px] text-muted-foreground">{te.targetSets} sets</p>
                       </div>
                       <Input
