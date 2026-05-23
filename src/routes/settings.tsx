@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
-import { Download, Upload, Sun, Moon, Monitor, Trash2 } from "lucide-react";
+import { Download, Upload, Sun, Moon, Monitor, Trash2, Languages } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { exportAll, importAll } from "@/lib/workout-service";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -22,9 +23,10 @@ export const Route = createFileRoute("/settings")({
 
 function SettingsPage() {
   const { settings, update } = useSettings();
+  const { t } = useT();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  if (!settings) return <AppShell title="Settings"><div /></AppShell>;
+  if (!settings) return <AppShell title={t("title.settings")}><div /></AppShell>;
 
   const doExport = async () => {
     const data = await exportAll();
@@ -42,14 +44,14 @@ function SettingsPage() {
     try {
       const data = JSON.parse(text);
       await importAll(data);
-      alert("Backup imported.");
+      alert(t("settings.importedOk"));
     } catch {
-      alert("Invalid backup file.");
+      alert(t("settings.invalidFile"));
     }
   };
 
   const clearAll = async () => {
-    if (!confirm("Delete ALL workouts, templates, and measurements? This cannot be undone.")) return;
+    if (!confirm(t("settings.confirmClear"))) return;
     await db.transaction("rw", db.tables, async () => {
       await Promise.all([
         db.workouts.clear(), db.workoutExercises.clear(), db.workoutSets.clear(),
@@ -59,15 +61,17 @@ function SettingsPage() {
     });
   };
 
+  const lang = settings.language ?? "en";
+
   return (
-    <AppShell title="Settings">
+    <AppShell title={t("title.settings")}>
       <div className="space-y-4">
-        <Section title="Appearance">
+        <Section title={t("settings.appearance")}>
           <div className="grid grid-cols-3 gap-2">
             {([
-              ["dark", "Dark", Moon],
-              ["light", "Light", Sun],
-              ["system", "Auto", Monitor],
+              ["dark", t("settings.theme.dark"), Moon],
+              ["light", t("settings.theme.light"), Sun],
+              ["system", t("settings.theme.auto"), Monitor],
             ] as const).map(([val, label, Icon]) => (
               <button
                 key={val}
@@ -84,8 +88,26 @@ function SettingsPage() {
           </div>
         </Section>
 
-        <Section title="Workout">
-          <Row label="Default rest (seconds)">
+        <Section title={t("settings.language")}>
+          <div className="grid grid-cols-2 gap-2">
+            {(["en", "vi"] as const).map((code) => (
+              <button
+                key={code}
+                onClick={() => update({ language: code })}
+                className={cn(
+                  "flex items-center justify-center gap-2 rounded-xl border p-3 text-sm font-medium",
+                  lang === code ? "border-primary bg-primary/10 text-foreground" : "border-border bg-secondary text-muted-foreground"
+                )}
+              >
+                <Languages className="h-4 w-4" />
+                {code === "en" ? t("lang.en") : t("lang.vi")}
+              </button>
+            ))}
+          </div>
+        </Section>
+
+        <Section title={t("settings.workout")}>
+          <Row label={t("settings.defaultRest")}>
             <Input
               type="number"
               className="num w-24 text-right"
@@ -93,7 +115,7 @@ function SettingsPage() {
               onChange={(e) => update({ defaultRest: Number(e.target.value) || 0 })}
             />
           </Row>
-          <Row label="Weekly goal (sessions)">
+          <Row label={t("settings.weeklyGoal")}>
             <Input
               type="number"
               className="num w-24 text-right"
@@ -103,22 +125,22 @@ function SettingsPage() {
           </Row>
         </Section>
 
-        <Section title="Data">
+        <Section title={t("settings.data")}>
           <Button onClick={doExport} variant="secondary" className="w-full justify-start gap-2">
-            <Download className="h-4 w-4" /> Export backup (.json)
+            <Download className="h-4 w-4" /> {t("settings.export")}
           </Button>
           <Button onClick={() => fileRef.current?.click()} variant="secondary" className="w-full justify-start gap-2">
-            <Upload className="h-4 w-4" /> Import backup
+            <Upload className="h-4 w-4" /> {t("settings.import")}
           </Button>
           <input ref={fileRef} type="file" accept="application/json" hidden
             onChange={(e) => { const f = e.target.files?.[0]; if (f) doImport(f); }} />
           <Button onClick={clearAll} variant="ghost" className="w-full justify-start gap-2 text-destructive hover:text-destructive">
-            <Trash2 className="h-4 w-4" /> Delete all data
+            <Trash2 className="h-4 w-4" /> {t("settings.deleteAll")}
           </Button>
         </Section>
 
         <p className="px-1 text-center text-[11px] text-muted-foreground">
-          Forge stores everything locally on this device. Export regularly to keep a backup safe.
+          {t("settings.footer")}
         </p>
       </div>
     </AppShell>

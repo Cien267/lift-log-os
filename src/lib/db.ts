@@ -131,6 +131,7 @@ export interface Settings {
   id: "app";
   unit: "kg" | "lb";
   theme: "dark" | "light" | "system";
+  language?: "en" | "vi";
   defaultRest: number;
   notificationsEnabled: boolean;
   availableEquipment: Equipment[];

@@ -54,6 +54,7 @@ export async function seedDatabase() {
       id: "app",
       unit: "kg",
       theme: "dark",
+      language: "en",
       defaultRest: 120,
       notificationsEnabled: false,
       availableEquipment: ["barbell", "dumbbell", "bench", "pullup-bar", "machine", "cable", "bodyweight", "band"],
