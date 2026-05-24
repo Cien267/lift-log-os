@@ -130,7 +130,7 @@ function ActiveWorkoutPage() {
                 <X className="h-5 w-5" />
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="w-[95%]">
               <AlertDialogHeader>
                 <AlertDialogTitle>Discard workout?</AlertDialogTitle>
                 <AlertDialogDescription>
@@ -237,7 +237,9 @@ function ExerciseCard({
     if (next) {
       try {
         navigator.vibrate?.(40);
-      } catch {}
+      } catch (e: any) {
+        console.error("Vibration failed:", e);
+      }
       startRest(defaultRest);
     }
   };

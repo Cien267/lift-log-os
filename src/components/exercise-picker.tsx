@@ -370,7 +370,7 @@ export function ExercisePicker({
       </Dialog>
 
       <AlertDialog open={!!confirmDelete} onOpenChange={(v) => !v && setConfirmDelete(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="w-[95%]">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{confirmDelete?.name}"?</AlertDialogTitle>
             <AlertDialogDescription>
