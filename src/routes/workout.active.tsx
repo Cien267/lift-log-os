@@ -17,6 +17,8 @@ import {
 } from "@/lib/workout-service";
 import { RestTimerBar, startRest } from "@/components/rest-timer";
 import { ExercisePicker } from "@/components/exercise-picker";
+import { InsightView } from "@/components/workout-insight";
+import type { WorkoutInsight } from "@/lib/insight";
 import { formatDuration, formatWeight } from "@/lib/analytics";
 import { useSettings } from "@/hooks/use-settings";
 import {
