@@ -79,7 +79,7 @@ export interface Workout {
   energyLevel?: 1 | 2 | 3 | 4 | 5;
   totalVolume?: number;
   estimatedCalories?: number;
-  insight?: import("./insight").WorkoutInsight;
+  insight?: any;
 }
 
 export interface TemplateExercise {
