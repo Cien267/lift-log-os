@@ -136,7 +136,7 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
   }
 
   // PR count: PRs whose workoutId matches current
-  const prs = await db.prs.where("workoutId").equals(workoutId).count();
+  const prs = (await db.prs.toArray()).filter((p) => p.workoutId === workoutId).length;
 
   const curDur = workout.durationSec ?? Math.floor((Date.now() - workout.startTime) / 1000);
   const prevDur = prev?.durationSec ?? 0;
