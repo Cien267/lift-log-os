@@ -99,9 +99,11 @@ function ActiveWorkoutPage() {
   };
 
   const onFinish = async () => {
-    await finishWorkout(id);
-    nav({ to: "/history" });
+    const result = await finishWorkout(id);
+    if (result) setInsight(result);
+    else nav({ to: "/history" });
   };
+
 
   const onDiscard = async () => {
     await discardWorkout(id);
