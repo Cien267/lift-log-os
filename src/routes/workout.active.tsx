@@ -194,6 +194,32 @@ function ActiveWorkoutPage() {
 
       <RestTimerBar />
       <ExercisePicker open={pickerOpen} onOpenChange={setPickerOpen} onSelect={onPick} />
+
+      {insight && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-background pt-safe">
+          <header className="sticky top-0 border-b border-border bg-background/80 px-4 py-3 backdrop-blur">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
+              Workout complete
+            </p>
+            <h2 className="text-lg font-bold">Your session insight</h2>
+          </header>
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            <InsightView insight={insight} />
+          </div>
+          <div className="sticky bottom-0 border-t border-border bg-background/95 p-4 pb-safe backdrop-blur">
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={() => {
+                setInsight(null);
+                nav({ to: "/history" });
+              }}
+            >
+              <Check className="h-4 w-4" /> Got it
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
