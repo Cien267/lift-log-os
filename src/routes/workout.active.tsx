@@ -17,6 +17,8 @@ import {
 } from "@/lib/workout-service";
 import { RestTimerBar, startRest } from "@/components/rest-timer";
 import { ExercisePicker } from "@/components/exercise-picker";
+import { InsightView } from "@/components/workout-insight";
+import type { WorkoutInsight } from "@/lib/insight";
 import { formatDuration, formatWeight } from "@/lib/analytics";
 import { useSettings } from "@/hooks/use-settings";
 import {
@@ -56,6 +58,8 @@ function ActiveWorkoutPage() {
   const { settings } = useSettings();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [insight, setInsight] = useState<WorkoutInsight | null>(null);
+
 
   const workout = useLiveQuery(() => db.workouts.get(id), [id]);
   const entries =
@@ -95,9 +99,11 @@ function ActiveWorkoutPage() {
   };
 
   const onFinish = async () => {
-    await finishWorkout(id);
-    nav({ to: "/history" });
+    const result = await finishWorkout(id);
+    if (result) setInsight(result);
+    else nav({ to: "/history" });
   };
+
 
   const onDiscard = async () => {
     await discardWorkout(id);
@@ -188,6 +194,32 @@ function ActiveWorkoutPage() {
 
       <RestTimerBar />
       <ExercisePicker open={pickerOpen} onOpenChange={setPickerOpen} onSelect={onPick} />
+
+      {insight && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-background pt-safe">
+          <header className="sticky top-0 border-b border-border bg-background/80 px-4 py-3 backdrop-blur">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
+              Workout complete
+            </p>
+            <h2 className="text-lg font-bold">Your session insight</h2>
+          </header>
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            <InsightView insight={insight} />
+          </div>
+          <div className="sticky bottom-0 border-t border-border bg-background/95 p-4 pb-safe backdrop-blur">
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={() => {
+                setInsight(null);
+                nav({ to: "/history" });
+              }}
+            >
+              <Check className="h-4 w-4" /> Got it
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

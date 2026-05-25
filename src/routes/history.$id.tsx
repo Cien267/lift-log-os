@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { formatDuration, formatWeight, e1rm } from "@/lib/analytics";
 import { createTemplateFromWorkout, discardWorkout } from "@/lib/workout-service";
 import { useState } from "react";
+import { InsightView } from "@/components/workout-insight";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -104,6 +105,12 @@ function WorkoutDetail() {
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       </header>
+
+      {workout.insight && (
+        <div className="mb-4">
+          <InsightView insight={workout.insight} />
+        </div>
+      )}
 
       <div className="space-y-3">
         {entries.map((e) => {
