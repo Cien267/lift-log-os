@@ -106,6 +106,12 @@ function WorkoutDetail() {
         </Button>
       </header>
 
+      {workout.insight && (
+        <div className="mb-4">
+          <InsightView insight={workout.insight} />
+        </div>
+      )}
+
       <div className="space-y-3">
         {entries.map((e) => {
           const ex = exMap.get(e.exerciseId);
