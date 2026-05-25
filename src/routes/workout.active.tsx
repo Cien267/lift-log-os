@@ -58,6 +58,8 @@ function ActiveWorkoutPage() {
   const { settings } = useSettings();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [insight, setInsight] = useState<WorkoutInsight | null>(null);
+
 
   const workout = useLiveQuery(() => db.workouts.get(id), [id]);
   const entries =
