@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { formatDuration, formatWeight, e1rm } from "@/lib/analytics";
 import { createTemplateFromWorkout, discardWorkout } from "@/lib/workout-service";
 import { useState } from "react";
+import { InsightView } from "@/components/workout-insight";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
