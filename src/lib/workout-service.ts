@@ -144,7 +144,7 @@ export async function finishWorkout(workoutId: string) {
   // Insight must be computed AFTER PRs are detected and durations are saved
   const { computeWorkoutInsight } = await import("./insight");
   const insight = await computeWorkoutInsight(workoutId);
-  await db.workouts.update(workoutId, { insight });
+  if (insight) await db.workouts.update(workoutId, { insight });
   if (getActiveWorkoutId() === workoutId) setActiveWorkoutId(null);
   clearRestTimer();
   return insight;

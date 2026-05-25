@@ -114,14 +114,9 @@ export function InsightView({
 
       {insight.exercises.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-            Per exercise
-          </p>
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Per exercise</p>
           {insight.exercises.map((e) => (
-            <div
-              key={e.exerciseId}
-              className="rounded-xl border border-border bg-card p-3"
-            >
+            <div key={e.exerciseId} className="rounded-xl border border-border bg-card p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="truncate text-sm font-semibold">{e.exerciseName}</p>
                 <VerdictIcon v={e.verdict} />

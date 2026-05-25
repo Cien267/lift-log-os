@@ -67,7 +67,7 @@ function verdictFor(cur: number, prev: number): ExerciseVerdict {
   return "same";
 }
 
-export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutInsight> {
+export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutInsight | null> {
   const workout = await db.workouts.get(workoutId);
   if (!workout) throw new Error("Workout not found");
 
@@ -75,9 +75,7 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
   let prev: Workout | undefined;
   let mode: WorkoutInsight["compareMode"] = "none";
   if (workout.templateId) {
-    const candidates = (
-      await db.workouts.where("templateId").equals(workout.templateId).toArray()
-    )
+    const candidates = (await db.workouts.where("templateId").equals(workout.templateId).toArray())
       .filter((w) => w.id !== workoutId && w.endTime)
       .sort((a, b) => b.startTime - a.startTime);
     if (candidates.length > 0) {
@@ -85,14 +83,8 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
       mode = "template";
     }
   }
-  if (!prev) {
-    const all = (await db.workouts.toArray())
-      .filter((w) => w.id !== workoutId && w.endTime && w.startTime < workout.startTime)
-      .sort((a, b) => b.startTime - a.startTime);
-    if (all.length > 0) {
-      prev = all[0];
-      mode = "any";
-    }
+  if (!prev || !workout.templateId) {
+    return null;
   }
 
   const curAgg = await computeWorkoutAggregate(workoutId);
@@ -142,9 +134,7 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
   const prevDur = prev?.durationSec ?? 0;
   const totalVolumeDelta = curAgg.totalVolume - (prevAgg?.totalVolume ?? 0);
   const totalVolumePct =
-    prevAgg && prevAgg.totalVolume > 0
-      ? (totalVolumeDelta / prevAgg.totalVolume) * 100
-      : 0;
+    prevAgg && prevAgg.totalVolume > 0 ? (totalVolumeDelta / prevAgg.totalVolume) * 100 : 0;
   const totalSetsDelta = curAgg.totalSets - (prevAgg?.totalSets ?? 0);
   const durationDelta = curDur - prevDur;
 

@@ -60,7 +60,6 @@ function ActiveWorkoutPage() {
   const [elapsed, setElapsed] = useState(0);
   const [insight, setInsight] = useState<WorkoutInsight | null>(null);
 
-
   const workout = useLiveQuery(() => db.workouts.get(id), [id]);
   const entries =
     useLiveQuery(() => db.workoutExercises.where("workoutId").equals(id).sortBy("order"), [id]) ??
@@ -103,7 +102,6 @@ function ActiveWorkoutPage() {
     if (result) setInsight(result);
     else nav({ to: "/history" });
   };
-
 
   const onDiscard = async () => {
     await discardWorkout(id);
