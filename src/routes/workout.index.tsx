@@ -89,9 +89,9 @@ function WorkoutLanding() {
                         {temp.exercises.length} exercises · {temp.location}
                       </p>
                     </div>
-                    <Button size="sm" variant="secondary">
+                    <span className="rounded-md bg-secondary px-3 py-1.5 text-xs font-medium">
                       {t("common.start")}
-                    </Button>
+                    </span>
                   </button>
                 </li>
               ))}
