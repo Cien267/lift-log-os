@@ -131,7 +131,7 @@ export async function getLastPerformance(exerciseId: string, excludeWorkoutId?: 
 export async function finishWorkout(workoutId: string) {
   const agg = await computeWorkoutAggregate(workoutId);
   const w = await db.workouts.get(workoutId);
-  if (!w) return;
+  if (!w) return null;
   const end = Date.now();
   const durationSec = Math.floor((end - w.startTime) / 1000);
   await db.workouts.update(workoutId, {
@@ -141,8 +141,13 @@ export async function finishWorkout(workoutId: string) {
     estimatedCalories: estimateCalories(durationSec, agg.totalVolume),
   });
   await detectPRs(workoutId);
+  // Insight must be computed AFTER PRs are detected and durations are saved
+  const { computeWorkoutInsight } = await import("./insight");
+  const insight = await computeWorkoutInsight(workoutId);
+  await db.workouts.update(workoutId, { insight });
   if (getActiveWorkoutId() === workoutId) setActiveWorkoutId(null);
   clearRestTimer();
+  return insight;
 }
 
 export async function discardWorkout(workoutId: string) {
