@@ -216,11 +216,11 @@ function BodyPage() {
 
         <section>
           <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            History
+            {t("nav.history")}
           </h2>
           {measurements.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
-              No measurements logged yet.
+              {t("body.emptyMeasurements")}
             </div>
           ) : (
             <ul className="space-y-2">
@@ -265,16 +265,16 @@ function BodyPage() {
       <AlertDialog open={!!deleteId} onOpenChange={(v) => !v && setDeleteId(null)}>
         <AlertDialogContent className="w-[95%]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete measurement?</AlertDialogTitle>
-            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+            <AlertDialogTitle>{t("body.deleteMeasurement")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("common.deleteMessage")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

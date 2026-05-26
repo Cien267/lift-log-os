@@ -184,7 +184,9 @@ export function ExercisePicker({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl p-0">
           <SheetHeader className="border-b border-border px-4 py-3">
-            <SheetTitle>Add exercise</SheetTitle>
+            <SheetTitle>
+              {t("common.add")} {t("common.exercises")}
+            </SheetTitle>
           </SheetHeader>
           <div className="space-y-3 px-4 py-3">
             <div className="relative">
@@ -192,7 +194,7 @@ export function ExercisePicker({
               <Input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Search exercises..."
+                placeholder={t("exercise.searchPlaceholder")}
                 className="pl-9"
               />
               {q && (
@@ -221,7 +223,8 @@ export function ExercisePicker({
               ))}
             </div>
             <Button onClick={openCreate} variant="outline" size="sm" className="w-full gap-1.5">
-              <Plus className="h-4 w-4" /> Create new exercise{q.trim() ? ` "${q.trim()}"` : ""}
+              <Plus className="h-4 w-4" /> {t("common.create")} {t("common.exercises")}
+              {q.trim() ? ` "${q.trim()}"` : ""}
             </Button>
           </div>
           <div className="h-[calc(85vh-12.5rem)] overflow-y-auto pb-8">
@@ -281,7 +284,7 @@ export function ExercisePicker({
               ))}
               {filtered.length === 0 && (
                 <li className="px-4 py-8 text-center text-sm text-muted-foreground">
-                  No exercises found. Tap "Create new exercise" above.
+                  {t("exercise.emptySearch")}
                 </li>
               )}
             </ul>
@@ -292,11 +295,13 @@ export function ExercisePicker({
       <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit exercise" : "New exercise"}</DialogTitle>
+            <DialogTitle>
+              {editingId ? t("common.edit") : t("common.new")} {t("common.exercises")}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label className="mb-1 block text-xs">Name</Label>
+              <Label className="mb-1 block text-xs">{t("common.name")}</Label>
               <Input
                 value={draft.name}
                 onChange={(e) => setDraft({ ...draft, name: e.target.value })}
@@ -305,7 +310,7 @@ export function ExercisePicker({
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="mb-1 block text-xs">Muscle group</Label>
+                <Label className="mb-1 block text-xs">{t("exercise.muscleGroup")}</Label>
                 <Select
                   value={draft.muscleGroup}
                   onValueChange={(v) => setDraft({ ...draft, muscleGroup: v as MuscleGroup })}
@@ -323,7 +328,7 @@ export function ExercisePicker({
                 </Select>
               </div>
               <div>
-                <Label className="mb-1 block text-xs">Equipment</Label>
+                <Label className="mb-1 block text-xs">{t("exercise.equipment")}</Label>
                 <Select
                   value={draft.equipment}
                   onValueChange={(v) => setDraft({ ...draft, equipment: v as Equipment })}
@@ -342,7 +347,7 @@ export function ExercisePicker({
               </div>
             </div>
             <div>
-              <Label className="mb-1 block text-xs">Category</Label>
+              <Label className="mb-1 block text-xs">{t("exercise.category")}</Label>
               <Select
                 value={draft.category}
                 onValueChange={(v) => setDraft({ ...draft, category: v as Exercise["category"] })}
@@ -360,7 +365,7 @@ export function ExercisePicker({
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setEditorOpen(false)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button onClick={saveExercise} disabled={!draft.name.trim()}>
               {editingId ? t("common.save") : t("common.createAdd")}
@@ -372,19 +377,18 @@ export function ExercisePicker({
       <AlertDialog open={!!confirmDelete} onOpenChange={(v) => !v && setConfirmDelete(null)}>
         <AlertDialogContent className="w-[95%]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete "{confirmDelete?.name}"?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This removes the exercise from your library. Past workout history that references it
-              is kept, but the name may no longer display correctly.
-            </AlertDialogDescription>
+            <AlertDialogTitle>
+              {t("common.delete")} "{confirmDelete?.name}"?
+            </AlertDialogTitle>
+            <AlertDialogDescription>{t("exercise.deleteDescription")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => confirmDelete && deleteExercise(confirmDelete)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

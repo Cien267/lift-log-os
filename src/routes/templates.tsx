@@ -181,30 +181,30 @@ function TemplatesPage() {
 
   return (
     <AppShell
-      title="Plans"
+      title={t("title.plans")}
       action={
         <Button size="sm" onClick={create} className="gap-1.5">
           <Plus className="h-4 w-4" />
-          New
+          {t("common.new")}
         </Button>
       }
     >
       {templates.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
-          No plans yet. Build one to repeat workouts easily.
+          {t("plan.empty")}
         </div>
       ) : (
         <ul className="space-y-2">
-          {templates.map((t) => (
-            <li key={t.id}>
+          {templates.map((template) => (
+            <li key={template.id}>
               <button
-                onClick={() => setEditing(t)}
+                onClick={() => setEditing(template)}
                 className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-surface"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{t.name}</p>
+                  <p className="truncate text-sm font-semibold">{template.name}</p>
                   <p className="text-xs capitalize text-muted-foreground">
-                    {t.location} · {t.exercises.length} exercises
+                    {template.location} · {template.exercises.length} {t("common.exercises")}
                   </p>
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -216,23 +216,23 @@ function TemplatesPage() {
 
       <Dialog open={!!editing} onOpenChange={(v) => !v && setEditing(null)}>
         <DialogContent
-          className="max-h-[90vh] overflow-y-auto overflow-x-hidden"
+          className="max-h-[90vh] overflow-y-auto overflow-x-hidden w-[95%]"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <DialogHeader>
-            <DialogTitle>Edit plan</DialogTitle>
+            <DialogTitle>{t("plan.edit")}</DialogTitle>
           </DialogHeader>
           {editing && (
             <div className="space-y-3">
               <div>
-                <Label className="mb-1 block text-xs">Name</Label>
+                <Label className="mb-1 block text-xs">{t("common.name")}</Label>
                 <Input
                   value={editing.name}
                   onChange={(e) => setEditing({ ...editing, name: e.target.value })}
                 />
               </div>
               <div>
-                <Label className="mb-1 block text-xs">Location</Label>
+                <Label className="mb-1 block text-xs">{t("common.location")}</Label>
                 <Select
                   value={editing.location}
                   onValueChange={(v) => setEditing({ ...editing, location: v as any })}
@@ -250,20 +250,20 @@ function TemplatesPage() {
 
               <div>
                 <div className="mb-1 flex items-center justify-between">
-                  <Label className="text-xs">Exercises</Label>
+                  <Label className="text-xs">{t("common.exercises")}</Label>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => setPickerOpen(true)}
                     className="gap-1 text-xs"
                   >
-                    <Plus className="h-3.5 w-3.5" /> Add
+                    <Plus className="h-3.5 w-3.5" /> {t("common.add")}
                   </Button>
                 </div>
                 <ul className="space-y-1.5">
                   {editing.exercises.length === 0 && (
                     <li className="rounded-lg border border-dashed border-border p-3 text-center text-xs text-muted-foreground">
-                      No exercises yet.
+                      {t("exercise.empty")}
                     </li>
                   )}
                   <DndContext
@@ -305,7 +305,7 @@ function TemplatesPage() {
               }}
             >
               <Trash2 className="mr-1.5 h-4 w-4" />
-              Delete
+              {t("common.delete")}
             </Button>
             <Button onClick={save}>{t("common.save")}</Button>
           </DialogFooter>

@@ -102,7 +102,7 @@ function SettingsPage() {
           </div>
         </Section>
 
-        {/* <Section title={t("settings.language")}>
+        <Section title={t("settings.language")}>
           <div className="grid grid-cols-2 gap-2">
             {(["en", "vi"] as const).map((code) => (
               <button
@@ -120,7 +120,7 @@ function SettingsPage() {
               </button>
             ))}
           </div>
-        </Section> */}
+        </Section>
 
         <Section title={t("settings.aboutMe")}>
           <Row label={t("settings.userName")}>
