@@ -88,18 +88,15 @@ export function RestTimerBar() {
             className="absolute inset-y-0 left-0 bg-primary/15 transition-[width] duration-300"
             style={{ width: `${pct * 100}%` }}
           />
-          <div className="relative flex items-center gap-2 px-3 py-2.5">
+          <div
+            className="relative flex items-center gap-2 px-3 py-2.5"
+            onClick={() => setMinimized(false)}
+          >
             <Timer className="h-4 w-4 text-primary" />
             <span className="num text-base font-semibold tracking-tight">{fmt(remaining)}</span>
             <span className="text-xs text-muted-foreground">rest</span>
             <div className="ml-auto flex items-center gap-1">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-7 w-7"
-                onClick={() => setMinimized(false)}
-                aria-label="Expand"
-              >
+              <Button size="icon" variant="ghost" className="h-7 w-7" aria-label="Expand">
                 <Maximize2 className="h-4 w-4" />
               </Button>
               <Button

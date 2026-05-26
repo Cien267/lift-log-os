@@ -140,7 +140,7 @@ function WorkoutDetail() {
                     key={s.id}
                     className={
                       "num grid grid-cols-[24px_1fr_1fr] gap-2 rounded-md px-2 py-1.5 text-sm " +
-                      (s.completed ? "bg-primary/5" : "opacity-50")
+                      (s.isWarmup ? "bg-warning/10" : s.completed ? "bg-primary/5" : "opacity-50")
                     }
                   >
                     <span className="text-xs text-muted-foreground">{i + 1}</span>

@@ -112,9 +112,9 @@ function ActiveWorkoutPage() {
     <div className="mx-auto flex min-h-screen max-w-2xl flex-col">
       <header className="sticky top-0 z-30 glass border-b border-border pt-safe">
         <div className="flex items-center gap-2 px-3 py-2.5">
-          <Button size="icon" variant="ghost" onClick={() => nav({ to: "/" })}>
+          {/* <Button size="icon" variant="ghost" onClick={() => nav({ to: "/" })}>
             <ArrowLeft className="h-5 w-5" />
-          </Button>
+          </Button> */}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">
               {workout.name ?? `${workout.location} workout`}
@@ -309,7 +309,7 @@ function ExerciseCard({
       <div className="px-3">
         <div className="grid grid-cols-[28px_1fr_1fr_44px_44px] items-center gap-2 pb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
           <span>Set</span>
-          <span className="text-center">Weight</span>
+          <span className="text-center">Weight (kg)</span>
           <span className="text-center">Reps</span>
           <span />
           <span />
@@ -358,12 +358,13 @@ function SetRow({
   onDelete: () => void;
 }) {
   const done = set.completed;
+  const isWarmup = set.isWarmup;
 
   return (
     <li
       className={
         "grid grid-cols-[28px_1fr_1fr_44px_44px] items-center gap-2 rounded-lg px-1 py-1 transition-colors " +
-        (done ? "bg-primary/10" : "")
+        (isWarmup ? "bg-warning/10" : done ? "bg-primary/10" : "")
       }
     >
       <span className="num text-center text-xs font-bold text-muted-foreground">{index}</span>
@@ -378,9 +379,11 @@ function SetRow({
         onClick={onComplete}
         className={
           "grid h-9 w-9 place-items-center justify-self-center rounded-lg border transition-all " +
-          (done
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-border bg-secondary text-muted-foreground hover:text-foreground")
+          (isWarmup
+            ? "border-warning bg-warning text-warning-foreground"
+            : done
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-border bg-secondary text-muted-foreground hover:text-foreground")
         }
         aria-label="Complete set"
       >
@@ -427,13 +430,13 @@ function NumberField({
 }) {
   return (
     <div className="relative flex items-center rounded-lg border border-border bg-secondary">
-      <button
+      {/* <button
         onClick={() => onChange(Math.max(0, +(value - step).toFixed(2)))}
         className="grid h-9 w-8 place-items-center text-muted-foreground hover:text-foreground"
         aria-label="Decrease"
       >
         <Minus className="h-3.5 w-3.5" />
-      </button>
+      </button> */}
       <input
         type="number"
         inputMode="decimal"
@@ -442,18 +445,18 @@ function NumberField({
         className="num h-9 w-full bg-transparent text-center text-base font-semibold focus:outline-none"
         placeholder="0"
       />
-      <button
+      {/* <button
         onClick={() => onChange(+(value + step).toFixed(2))}
         className="grid h-9 w-8 place-items-center text-muted-foreground hover:text-foreground"
         aria-label="Increase"
       >
         <Plus className="h-3.5 w-3.5" />
-      </button>
-      {suffix && (
+      </button> */}
+      {/* {suffix && (
         <span className="pointer-events-none absolute bottom-0 right-6 text-[8px] uppercase text-muted-foreground">
           {suffix}
         </span>
-      )}
+      )} */}
     </div>
   );
 }
