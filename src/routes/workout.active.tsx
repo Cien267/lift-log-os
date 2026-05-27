@@ -38,6 +38,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useT } from "@/lib/i18n";
 
 const search = z.object({ id: z.string() });
 
@@ -53,6 +54,7 @@ export const Route = createFileRoute("/workout/active")({
 });
 
 function ActiveWorkoutPage() {
+  const { t } = useT();
   const { id } = Route.useSearch();
   const nav = useNavigate();
   const { settings } = useSettings();
@@ -126,7 +128,7 @@ function ActiveWorkoutPage() {
           </div>
           <Button size="sm" onClick={onFinish} className="gap-1.5">
             <Check className="h-4 w-4" />
-            Finish
+            {t("common.finish")}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -136,18 +138,16 @@ function ActiveWorkoutPage() {
             </AlertDialogTrigger>
             <AlertDialogContent className="w-[95%]">
               <AlertDialogHeader>
-                <AlertDialogTitle>Discard workout?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete all sets logged in this session.
-                </AlertDialogDescription>
+                <AlertDialogTitle>{t("common.discard")} workout?</AlertDialogTitle>
+                <AlertDialogDescription>{t("workout.discardMessage")}</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Keep training</AlertDialogCancel>
+                <AlertDialogCancel>{t("workout.keepTraining")}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={onDiscard}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
-                  Discard
+                  {t("common.discard")}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -158,9 +158,9 @@ function ActiveWorkoutPage() {
       <main className="flex-1 space-y-3 px-3 pb-32 pt-3">
         {entries.length === 0 && (
           <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center">
-            <p className="text-sm text-muted-foreground">No exercises yet.</p>
+            <p className="text-sm text-muted-foreground">{t("exercise.empty")}</p>
             <Button onClick={() => setPickerOpen(true)} className="mt-3 gap-1.5">
-              <Plus className="h-4 w-4" /> Add exercise
+              <Plus className="h-4 w-4" /> {t("common.add")} {t("common.exercise")}
             </Button>
           </div>
         )}
@@ -185,7 +185,7 @@ function ActiveWorkoutPage() {
 
         {entries.length > 0 && (
           <Button variant="outline" onClick={() => setPickerOpen(true)} className="w-full gap-1.5">
-            <Plus className="h-4 w-4" /> Add exercise
+            <Plus className="h-4 w-4" /> {t("common.add")} {t("common.exercise")}
           </Button>
         )}
       </main>
@@ -197,9 +197,9 @@ function ActiveWorkoutPage() {
         <div className="fixed inset-0 z-50 flex flex-col bg-background pt-safe">
           <header className="sticky top-0 border-b border-border bg-background/80 px-4 py-3 backdrop-blur">
             <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Workout complete
+              {t("workout.complete")}
             </p>
-            <h2 className="text-lg font-bold">Your session insight</h2>
+            <h2 className="text-lg font-bold">{t("workout.insight")}</h2>
           </header>
           <div className="flex-1 overflow-y-auto px-4 py-4">
             <InsightView insight={insight} />
@@ -213,7 +213,7 @@ function ActiveWorkoutPage() {
                 nav({ to: "/history" });
               }}
             >
-              <Check className="h-4 w-4" /> Got it
+              <Check className="h-4 w-4" /> {t("common.gotIt")}
             </Button>
           </div>
         </div>
@@ -242,6 +242,7 @@ function ExerciseCard({
   onRemove: () => void;
 }) {
   const prefillRef = useRef(false);
+  const { t } = useT();
 
   useEffect(() => {
     if (sets.length === 0 && !prefillRef.current) {
@@ -300,7 +301,7 @@ function ExerciseCard({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={onRemove} className="text-destructive">
-              <Trash2 className="mr-2 h-4 w-4" /> Remove exercise
+              <Trash2 className="mr-2 h-4 w-4" /> {t("common.remove")} {t("common.exercise")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -335,7 +336,7 @@ function ExerciseCard({
           size="sm"
           className="my-2 w-full justify-center gap-1.5 text-muted-foreground hover:text-foreground"
         >
-          <Plus className="h-4 w-4" /> Add set
+          <Plus className="h-4 w-4" /> {t("common.add")} set
         </Button>
       </div>
     </section>
@@ -357,6 +358,7 @@ function SetRow({
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useT();
   const done = set.completed;
   const isWarmup = set.isWarmup;
 
@@ -401,15 +403,15 @@ function SetRow({
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={onDuplicate}>
             <Copy className="mr-2 h-4 w-4" />
-            Duplicate
+            {t("common.duplicate")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onChange({ isWarmup: !set.isWarmup })}>
             <Flame className="mr-2 h-4 w-4" />
-            {set.isWarmup ? "Unmark warmup" : "Mark as warmup"}
+            {set.isWarmup ? t("workout.unmarkWarmup") : t("workout.markAsWarmup")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onDelete} className="text-destructive">
             <Trash2 className="mr-2 h-4 w-4" />
-            Delete
+            {t("common.delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

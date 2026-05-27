@@ -264,6 +264,7 @@ function Insights({
   workouts: any[];
   muscleVol: { muscle: string; volume: number }[];
 }) {
+  const { t } = useT();
   const insights: string[] = [];
   const lastWeekStart = getWeekStart();
   const prevWeekStart = new Date(lastWeekStart);
@@ -273,11 +274,16 @@ function Insights({
     (w) => w.startTime >= prevWeekStart.getTime() && w.startTime < lastWeekStart.getTime(),
   ).length;
   if (prevWeek > 0 && lastWeek < prevWeek)
-    insights.push(`Training frequency dropped to ${lastWeek} from ${prevWeek} last week.`);
-  if (lastWeek >= 4) insights.push(`Strong week — ${lastWeek} sessions completed.`);
+    insights.push(
+      `${t("analytics.insightFrequencyDrop")} ${lastWeek} ${t("common.from")} ${prevWeek} ${t("common.lastWeek")}.`,
+    );
+  if (lastWeek >= 4)
+    insights.push(
+      `${t("analytics.insightStrongWeek")} ${lastWeek} ${t("analytics.insightSessionCompleted")}.`,
+    );
   const lows = muscleVol.filter((m) => m.volume === 0);
   if (lows.length > 0)
-    insights.push(`Not trained this month: ${lows.map((l) => l.muscle).join(", ")}.`);
+    insights.push(`${t("analytics.insightNotTrain")} ${lows.map((l) => l.muscle).join(", ")}.`);
   if (insights.length === 0) insights.push("Log a few workouts to unlock personalized insights.");
   return (
     <Card title="Insights">

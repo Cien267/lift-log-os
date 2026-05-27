@@ -185,7 +185,7 @@ export function ExercisePicker({
         <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl p-0">
           <SheetHeader className="border-b border-border px-4 py-3">
             <SheetTitle>
-              {t("common.add")} {t("common.exercises")}
+              {t("common.add")} {t("common.exercise")}
             </SheetTitle>
           </SheetHeader>
           <div className="space-y-3 px-4 py-3">
@@ -223,7 +223,7 @@ export function ExercisePicker({
               ))}
             </div>
             <Button onClick={openCreate} variant="outline" size="sm" className="w-full gap-1.5">
-              <Plus className="h-4 w-4" /> {t("common.create")} {t("common.exercises")}
+              <Plus className="h-4 w-4" /> {t("common.create")} {t("common.exercise")}
               {q.trim() ? ` "${q.trim()}"` : ""}
             </Button>
           </div>
@@ -296,7 +296,7 @@ export function ExercisePicker({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingId ? t("common.edit") : t("common.new")} {t("common.exercises")}
+              {editingId ? t("common.edit") : t("common.new")} {t("common.exercise")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">

@@ -12,6 +12,7 @@ const dict = {
     "nav.body": "Body",
     "nav.plans": "Plans",
     "nav.settings": "Settings",
+
     // titles
     "title.forge": "Forge",
     "title.startWorkout": "Start workout",
@@ -20,6 +21,7 @@ const dict = {
     "title.body": "Body",
     "title.plans": "Plans",
     "title.settings": "Settings",
+
     // settings
     "settings.appearance": "Appearance",
     "settings.language": "Language",
@@ -43,6 +45,7 @@ const dict = {
     "settings.userName": "Name",
     "lang.en": "English",
     "lang.vi": "Tiếng Việt",
+
     // home
     "home.today": "Today",
     "home.slogan": "Train with intent.",
@@ -56,12 +59,21 @@ const dict = {
     "home.recentActivity": "Recent activity",
     "home.finishWorkoutHint": "Finish a workout to start logging PRs.",
     "home.recentActivityHint": "Tap Start workout to begin.",
+
     //workout
     "workout.startFresh": "Start fresh",
     "workout.fromTemplate": "From template",
     "workout.emptyTemplate": "No templates yet. Create one in Plans.",
+    "workout.discardMessage": "This will permanently delete all sets logged in this session.",
+    "workout.keepTraining": "Keep training",
+    "workout.complete": "Workout complete",
+    "workout.insight": "Your session insight",
+    "workout.unmarkWarmup": "Unmark warmup",
+    "workout.markAsWarmup": "Mark as warmup",
+
     // history
     "history.empty": "No completed workouts yet.",
+
     // analytics
     "analytics.workouts": "Workouts",
     "analytics.consistency": "Consistency",
@@ -72,15 +84,22 @@ const dict = {
     "analytics.topLifts": "Top lifts",
     "analytics.e1RM": "Estimated 1RM",
     "analytics.emptyInsight": "Log a few workouts to unlock personalized insights.",
+    "analytics.insightFrequencyDrop": "Training frequency dropped to",
+    "analytics.insightStrongWeek": "Strong week —",
+    "analytics.insightSessionCompleted": "sessions completed.",
+    "analytics.insightNotTrain": "Not trained this month:",
+
     // body
     "body.createMeasurement": "New measurement",
     "body.editMeasurement": "Edit measurement",
     "body.deleteMeasurement": "Delete measurement",
     "body.measurements": "Body measurements",
     "body.emptyMeasurements": "No measurements logged yet.",
+
     // plan
     "plan.empty": "No plans yet. Build one to repeat workouts easily.",
     "plan.edit": "Edit plan",
+
     // exercise
     "exercise.empty": "No exercises yet.",
     "exercise.searchPlaceholder": "Search exercises...",
@@ -90,6 +109,7 @@ const dict = {
     "exercise.category": "Category",
     "exercise.deleteDescription":
       "This removes the exercise from your library. Past workout history that references it is kept, but the name may no longer display correctly.",
+
     // common
     "common.empty": "Empty",
     "common.start": "Start",
@@ -109,10 +129,19 @@ const dict = {
     "common.deleteMessage": "This action cannot be undone.",
     "common.new": "New",
     "common.exercises": "Exercises",
+    "common.exercise": "exercise",
     "common.name": "Name",
     "common.location": "Location",
+    "common.from": "from",
+    "common.lastWeek": "last week",
+    "common.finish": "Finish",
+    "common.discard": "Discard",
+    "common.gotIt": "Got it",
+    "common.duplicate": "Duplicate",
+    "common.remove": "Remove",
   },
   vi: {
+    // bottom nav
     "nav.home": "Home",
     "nav.workout": "Tập luyện",
     "nav.history": "Lịch sử",
@@ -120,6 +149,8 @@ const dict = {
     "nav.body": "Cơ thể",
     "nav.plans": "Kế hoạch",
     "nav.settings": "Cài đặt",
+
+    // titles
     "title.forge": "Forge",
     "title.startWorkout": "Bắt đầu luyện tập",
     "title.history": "Lịch sử",
@@ -127,6 +158,8 @@ const dict = {
     "title.body": "Cơ thể",
     "title.plans": "Kế hoạch",
     "title.settings": "Cài đặt",
+
+    // settings
     "settings.appearance": "Giao diện",
     "settings.language": "Ngôn ngữ",
     "settings.workout": "Tập luyện",
@@ -148,6 +181,8 @@ const dict = {
     "settings.userName": "Tên",
     "lang.en": "English",
     "lang.vi": "Tiếng Việt",
+
+    // home
     "home.today": "Hôm nay",
     "home.slogan": "Luyện tập.",
     "home.streak": "chuỗi ngày",
@@ -159,10 +194,23 @@ const dict = {
     "home.recentActivity": "Hoạt động gần đây",
     "home.finishWorkoutHint": "Hoàn thành buổi tập để bắt đầu ghi lại PR.",
     "home.recentActivityHint": "Nhấn Bắt đầu buổi tập.",
+
+    // workout
     "workout.startFresh": "Bắt đầu hoàn toàn mới",
     "workout.fromTemplate": "Chọn từ mẫu",
     "workout.emptyTemplate": "Chưa có mẫu nào. Tạo trong Kế hoạch.",
+    "workout.discardMessage":
+      "Hành động này sẽ xóa vĩnh viễn tất cả các set đã ghi lại trong phiên tập này.",
+    "workout.keepTraining": "Tiếp tục tập luyện",
+    "workout.complete": "Hoàn thành buổi tập",
+    "workout.insight": "Thông tin chi tiết buổi tập của bạn",
+    "workout.unmarkWarmup": "Bỏ đánh dấu khởi động",
+    "workout.markAsWarmup": "Đánh dấu là khởi động",
+
+    // history
     "history.empty": "Chưa có buổi tập nào được hoàn thành.",
+
+    // analytics
     "analytics.empty": "Chưa có dữ liệu phân tích.",
     "analytics.workouts": "Buổi tập",
     "analytics.consistency": "Độ nhất quán",
@@ -174,13 +222,23 @@ const dict = {
     "analytics.e1RM": "1RM ước tính",
     "analytics.emptyInsight":
       "Ghi lại một vài buổi tập để mở khóa các thông tin chi tiết cá nhân hóa.",
+    "analytics.insightFrequencyDrop": "Tần suất tập luyện giảm xuống",
+    "analytics.insightStrongWeek": "Tuần tập năng suất —",
+    "analytics.insightSessionCompleted": "buổi tập đã hoàn thành.",
+    "analytics.insightNotTrain": "Chưa tập luyện trong tháng này:",
+
+    // body
     "body.createMeasurement": "Ghi lại số đo mới",
     "body.editMeasurement": "Chỉnh sửa số đo",
     "body.deleteMeasurement": "Xóa số đo",
     "body.measurements": "Các số đo cơ thể",
     "body.emptyMeasurements": "Chưa có số đo nào được ghi lại.",
+
+    // plan
     "plan.empty": "Chưa có kế hoạch nào. Tạo một kế hoạch để lặp lại các buổi tập dễ dàng.",
     "plan.edit": "Chỉnh sửa kế hoạch",
+
+    // exercise
     "exercise.empty": "Chưa có bài tập nào.",
     "exercise.searchPlaceholder": "Tìm kiếm bài tập...",
     "exercise.emptySearch": 'Không tìm thấy bài tập nào. Nhấn "Tạo Bài tập" ở trên.',
@@ -189,6 +247,8 @@ const dict = {
     "exercise.category": "Thể loại",
     "exercise.deleteDescription":
       "Điều này sẽ xóa bài tập khỏi thư viện của bạn. Lịch sử tập luyện trước đó tham chiếu đến nó sẽ được giữ lại, nhưng tên có thể không còn hiển thị chính xác.",
+
+    // common
     "common.empty": "Trống",
     "common.start": "Bắt đầu",
     "common.locale": "vi",
@@ -207,8 +267,16 @@ const dict = {
     "common.deleteMessage": "Hành động này không thể hoàn tác.",
     "common.new": "Thêm mới",
     "common.exercises": "Bài tập",
+    "common.exercise": "bài tập",
     "common.name": "Tên",
     "common.location": "Địa điểm",
+    "common.from": "từ",
+    "common.lastWeek": "tuần trước",
+    "common.finish": "Hoàn thành",
+    "common.discard": "Bỏ qua",
+    "common.gotIt": "Đã hiểu",
+    "common.duplicate": "Nhân đôi",
+    "common.remove": "Xóa",
   },
 } as const;
 
