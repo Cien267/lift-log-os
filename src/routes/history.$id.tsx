@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/history/$id")({
   head: ({ params }) => ({
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/history/$id")({
 });
 
 function WorkoutDetail() {
+  const { t } = useT();
   const { id } = Route.useParams();
   const nav = useNavigate();
   const workout = useLiveQuery(() => db.workouts.get(id), [id]);
@@ -49,7 +51,9 @@ function WorkoutDetail() {
   const [open, setOpen] = useState(false);
 
   if (!workout)
-    return <div className="p-8 text-center text-sm text-muted-foreground">Not found.</div>;
+    return (
+      <div className="p-8 text-center text-sm text-muted-foreground">{t("common.notFound")}</div>
+    );
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-12 pt-safe">
@@ -72,12 +76,12 @@ function WorkoutDetail() {
           </DialogTrigger>
           <DialogContent className="w-[95%]">
             <DialogHeader>
-              <DialogTitle>Save as a new plan</DialogTitle>
+              <DialogTitle>{t("history.saveAsNewPlan")}</DialogTitle>
             </DialogHeader>
             <Input
               value={tplName}
               onChange={(e) => setTplName(e.target.value)}
-              placeholder="Plan name"
+              placeholder={t("history.saveAsNewPlanPlaceholder")}
             />
             <DialogFooter>
               <Button
@@ -89,7 +93,7 @@ function WorkoutDetail() {
                   }
                 }}
               >
-                Save
+                {t("common.save")}
               </Button>
             </DialogFooter>
           </DialogContent>

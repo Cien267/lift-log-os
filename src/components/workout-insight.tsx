@@ -2,6 +2,7 @@ import { TrendingUp, TrendingDown, Minus, Trophy, Sparkles } from "lucide-react"
 import type { WorkoutInsight, ExerciseInsight } from "@/lib/insight";
 import { formatDuration, formatWeight } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 function fmtPct(n: number) {
   const sign = n > 0 ? "+" : "";
@@ -26,6 +27,7 @@ function Stat({
   prev?: string | number;
   suffix?: string;
 }) {
+  const { t } = useT();
   return (
     <div className="rounded-lg bg-secondary/50 p-2">
       <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
@@ -35,7 +37,7 @@ function Stat({
       </p>
       {prev !== undefined && (
         <p className="num text-[10px] text-muted-foreground">
-          prev: {prev}
+          {t("common.prev")}: {prev}
           {suffix}
         </p>
       )}
@@ -50,6 +52,7 @@ export function InsightView({
   insight: WorkoutInsight;
   compact?: boolean;
 }) {
+  const { t } = useT();
   const hasPrev = !!insight.previous;
   const volColor =
     insight.totalVolumeDelta > 0
@@ -67,12 +70,12 @@ export function InsightView({
           ) : (
             <Sparkles className="h-5 w-5 text-primary" />
           )}
-          <p className="text-sm font-semibold">Session insight</p>
+          <p className="text-sm font-semibold">{t("history.sessionInsight")}</p>
         </div>
         <p className="mt-1 text-base font-bold leading-snug">{insight.headline}</p>
         {hasPrev && insight.comparedToDate && (
           <p className="mt-1 text-[11px] text-muted-foreground">
-            Compared to {insight.comparedToDate}
+            {t("common.comparedTo")} {insight.comparedToDate}
             {insight.compareMode === "template" ? " · same plan" : ""}
           </p>
         )}
@@ -80,7 +83,9 @@ export function InsightView({
 
       <div className="grid grid-cols-3 gap-2">
         <div className="rounded-xl border border-border bg-card p-3">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Volume</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            {t("common.volume")}
+          </p>
           <p className="num text-base font-bold">
             {formatWeight(Math.round(insight.current.totalVolume))}
           </p>
@@ -96,17 +101,19 @@ export function InsightView({
           {hasPrev && (
             <p className="num text-[11px] text-muted-foreground">
               {insight.totalSetsDelta > 0 ? "+" : ""}
-              {insight.totalSetsDelta} vs last
+              {insight.totalSetsDelta} {t("common.vsLast")}
             </p>
           )}
         </div>
         <div className="rounded-xl border border-border bg-card p-3">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Duration</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            {t("common.duration")}
+          </p>
           <p className="num text-base font-bold">{formatDuration(insight.current.durationSec)}</p>
           {hasPrev && (
             <p className="num text-[11px] text-muted-foreground">
               {insight.durationDelta > 0 ? "+" : ""}
-              {Math.round(insight.durationDelta / 60)}m vs last
+              {Math.round(insight.durationDelta / 60)}m {t("common.vsLast")}
             </p>
           )}
         </div>
@@ -114,7 +121,9 @@ export function InsightView({
 
       {insight.exercises.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Per exercise</p>
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            {t("common.perExercise")}
+          </p>
           {insight.exercises.map((e) => (
             <div key={e.exerciseId} className="rounded-xl border border-border bg-card p-3">
               <div className="flex items-center justify-between gap-2">

@@ -51,7 +51,6 @@ const dict = {
     "home.slogan": "Train with intent.",
     "home.streak": "day streak",
     "home.thisWeek": "This week",
-    "home.volume": "Volume",
     "home.lastSession": "Last session",
     "home.sessions": "Sessions",
     "home.recentPRs": "Recent PRs",
@@ -73,6 +72,9 @@ const dict = {
 
     // history
     "history.empty": "No completed workouts yet.",
+    "history.saveAsNewPlan": "Save as a new plan",
+    "history.saveAsNewPlanPlaceholder": "Plan name",
+    "history.sessionInsight": "Session insight",
 
     // analytics
     "analytics.workouts": "Workouts",
@@ -139,11 +141,17 @@ const dict = {
     "common.gotIt": "Got it",
     "common.duplicate": "Duplicate",
     "common.remove": "Remove",
+    "common.notFound": "Not found.",
+    "common.comparedTo": "Compared to",
+    "common.vsLast": "vs last",
+    "common.duration": "Duration",
+    "common.perExercise": "Per exercise",
+    "common.prev": "prev",
   },
   vi: {
     // bottom nav
     "nav.home": "Home",
-    "nav.workout": "Tập luyện",
+    "nav.workout": "Tập",
     "nav.history": "Lịch sử",
     "nav.stats": "Thống kê",
     "nav.body": "Cơ thể",
@@ -209,6 +217,9 @@ const dict = {
 
     // history
     "history.empty": "Chưa có buổi tập nào được hoàn thành.",
+    "history.saveAsNewPlan": "Lưu thành kế hoạch mới",
+    "history.saveAsNewPlanPlaceholder": "Tên kế hoạch",
+    "history.sessionInsight": "Thông tin chi tiết buổi tập",
 
     // analytics
     "analytics.empty": "Chưa có dữ liệu phân tích.",
@@ -277,6 +288,12 @@ const dict = {
     "common.gotIt": "Đã hiểu",
     "common.duplicate": "Nhân đôi",
     "common.remove": "Xóa",
+    "common.notFound": "Không tìm thấy.",
+    "common.comparedTo": "So với",
+    "common.vsLast": "so với trước",
+    "common.duration": "Thời lượng",
+    "common.perExercise": "Theo từng bài tập",
+    "common.prev": "trước",
   },
 } as const;
 
