@@ -16,8 +16,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/templates", priority: "0.6" },
           { path: "/settings", priority: "0.4" },
         ];
-        const urls = entries.map((e) =>
-          `  <url><loc>${BASE_URL}${e.path}</loc><priority>${e.priority}</priority></url>`
+        const urls = entries.map(
+          (e) => `  <url><loc>${BASE_URL}${e.path}</loc><priority>${e.priority}</priority></url>`,
         );
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,

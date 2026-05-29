@@ -147,6 +147,10 @@ const dict = {
     "common.duration": "Duration",
     "common.perExercise": "Per exercise",
     "common.prev": "prev",
+    "common.remaining": "remaining",
+    "common.rest": "rest",
+    "common.Rest": "Rest",
+    "common.skipRest": "Skip rest",
   },
   vi: {
     // bottom nav
@@ -294,6 +298,10 @@ const dict = {
     "common.duration": "Thời lượng",
     "common.perExercise": "Theo từng bài tập",
     "common.prev": "trước",
+    "common.remaining": "còn lại",
+    "common.rest": "nghỉ",
+    "common.Rest": "Nghỉ",
+    "common.skipRest": "Bỏ qua nghỉ",
   },
 } as const;
 

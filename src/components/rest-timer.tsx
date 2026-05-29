@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Timer, X, Plus, Minus, Minimize2, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n";
 
 const KEY = "forge.restTimer";
 
@@ -40,6 +41,7 @@ export function RestTimerBar() {
   const [remaining, setRemaining] = useState(0);
   const [minimized, setMinimized] = useState(false);
   const beeped = useRef(false);
+  const { t } = useT();
 
   useEffect(() => {
     const sync = () => setState(read());
@@ -94,7 +96,7 @@ export function RestTimerBar() {
           >
             <Timer className="h-4 w-4 text-primary" />
             <span className="num text-base font-semibold tracking-tight">{fmt(remaining)}</span>
-            <span className="text-xs text-muted-foreground">rest</span>
+            <span className="text-xs text-muted-foreground">{t("common.rest")}</span>
             <div className="ml-auto flex items-center gap-1">
               <Button size="icon" variant="ghost" className="h-7 w-7" aria-label="Expand">
                 <Maximize2 className="h-4 w-4" />
@@ -125,8 +127,8 @@ export function RestTimerBar() {
     <div className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-xl py-6">
       <div className="flex items-center justify-between px-4 pt-safe pt-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Timer className="h-4 w-4 text-primary" />
-          Rest
+          <Timer className="h-4 w-4 text-primary " />
+          {t("common.Rest")}
         </div>
         <Button
           size="icon"
@@ -167,7 +169,7 @@ export function RestTimerBar() {
               {fmt(remaining)}
             </span>
             <span className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
-              remaining
+              {t("common.remaining")}
             </span>
           </div>
         </div>
@@ -192,7 +194,7 @@ export function RestTimerBar() {
         </div>
 
         <Button variant="ghost" onClick={stopRest} className="text-muted-foreground">
-          Skip rest
+          {t("common.skipRest")}
         </Button>
       </div>
     </div>
