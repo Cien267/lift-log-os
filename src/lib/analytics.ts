@@ -1,11 +1,9 @@
 import { db, type MuscleGroup, type WorkoutSet, type Exercise } from "./db";
 
 // Epley estimated 1RM
-export const e1rm = (weight: number, reps: number) =>
-  reps <= 0 ? 0 : weight * (1 + reps / 30);
+export const e1rm = (weight: number, reps: number) => (reps <= 0 ? 0 : weight * (1 + reps / 30));
 
-export const setVolume = (s: WorkoutSet) =>
-  (s.completed ? s.weight * s.reps : 0);
+export const setVolume = (s: WorkoutSet) => (s.completed ? s.weight * s.reps : 0);
 
 export function formatWeight(kg: number, unit: "kg" | "lb" = "kg") {
   if (unit === "lb") return `${(kg * 2.20462).toFixed(1)} lb`;
