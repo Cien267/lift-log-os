@@ -3,6 +3,8 @@ import type { WorkoutInsight, ExerciseInsight } from "@/lib/insight";
 import { formatDuration, formatWeight } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/utils";
+import { useSettings } from "@/hooks/use-settings";
 
 function fmtPct(n: number) {
   const sign = n > 0 ? "+" : "";
@@ -53,6 +55,8 @@ export function InsightView({
   compact?: boolean;
 }) {
   const { t } = useT();
+  const { settings } = useSettings();
+  const lang = settings?.language ?? "en";
   const hasPrev = !!insight.previous;
   const volColor =
     insight.totalVolumeDelta > 0
@@ -75,7 +79,7 @@ export function InsightView({
         <p className="mt-1 text-base font-bold leading-snug">{insight.headline}</p>
         {hasPrev && insight.comparedToDate && (
           <p className="mt-1 text-[11px] text-muted-foreground">
-            {t("common.comparedTo")} {insight.comparedToDate}
+            {t("common.comparedTo")} {formatDate(insight.comparedToDate, lang)}
             {insight.compareMode === "template" ? " · same plan" : ""}
           </p>
         )}

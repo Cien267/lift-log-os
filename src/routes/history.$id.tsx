@@ -17,6 +17,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/utils";
+import { useSettings } from "@/hooks/use-settings";
 
 export const Route = createFileRoute("/history/$id")({
   head: ({ params }) => ({
@@ -30,6 +32,8 @@ export const Route = createFileRoute("/history/$id")({
 
 function WorkoutDetail() {
   const { t } = useT();
+  const { settings } = useSettings();
+  const lang = settings?.language ?? "en";
   const { id } = Route.useParams();
   const nav = useNavigate();
   const workout = useLiveQuery(() => db.workouts.get(id), [id]);
@@ -64,7 +68,7 @@ function WorkoutDetail() {
         <div className="flex-1">
           <h1 className="text-lg font-semibold">{workout.name ?? `${workout.location} workout`}</h1>
           <p className="num text-xs text-muted-foreground">
-            {workout.date} · {formatDuration(workout.durationSec ?? 0)} ·{" "}
+            {formatDate(workout.date, lang)} · {formatDuration(workout.durationSec ?? 0)} ·{" "}
             {formatWeight(Math.round(workout.totalVolume ?? 0))}
           </p>
         </div>

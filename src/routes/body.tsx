@@ -27,6 +27,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/utils";
+import { useSettings } from "@/hooks/use-settings";
 
 export const Route = createFileRoute("/body")({
   head: () => ({
@@ -54,6 +56,8 @@ const emptyForm = (): Partial<BodyMeasurement> => ({
 
 function BodyPage() {
   const { t } = useT();
+  const { settings } = useSettings();
+  const lang = settings?.language ?? "en";
   const measurements =
     useLiveQuery(() => db.measurements.orderBy("date").reverse().toArray()) ?? [];
   const [open, setOpen] = useState(false);
@@ -169,9 +173,10 @@ function BodyPage() {
             {latest?.weight ? `${latest.weight} kg` : "—"}
           </p>
           {latest && prev && latest.weight && prev.weight && (
-            <p className="num text-xs text-muted-foreground">
+            <p className="num text-xs text-muted-foreground mt-1">
               {latest.weight > prev.weight ? "+" : ""}
-              {(latest.weight - prev.weight).toFixed(1)} kg {t("common.since")} {prev.date}
+              {(latest.weight - prev.weight).toFixed(1)} kg {t("common.since")}{" "}
+              {formatDate(prev.date, lang)}
             </p>
           )}
           {weightSeries.length > 1 && (
@@ -227,7 +232,7 @@ function BodyPage() {
               {measurements.map((m) => (
                 <li key={m.id} className="rounded-xl border border-border bg-card p-3">
                   <div className="flex items-baseline justify-between gap-2">
-                    <p className="num text-sm font-semibold">{m.date}</p>
+                    <p className="num text-sm font-semibold">{formatDate(m.date, lang)}</p>
                     <div className="flex items-center gap-1">
                       {m.weight && <p className="num mr-1 text-sm">{m.weight} kg</p>}
                       <Button

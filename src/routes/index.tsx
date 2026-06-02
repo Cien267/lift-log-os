@@ -7,6 +7,7 @@ import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/use-settings";
 import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,6 +26,7 @@ function Dashboard() {
   const { t } = useT();
   useSettings();
   const { settings } = useSettings();
+  const lang = settings?.language ?? "en";
   const workouts =
     useLiveQuery(() => db.workouts.orderBy("startTime").reverse().limit(50).toArray()) ?? [];
   const prs = useLiveQuery(() => db.prs.orderBy("date").reverse().limit(5).toArray()) ?? [];
@@ -62,7 +64,7 @@ function Dashboard() {
           <Stat
             label={t("home.lastSession")}
             value={last ? formatDuration(last.durationSec ?? 0) : "—"}
-            sub={last?.date ?? "no data"}
+            sub={formatDate(last?.date, lang) ?? "no data"}
             icon={Dumbbell}
           />
           <Stat
@@ -104,7 +106,9 @@ function Dashboard() {
                           : `${formatWeight(Math.round(pr.value))} volume`}
                     </p>
                   </div>
-                  <span className="num text-xs text-muted-foreground">{pr.date}</span>
+                  <span className="num text-xs text-muted-foreground">
+                    {formatDate(pr.date, lang)}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -126,7 +130,8 @@ function Dashboard() {
                       {w.name ?? `${w.location} workout`}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {w.date} · {w.endTime ? formatDuration(w.durationSec ?? 0) : "in progress"}
+                      {formatDate(w.date, lang)} ·{" "}
+                      {w.endTime ? formatDuration(w.durationSec ?? 0) : "in progress"}
                     </p>
                   </div>
                   <span className="num text-xs text-muted-foreground">

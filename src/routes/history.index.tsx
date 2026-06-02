@@ -5,6 +5,8 @@ import { AppShell } from "@/components/app-shell";
 import { formatDuration, formatWeight } from "@/lib/analytics";
 import { Dumbbell, ChevronRight } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/utils";
+import { useSettings } from "@/hooks/use-settings";
 
 export const Route = createFileRoute("/history/")({
   head: () => ({
@@ -18,6 +20,8 @@ export const Route = createFileRoute("/history/")({
 
 function HistoryPage() {
   const { t } = useT();
+  const { settings } = useSettings();
+  const lang = settings?.language ?? "en";
 
   const groups =
     useLiveQuery(async () => {
@@ -97,7 +101,7 @@ function HistoryPage() {
                         </p>
 
                         <p className="num text-xs text-muted-foreground">
-                          {w.date} · {formatDuration(w.durationSec ?? 0)} ·{" "}
+                          {formatDate(w.date, lang)} · {formatDuration(w.durationSec ?? 0)} ·{" "}
                           {formatWeight(Math.round(w.totalVolume ?? 0))}
                         </p>
                       </div>
