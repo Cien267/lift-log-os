@@ -84,9 +84,7 @@ function HistoryPage() {
               if (!weekGroups.has(key)) weekGroups.set(key, [] as any);
               weekGroups.get(key)!.push(w);
             }
-            const sortedWeeks = [...weekGroups.entries()].sort((a, b) =>
-              a[0] < b[0] ? 1 : -1,
-            );
+            const sortedWeeks = [...weekGroups.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
 
             return (
               <section key={month}>
@@ -156,7 +154,6 @@ function HistoryPage() {
             );
           })}
         </div>
-
       )}
     </AppShell>
   );
