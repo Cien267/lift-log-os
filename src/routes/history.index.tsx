@@ -7,6 +7,7 @@ import { Dumbbell, ChevronRight } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
+import { format } from "date-fns";
 
 export const Route = createFileRoute("/history/")({
   head: () => ({
@@ -80,7 +81,7 @@ function HistoryPage() {
               const monday = new Date(d);
               monday.setDate(d.getDate() + diff);
               monday.setHours(0, 0, 0, 0);
-              const key = monday.toISOString().slice(0, 10);
+              const key = format(monday, "yyyy-MM-dd");
               if (!weekGroups.has(key)) weekGroups.set(key, [] as any);
               weekGroups.get(key)!.push(w);
             }
