@@ -70,50 +70,93 @@ function HistoryPage() {
         </div>
       ) : (
         <div className="space-y-5">
-          {[...groups.entries()].map(([month, list]) => (
-            <section key={month}>
-              <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {new Date(month + "-01").toLocaleDateString(t("common.locale"), {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </h2>
+          {[...groups.entries()].map(([month, list]) => {
+            const weekGroups = new Map<string, typeof list>();
+            for (const w of list) {
+              const d = new Date(w.date);
+              // Monday-start week key
+              const day = d.getDay(); // 0=Sun..6=Sat
+              const diff = day === 0 ? -6 : 1 - day;
+              const monday = new Date(d);
+              monday.setDate(d.getDate() + diff);
+              monday.setHours(0, 0, 0, 0);
+              const key = monday.toISOString().slice(0, 10);
+              if (!weekGroups.has(key)) weekGroups.set(key, [] as any);
+              weekGroups.get(key)!.push(w);
+            }
+            const sortedWeeks = [...weekGroups.entries()].sort((a, b) =>
+              a[0] < b[0] ? 1 : -1,
+            );
 
-              <ul className="space-y-2">
-                {list.map((w: any) => (
-                  <li key={w.id}>
-                    <Link
-                      to="/history/$id"
-                      params={{ id: w.id }}
-                      className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-surface"
-                    >
-                      <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/15 text-primary">
-                        <Dumbbell className="h-4 w-4" />
+            return (
+              <section key={month}>
+                <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {new Date(month + "-01").toLocaleDateString(t("common.locale"), {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </h2>
+
+                <div className="space-y-3">
+                  {sortedWeeks.map(([weekStart, items]) => {
+                    const start = new Date(weekStart);
+                    const end = new Date(start);
+                    end.setDate(start.getDate() + 6);
+                    const fmt = (d: Date) =>
+                      d.toLocaleDateString(t("common.locale"), {
+                        month: "short",
+                        day: "numeric",
+                      });
+                    return (
+                      <div key={weekStart}>
+                        <h3 className="mb-1.5 px-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
+                          {fmt(start)} – {fmt(end)}
+                        </h3>
+                        <ul className="space-y-2">
+                          {items.map((w: any) => (
+                            <li key={w.id}>
+                              <Link
+                                to="/history/$id"
+                                params={{ id: w.id }}
+                                className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-surface"
+                              >
+                                <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/15 text-primary">
+                                  <Dumbbell className="h-4 w-4" />
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-sm font-semibold uppercase">
+                                    {w.name ?? `${w.location} workout`}
+
+                                    {w.template?.name && (
+                                      <span className="text-muted-foreground">
+                                        {" "}
+                                        ({w.template.name})
+                                      </span>
+                                    )}
+                                  </p>
+
+                                  <p className="num text-xs text-muted-foreground">
+                                    {formatDate(w.date, lang)} ·{" "}
+                                    {formatDuration(w.durationSec ?? 0)} ·{" "}
+                                    {formatWeight(Math.round(w.totalVolume ?? 0))}
+                                  </p>
+                                </div>
+
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold uppercase">
-                          {w.name ?? `${w.location} workout`}
-
-                          {w.template?.name && (
-                            <span className="text-muted-foreground"> ({w.template.name})</span>
-                          )}
-                        </p>
-
-                        <p className="num text-xs text-muted-foreground">
-                          {formatDate(w.date, lang)} · {formatDuration(w.durationSec ?? 0)} ·{" "}
-                          {formatWeight(Math.round(w.totalVolume ?? 0))}
-                        </p>
-                      </div>
-
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
         </div>
+
       )}
     </AppShell>
   );
