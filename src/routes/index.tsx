@@ -240,21 +240,45 @@ function Empty({ hint }: { hint: string }) {
   return <p className="py-4 text-center text-xs text-muted-foreground">{hint}</p>;
 }
 
-function computeStreak(dates: string[]) {
-  const set = new Set(dates);
+function computeStreak(dates: string[], weeklyGoal: number) {
+  // Day-streak fallback when no weekly goal is configured.
+  if (!weeklyGoal || weeklyGoal <= 0) {
+    const set = new Set(dates);
+    let streak = 0;
+    const cur = new Date();
+    while (true) {
+      const k = cur.toISOString().slice(0, 10);
+      if (set.has(k)) {
+        streak++;
+        cur.setDate(cur.getDate() - 1);
+      } else if (streak === 0) {
+        cur.setDate(cur.getDate() - 1);
+        const k2 = cur.toISOString().slice(0, 10);
+        if (!set.has(k2)) break;
+      } else break;
+    }
+    return streak;
+  }
+
+  // Week-streak: count consecutive weeks (Mon–Sun) hitting the weekly goal.
+  // The current week is in progress: if it has not yet met the goal it does
+  // not break the streak, it just doesn't add to it.
+  const counts = new Map<string, number>();
+  for (const d of dates) {
+    const ws = getWeekStart(new Date(d));
+    const key = ws.toISOString().slice(0, 10);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
   let streak = 0;
-  const cur = new Date();
-  while (true) {
-    const k = cur.toISOString().slice(0, 10);
-    if (set.has(k)) {
-      streak++;
-      cur.setDate(cur.getDate() - 1);
-    } else if (streak === 0) {
-      cur.setDate(cur.getDate() - 1);
-      // allow today to be skipped
-      const k2 = cur.toISOString().slice(0, 10);
-      if (!set.has(k2)) break;
-    } else break;
+  const cur = getWeekStart();
+  const curKey = cur.toISOString().slice(0, 10);
+  if ((counts.get(curKey) ?? 0) >= weeklyGoal) {
+    streak++;
+  }
+  cur.setDate(cur.getDate() - 7);
+  while ((counts.get(cur.toISOString().slice(0, 10)) ?? 0) >= weeklyGoal) {
+    streak++;
+    cur.setDate(cur.getDate() - 7);
   }
   return streak;
 }
