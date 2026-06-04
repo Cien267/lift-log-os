@@ -37,7 +37,11 @@ function Dashboard() {
   const weekStart = getWeekStart();
   const weekWorkouts = workouts.filter((w) => w.startTime >= weekStart.getTime() && w.endTime);
   const weekVolume = weekWorkouts.reduce((a, w) => a + (w.totalVolume ?? 0), 0);
-  const streak = computeStreak(workouts.map((w) => w.date));
+  const weeklyGoal = settings?.weeklyGoal ?? 0;
+  const streak = computeStreak(
+    workouts.filter((w) => w.endTime).map((w) => w.date),
+    weeklyGoal,
+  );
   const last = workouts.find((w) => w.endTime);
   const exMap = new Map(exercises.map((e) => [e.id, e]));
   const bw = measurements[0]?.weight;
