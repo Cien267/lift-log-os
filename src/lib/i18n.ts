@@ -197,7 +197,7 @@ const dict = {
     // home
     "home.today": "Hôm nay",
     "home.slogan": "Luyện tập.",
-    "home.streak": "chuỗi ngày",
+    "home.streak": "chuỗi tuần",
     "home.thisWeek": "Tuần này",
     "home.lastSession": "Buổi trước",
     "home.sessions": "Buổi tập",
