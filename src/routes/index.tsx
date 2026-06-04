@@ -55,7 +55,7 @@ function Dashboard() {
         <div className="grid grid-cols-2 gap-3">
           <Stat
             label={t("home.thisWeek")}
-            value={String(weekWorkouts.length)}
+            value={weeklyGoal > 0 ? `${weekWorkouts.length} / ${weeklyGoal}` : String(weekWorkouts.length)}
             sub={t("home.sessions")}
             icon={Calendar}
           />
