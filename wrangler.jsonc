@@ -3,5 +3,11 @@
   "name": "lift-log-os",
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "logs": {
+      "enabled": false,
+      "invocation_logs": true,
+    },
+  },
   "main": "src/server.ts",
 }
