@@ -245,20 +245,24 @@ function ExerciseCard({
   const { t } = useT();
 
   useEffect(() => {
-    if (sets.length === 0 && !prefillRef.current) {
-      prefillRef.current = true;
-      (async () => {
-        const entry = await db.workoutExercises.get(entryId);
-        if (!entry) return;
-        const prev = await getLastPerformance(entry.exerciseId, workoutId);
-        const count = Math.max(targetSets ?? 0, prev?.sets.length ?? 0, 1);
-        for (let i = 0; i < count; i++) {
-          const ref = prev?.sets[i] ?? prev?.sets[prev.sets.length - 1];
-          await addSet(entryId, ref ? { weight: ref.weight, reps: ref.reps } : {});
-        }
-      })();
-    }
-  }, [sets.length, entryId, workoutId, targetSets]);
+    if (prefillRef.current) return;
+    prefillRef.current = true;
+    (async () => {
+      const existing = await db.workoutSets
+        .where("exerciseEntryId")
+        .equals(entryId)
+        .count();
+      if (existing > 0) return;
+      const entry = await db.workoutExercises.get(entryId);
+      if (!entry) return;
+      const prev = await getLastPerformance(entry.exerciseId, workoutId);
+      const count = Math.max(targetSets ?? 0, prev?.sets.length ?? 0, 1);
+      for (let i = 0; i < count; i++) {
+        const ref = prev?.sets[i] ?? prev?.sets[prev.sets.length - 1];
+        await addSet(entryId, ref ? { weight: ref.weight, reps: ref.reps } : {});
+      }
+    })();
+  }, [entryId, workoutId, targetSets]);
 
   const sorted = [...sets].sort((a, b) => a.timestamp - b.timestamp);
 
