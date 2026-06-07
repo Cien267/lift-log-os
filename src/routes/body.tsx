@@ -42,6 +42,7 @@ export const Route = createFileRoute("/body")({
 
 const FIELDS: { key: keyof BodyMeasurement; label: string; unit: string }[] = [
   { key: "weight", label: "Weight", unit: "kg" },
+  { key: "height", label: "Height", unit: "cm" },
   { key: "bodyFat", label: "Body fat", unit: "%" },
   { key: "chest", label: "Chest", unit: "cm" },
   { key: "waist", label: "Waist", unit: "cm" },

@@ -106,6 +106,7 @@ export interface BodyMeasurement {
   id: string;
   date: string;
   weight?: number;
+  height?: number;
   bodyFat?: number;
   chest?: number;
   waist?: number;
