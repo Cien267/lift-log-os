@@ -311,3 +311,45 @@ function BodyPage() {
     </AppShell>
   );
 }
+
+function TargetJourney({
+  current,
+  target,
+  start,
+  reachedLabel,
+  targetLabel,
+  toGoLabel,
+}: {
+  current: number;
+  target: number;
+  start: number;
+  reachedLabel: string;
+  targetLabel: string;
+  toGoLabel: string;
+}) {
+  const delta = current - target;
+  const reached = Math.abs(delta) < 0.05;
+  const total = Math.abs(start - target) || 1;
+  const done = Math.max(0, Math.min(1, 1 - Math.abs(delta) / total));
+  const pct = Math.round(done * 100);
+  return (
+    <div className="mt-3">
+      <div className="flex items-baseline justify-between text-xs text-muted-foreground">
+        <span>
+          {targetLabel}: <span className="num text-foreground">{target} kg</span>
+        </span>
+        <span className="num">
+          {reached
+            ? reachedLabel
+            : `${Math.abs(delta).toFixed(1)} kg ${toGoLabel} · ${pct}%`}
+        </span>
+      </div>
+      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+        <div
+          className="h-full bg-primary transition-all"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
