@@ -156,6 +156,7 @@ export interface Settings {
   notificationsEnabled: boolean;
   availableEquipment: Equipment[];
   weeklyGoal?: number;
+  targetWeight?: number;
   createdAt: number;
   userName?: string;
 }

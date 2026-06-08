@@ -150,6 +150,17 @@ function SettingsPage() {
               onChange={(e) => update({ weeklyGoal: Number(e.target.value) || 0 })}
             />
           </Row>
+          <Row label={t("settings.targetWeight")}>
+            <Input
+              type="number"
+              inputMode="decimal"
+              className="num w-24 text-right"
+              value={settings.targetWeight ?? ""}
+              onChange={(e) =>
+                update({ targetWeight: e.target.value ? Number(e.target.value) : undefined })
+              }
+            />
+          </Row>
         </Section>
 
         <Section title={t("settings.data")}>

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useState } from "react";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, ReferenceLine } from "recharts";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { db, uid, type BodyMeasurement } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
@@ -180,9 +180,19 @@ function BodyPage() {
               {formatDate(prev.date, lang)}
             </p>
           )}
+          {settings?.targetWeight && latest?.weight && (
+            <TargetJourney
+              current={latest.weight}
+              target={settings.targetWeight}
+              start={[...measurements].reverse().find((m) => m.weight)?.weight ?? latest.weight}
+              reachedLabel={t("body.reached")}
+              targetLabel={t("body.target")}
+              toGoLabel={t("body.toGo")}
+            />
+          )}
           {weightSeries.length > 1 && (
             <div className="mt-3">
-              <ResponsiveContainer width="100%" height={120}>
+              <ResponsiveContainer width="100%" height={140}>
                 <LineChart data={weightSeries}>
                   <XAxis
                     dataKey="date"
@@ -207,6 +217,19 @@ function BodyPage() {
                       fontSize: 12,
                     }}
                   />
+                  {settings?.targetWeight && (
+                    <ReferenceLine
+                      y={settings.targetWeight}
+                      stroke="var(--color-warning, #f59e0b)"
+                      strokeDasharray="4 4"
+                      label={{
+                        value: `${t("body.target")} ${settings.targetWeight}kg`,
+                        position: "insideTopRight",
+                        fill: "var(--color-muted-foreground)",
+                        fontSize: 10,
+                      }}
+                    />
+                  )}
                   <Line
                     type="monotone"
                     dataKey="v"
@@ -286,5 +309,47 @@ function BodyPage() {
         </AlertDialogContent>
       </AlertDialog>
     </AppShell>
+  );
+}
+
+function TargetJourney({
+  current,
+  target,
+  start,
+  reachedLabel,
+  targetLabel,
+  toGoLabel,
+}: {
+  current: number;
+  target: number;
+  start: number;
+  reachedLabel: string;
+  targetLabel: string;
+  toGoLabel: string;
+}) {
+  const delta = current - target;
+  const reached = Math.abs(delta) < 0.05;
+  const total = Math.abs(start - target) || 1;
+  const done = Math.max(0, Math.min(1, 1 - Math.abs(delta) / total));
+  const pct = Math.round(done * 100);
+  return (
+    <div className="mt-3">
+      <div className="flex items-baseline justify-between text-xs text-muted-foreground">
+        <span>
+          {targetLabel}: <span className="num text-foreground">{target} kg</span>
+        </span>
+        <span className="num">
+          {reached
+            ? reachedLabel
+            : `${Math.abs(delta).toFixed(1)} kg ${toGoLabel} · ${pct}%`}
+        </span>
+      </div>
+      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+        <div
+          className="h-full bg-primary transition-all"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
   );
 }
