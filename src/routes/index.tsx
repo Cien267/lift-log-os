@@ -79,7 +79,11 @@ function Dashboard() {
             label={t("common.bodyWeight")}
             value={bw ? formatWeight(bw) : "—"}
             sub={
-              bw && bwPrev ? `${bw > bwPrev ? "+" : ""}${(bw - bwPrev).toFixed(1)} kg` : "log it"
+              bw && settings?.targetWeight
+                ? `${t("body.target")} ${formatWeight(settings.targetWeight)} · ${(bw - settings.targetWeight > 0 ? "+" : "")}${(bw - settings.targetWeight).toFixed(1)} kg`
+                : bw && bwPrev
+                  ? `${bw > bwPrev ? "+" : ""}${(bw - bwPrev).toFixed(1)} kg`
+                  : "log it"
             }
             icon={TrendingUp}
           />
