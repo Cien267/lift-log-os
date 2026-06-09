@@ -60,6 +60,28 @@ function Dashboard() {
                 ? `${weekWorkouts.length} / ${weeklyGoal}`
                 : String(weekWorkouts.length)
             }
+            valueChildren={
+              <>
+                {weeklyGoal > 0 ? (
+                  <>
+                    <span
+                      className={
+                        weekWorkouts.length > weeklyGoal
+                          ? "text-green-500"
+                          : weekWorkouts.length == weeklyGoal
+                            ? "text-sky-500"
+                            : "text-muted-foreground"
+                      }
+                    >
+                      {weekWorkouts.length}
+                    </span>{" "}
+                    / {weeklyGoal}
+                  </>
+                ) : (
+                  String(weekWorkouts.length)
+                )}
+              </>
+            }
             sub={t("home.sessions")}
             icon={Calendar}
           />
@@ -80,7 +102,7 @@ function Dashboard() {
             value={bw ? formatWeight(bw) : "—"}
             sub={
               bw && settings?.targetWeight
-                ? `${t("body.target")} ${formatWeight(settings.targetWeight)} · ${(bw - settings.targetWeight > 0 ? "+" : "")}${(bw - settings.targetWeight).toFixed(1)} kg`
+                ? `${t("body.target")} ${formatWeight(settings.targetWeight)} · ${bw - settings.targetWeight > 0 ? "+" : ""}${(bw - settings.targetWeight).toFixed(1)} kg`
                 : bw && bwPrev
                   ? `${bw > bwPrev ? "+" : ""}${(bw - bwPrev).toFixed(1)} kg`
                   : "log it"
@@ -206,11 +228,13 @@ function Stat({
   value,
   sub,
   icon: Icon,
+  valueChildren,
 }: {
   label: string;
   value: string;
   sub?: string;
   icon: any;
+  valueChildren?: React.ReactNode;
 }) {
   return (
     <div className="rounded-xl border border-border bg-card p-3">
@@ -218,7 +242,7 @@ function Stat({
         <span className="text-[11px] uppercase tracking-wider">{label}</span>
         <Icon className="h-3.5 w-3.5" />
       </div>
-      <p className="num mt-1.5 text-xl font-semibold tracking-tight">{value}</p>
+      <p className="num mt-1.5 text-xl font-semibold tracking-tight">{valueChildren ?? value}</p>
       {sub && <p className="num text-[11px] text-muted-foreground">{sub}</p>}
     </div>
   );
