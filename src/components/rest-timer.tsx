@@ -28,6 +28,14 @@ function write(s: RestState | null) {
 }
 
 export const startRest = (duration: number) => {
+  window.addEventListener(
+    "touchstart",
+    () => {
+      const ctx = new AudioContext();
+      ctx.resume();
+    },
+    { once: true },
+  );
   write({ endsAt: Date.now() + duration * 1000, duration });
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event("forge:rest:expand"));
