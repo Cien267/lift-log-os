@@ -248,10 +248,7 @@ function ExerciseCard({
     if (prefillRef.current) return;
     prefillRef.current = true;
     (async () => {
-      const existing = await db.workoutSets
-        .where("exerciseEntryId")
-        .equals(entryId)
-        .count();
+      const existing = await db.workoutSets.where("exerciseEntryId").equals(entryId).count();
       if (existing > 0) return;
       const entry = await db.workoutExercises.get(entryId);
       if (!entry) return;

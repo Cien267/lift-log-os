@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Timer, X, Plus, Minus, Minimize2, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
+import { schoolBellSound } from "@/lib/utils";
 
 const KEY = "forge.restTimer";
 
@@ -66,7 +67,7 @@ export function RestTimerBar() {
       if (r === 0 && !beeped.current) {
         beeped.current = true;
         try {
-          navigator.vibrate?.([180, 80, 180]);
+          schoolBellSound();
         } catch (e: any) {
           console.error("error: ", e);
         }
