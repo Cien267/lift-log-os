@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
+import { getAudioCtx } from "@/lib/audioCtx";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,7 +19,7 @@ export const formatDate = (date?: Date | string, language: "en" | "vi" = "en") =
 
 export const schoolBellSound = () => {
   try {
-    const ctx = new AudioContext();
+    const ctx = getAudioCtx();
     const now = ctx.currentTime;
 
     const bell = (start: number, freq: number) => {

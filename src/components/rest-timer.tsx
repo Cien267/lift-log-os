@@ -3,6 +3,7 @@ import { Timer, X, Plus, Minus, Minimize2, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
 import { schoolBellSound } from "@/lib/utils";
+import { unlockAudio } from "@/lib/audioCtx";
 
 const KEY = "forge.restTimer";
 
@@ -28,14 +29,6 @@ function write(s: RestState | null) {
 }
 
 export const startRest = (duration: number) => {
-  window.addEventListener(
-    "touchstart",
-    () => {
-      const ctx = new AudioContext();
-      ctx.resume();
-    },
-    { once: true },
-  );
   write({ endsAt: Date.now() + duration * 1000, duration });
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event("forge:rest:expand"));
@@ -63,6 +56,18 @@ export function RestTimerBar() {
       window.removeEventListener("forge:rest", sync);
       window.removeEventListener("forge:rest:expand", expand);
       window.removeEventListener("storage", sync);
+    };
+  }, []);
+
+  useEffect(() => {
+    const unlock = () => unlockAudio();
+
+    window.addEventListener("click", unlock, { once: true });
+    window.addEventListener("touchstart", unlock, { once: true });
+
+    return () => {
+      window.removeEventListener("click", unlock);
+      window.removeEventListener("touchstart", unlock);
     };
   }, []);
 
