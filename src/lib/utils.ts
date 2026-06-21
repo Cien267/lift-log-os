@@ -58,8 +58,6 @@ export const schoolBellSound = () => {
 
     // thêm 1 tiếng cuối dài hơn (optional "tan học!")
     bell(now + 0.6, base * 0.75);
-
-    setTimeout(() => ctx.close(), 5000);
   } catch (e) {
     console.error("school bell error:", e);
   }

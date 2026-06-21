@@ -1,7 +1,7 @@
 let audioCtx: AudioContext | null = null;
 
 export const getAudioCtx = () => {
-  if (!audioCtx) {
+  if (!audioCtx || audioCtx.state === "closed") {
     audioCtx = new AudioContext();
   }
   return audioCtx;
