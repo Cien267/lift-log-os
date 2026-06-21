@@ -72,6 +72,18 @@ export function RestTimerBar() {
   }, []);
 
   useEffect(() => {
+    const onVisible = async () => {
+      if (document.visibilityState === "visible") {
+        await unlockAudio();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
+
+  useEffect(() => {
     if (!state) return;
     beeped.current = false;
     const tick = () => {
