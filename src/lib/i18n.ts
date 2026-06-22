@@ -107,6 +107,7 @@ const dict = {
     "plan.edit": "Edit plan",
 
     // exercise
+    "exercise.selected": "exercise selected",
     "exercise.empty": "No exercises yet.",
     "exercise.searchPlaceholder": "Search exercises...",
     "exercise.emptySearch": 'No exercises found. Tap "Create new exercise" above.',
@@ -262,6 +263,7 @@ const dict = {
     "plan.edit": "Chỉnh sửa kế hoạch",
 
     // exercise
+    "exercise.selected": "bài tập đã chọn.",
     "exercise.empty": "Chưa có bài tập nào.",
     "exercise.searchPlaceholder": "Tìm kiếm bài tập...",
     "exercise.emptySearch": 'Không tìm thấy bài tập nào. Nhấn "Tạo Bài tập" ở trên.',

@@ -191,7 +191,12 @@ function ActiveWorkoutPage() {
       </main>
 
       <RestTimerBar />
-      <ExercisePicker open={pickerOpen} onOpenChange={setPickerOpen} onSelect={onPick} />
+      <ExercisePicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        onSelect={onPick}
+        selectedExerciseIds={entries.map((e) => e.id)}
+      />
 
       {insight && (
         <div className="fixed inset-0 z-50 flex flex-col bg-background pt-safe">

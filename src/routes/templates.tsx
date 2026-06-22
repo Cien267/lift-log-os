@@ -324,6 +324,7 @@ function TemplatesPage() {
           };
           setEditing({ ...editing, exercises: [...editing.exercises, te] });
         }}
+        selectedExerciseIds={editing?.exercises.map((te) => te.exerciseId)}
       />
     </AppShell>
   );

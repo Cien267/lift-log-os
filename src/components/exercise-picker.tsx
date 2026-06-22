@@ -34,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
+import { motion } from "framer-motion";
 
 const GROUPS: ("all" | MuscleGroup)[] = [
   "all",
@@ -95,11 +96,13 @@ export function ExercisePicker({
   onOpenChange,
   onSelect,
   filterEquipment,
+  selectedExerciseIds,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   onSelect: (exerciseId: string) => void;
   filterEquipment?: Equipment[];
+  selectedExerciseIds?: string[];
 }) {
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
   const { t } = useT();
@@ -109,6 +112,8 @@ export function ExercisePicker({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [confirmDelete, setConfirmDelete] = useState<Exercise | null>(null);
+  const [effects, setEffects] = useState<any[]>([]);
+  const [numberAnimating, setNumberAnimating] = useState(false);
 
   const filtered = useMemo(() => {
     let list = exercises;
@@ -169,7 +174,6 @@ export function ExercisePicker({
       await db.exercises.add(ex);
       setEditorOpen(false);
       onSelect(ex.id);
-      onOpenChange(false);
     }
   };
 
@@ -179,6 +183,35 @@ export function ExercisePicker({
     toast.success(`Deleted "${ex.name}"`);
   };
 
+  const handleAnimation = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const id = Date.now();
+
+    setEffects((prev) => [
+      ...prev,
+      {
+        id,
+        x: rect.left + rect.width / 2,
+        y: rect.top,
+      },
+    ]);
+
+    setTimeout(() => {
+      setEffects((prev) => prev.filter((item) => item.id !== id));
+    }, 1000);
+
+    triggerNumberAnimation();
+  };
+
+  const triggerNumberAnimation = () => {
+    setNumberAnimating(true);
+
+    setTimeout(() => {
+      setNumberAnimating(false);
+    }, 1000);
+  };
+
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
@@ -186,6 +219,19 @@ export function ExercisePicker({
           <SheetHeader className="border-b border-border px-4 py-3">
             <SheetTitle>
               {t("common.add")} {t("common.exercise")}
+              {(selectedExerciseIds?.length || 0) > 0 && (
+                <div className="text-sm font-normal text-muted-foreground mt-2">
+                  <span
+                    className={cn(
+                      "font-extrabold inline-block",
+                      numberAnimating && "animate-bounce text-primary transition-all",
+                    )}
+                  >
+                    {selectedExerciseIds?.length}
+                  </span>{" "}
+                  {t("exercise.selected")}
+                </div>
+              )}
             </SheetTitle>
           </SheetHeader>
           <div className="space-y-3 px-4 py-3">
@@ -232,9 +278,9 @@ export function ExercisePicker({
               {filtered.map((ex) => (
                 <li key={ex.id} className="flex items-center gap-1 pr-2 hover:bg-surface">
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      handleAnimation(e);
                       onSelect(ex.id);
-                      onOpenChange(false);
                     }}
                     className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left"
                   >
@@ -256,6 +302,32 @@ export function ExercisePicker({
                       {ex.category}
                     </Badge>
                   </button>
+                  {effects.map((effect) => (
+                    <motion.div
+                      key={`${effect.x}-${effect.y}`}
+                      initial={{
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                      }}
+                      animate={{
+                        opacity: 0,
+                        y: -60,
+                        scale: 1.3,
+                      }}
+                      transition={{
+                        duration: 1,
+                        ease: "easeOut",
+                      }}
+                      className="fixed text-xl font-bold text-primary pointer-events-none"
+                      style={{
+                        left: effect.x,
+                        top: effect.y,
+                      }}
+                    >
+                      +1
+                    </motion.div>
+                  ))}
                   <Button
                     size="icon"
                     variant="ghost"
