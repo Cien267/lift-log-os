@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Plus, Trash2, ChevronRight, X, GripVertical } from "lucide-react";
 import {
   DndContext,
@@ -118,7 +118,17 @@ function SortableExercise({
 
 function TemplatesPage() {
   const { t } = useT();
-  const templates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray()) ?? [];
+  const rawTemplates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray());
+  const templates = useMemo(() => rawTemplates ?? [], [rawTemplates]);
+  const groupedTemplates = useMemo(() => {
+    return templates.reduce(
+      (acc, template) => {
+        (acc[template.location] ??= []).push(template);
+        return acc;
+      },
+      {} as Record<string, WorkoutTemplate[]>,
+    );
+  }, [templates]);
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
   const exMap = new Map(exercises.map((e) => [e.id, e]));
   const [editing, setEditing] = useState<WorkoutTemplate | null>(null);
@@ -194,22 +204,29 @@ function TemplatesPage() {
           {t("plan.empty")}
         </div>
       ) : (
-        <ul className="space-y-2">
-          {templates.map((template) => (
-            <li key={template.id}>
-              <button
-                onClick={() => setEditing(template)}
-                className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-surface"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{template.name}</p>
-                  <p className="text-xs capitalize text-muted-foreground">
-                    {template.location} · {template.exercises.length} {t("common.exercises")}
-                  </p>
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </button>
-            </li>
+        <ul className="space-y-4">
+          {Object.entries(groupedTemplates).map(([location, templates]) => (
+            <ul key={location} className="space-y-2">
+              <h2 className="uppercase text-sm font-semibold">📍 {location}</h2>
+              {templates.map((template) => (
+                <li key={template.id}>
+                  <button
+                    onClick={() => setEditing(template)}
+                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-surface"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{template.name}</p>
+
+                      <p className="text-xs capitalize text-muted-foreground">
+                        {template.location} · {template.exercises.length} {t("common.exercises")}
+                      </p>
+                    </div>
+
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </li>
+              ))}
+            </ul>
           ))}
         </ul>
       )}

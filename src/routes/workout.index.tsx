@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Play, Home, Building2 } from "lucide-react";
-import { db } from "@/lib/db";
+import { db, WorkoutTemplate } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { getActiveWorkoutId, startWorkout } from "@/lib/workout-service";
@@ -23,7 +23,17 @@ function WorkoutLanding() {
   const { t } = useT();
   const nav = useNavigate();
   const [active, setActive] = useState<string | null>(null);
-  const templates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray()) ?? [];
+  const rawTemplates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray());
+  const templates = useMemo(() => rawTemplates ?? [], [rawTemplates]);
+  const groupedTemplates = useMemo(() => {
+    return templates.reduce(
+      (acc, template) => {
+        (acc[template.location] ??= []).push(template);
+        return acc;
+      },
+      {} as Record<string, WorkoutTemplate[]>,
+    );
+  }, [templates]);
   useSettings();
 
   useEffect(() => {
@@ -71,29 +81,34 @@ function WorkoutLanding() {
               {t("workout.emptyTemplate")}
             </div>
           ) : (
-            <ul className="space-y-2">
-              {templates.map((temp) => (
-                <li key={temp.id}>
-                  <button
-                    onClick={() =>
-                      begin({ location: temp.location as "gym" | "home", templateId: temp.id })
-                    }
-                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-surface"
-                  >
-                    <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/15 text-primary">
-                      <Play className="h-4 w-4 fill-current" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{temp.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {temp.exercises.length} exercises · {temp.location}
-                      </p>
-                    </div>
-                    <span className="rounded-md bg-secondary px-3 py-1.5 text-xs font-medium">
-                      {t("common.start")}
-                    </span>
-                  </button>
-                </li>
+            <ul className="space-y-4">
+              {Object.entries(groupedTemplates).map(([location, templates]) => (
+                <ul key={location} className="space-y-2">
+                  <h2 className="uppercase text-xs font-semibold">📍 {location}</h2>
+                  {templates.map((temp) => (
+                    <li key={temp.id}>
+                      <button
+                        onClick={() =>
+                          begin({ location: temp.location as "gym" | "home", templateId: temp.id })
+                        }
+                        className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-surface"
+                      >
+                        <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/15 text-primary">
+                          <Play className="h-4 w-4 fill-current" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold">{temp.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {temp.exercises.length} exercises · {temp.location}
+                          </p>
+                        </div>
+                        <span className="rounded-md bg-secondary px-3 py-1.5 text-xs font-medium">
+                          {t("common.start")}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               ))}
             </ul>
           )}
