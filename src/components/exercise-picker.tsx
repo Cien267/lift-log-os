@@ -38,6 +38,7 @@ import { motion } from "framer-motion";
 
 const GROUPS: ("all" | MuscleGroup)[] = [
   "all",
+  "cardio",
   "chest",
   "back",
   "shoulders",

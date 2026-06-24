@@ -271,11 +271,76 @@ const EXERCISES: Exercise[] = [
   },
 ];
 
+const CARDIO_EXERCISES: Exercise[] = [
+  {
+    id: "treadmill-walking",
+    name: "Treadmill Walking",
+    muscleGroup: "cardio",
+    equipment: "machine",
+    category: "cardio",
+  },
+  {
+    id: "stationary-cycling",
+    name: "Stationary Cycling",
+    muscleGroup: "cardio",
+    equipment: "machine",
+    category: "cardio",
+  },
+  {
+    id: "jump-rope",
+    name: "Jump Rope",
+    muscleGroup: "cardio",
+    equipment: "other",
+    category: "cardio",
+  },
+  {
+    id: "burpee",
+    name: "Burpee",
+    muscleGroup: "cardio",
+    equipment: "bodyweight",
+    category: "cardio",
+  },
+  {
+    id: "mountain-climber",
+    name: "Mountain Climber",
+    muscleGroup: "cardio",
+    equipment: "bodyweight",
+    category: "cardio",
+  },
+  {
+    id: "battle-ropes",
+    name: "Battle Ropes",
+    muscleGroup: "cardio",
+    equipment: "other",
+    category: "cardio",
+  },
+  {
+    id: "box-jump",
+    name: "Box Jump",
+    muscleGroup: "cardio",
+    equipment: "other",
+    category: "cardio",
+  },
+  {
+    id: "high-knees",
+    name: "High Knees",
+    muscleGroup: "cardio",
+    equipment: "bodyweight",
+    category: "cardio",
+  },
+];
+
 export async function seedDatabase() {
   const count = await db.exercises.count();
   if (count === 0) {
     await db.exercises.bulkAdd(EXERCISES);
+  } else {
+    const cardioExercises = await db.exercises.where("category").equals("cardio").toArray();
+    if (cardioExercises.length === 0) {
+      await db.exercises.bulkAdd(CARDIO_EXERCISES);
+    }
   }
+
   const s = await db.settings.get("app");
   if (!s) {
     const defaults: Settings = {
