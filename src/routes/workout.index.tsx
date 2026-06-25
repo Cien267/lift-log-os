@@ -81,7 +81,7 @@ function WorkoutLanding() {
               {t("workout.emptyTemplate")}
             </div>
           ) : (
-            <ul className="space-y-4">
+            <ul className="space-y-4 mt-4">
               {Object.entries(groupedTemplates).map(([location, templates]) => (
                 <ul key={location} className="space-y-2">
                   <h2 className="uppercase text-xs font-semibold">📍 {location}</h2>
