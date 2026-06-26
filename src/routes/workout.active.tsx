@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Check, Plus, Trash2, MoreVertical, Minus, Copy, Flame, X, ArrowLeft } from "lucide-react";
 import { z } from "zod";
-import { db, type WorkoutSet } from "@/lib/db";
+import { db, type WorkoutSet, type Exercise } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import {
   addExerciseToWorkout,
@@ -39,6 +39,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useT } from "@/lib/i18n";
+import { ExercisePreview } from "@/components/exercise-preview";
 
 const search = z.object({ id: z.string() });
 
@@ -173,8 +174,7 @@ function ActiveWorkoutPage() {
               key={entry.id}
               workoutId={id}
               entryId={entry.id}
-              exerciseName={ex?.name ?? "Exercise"}
-              muscleGroup={ex?.muscleGroup}
+              exercise={ex}
               sets={entrySets}
               defaultRest={entry.restPreset ?? settings?.defaultRest ?? 120}
               targetSets={entry.targetSets}
@@ -230,8 +230,7 @@ function ActiveWorkoutPage() {
 function ExerciseCard({
   workoutId,
   entryId,
-  exerciseName,
-  muscleGroup,
+  exercise,
   sets,
   defaultRest,
   targetSets,
@@ -239,8 +238,7 @@ function ExerciseCard({
 }: {
   workoutId: string;
   entryId: string;
-  exerciseName: string;
-  muscleGroup?: string;
+  exercise?: Exercise;
   sets: WorkoutSet[];
   defaultRest: number;
   targetSets?: number;
@@ -294,9 +292,13 @@ function ExerciseCard({
     <section className="overflow-hidden rounded-2xl border border-border bg-card">
       <header className="flex items-center gap-2 px-3 py-2.5">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-semibold">{exerciseName}</h3>
-          {muscleGroup && (
-            <p className="text-[11px] capitalize text-muted-foreground">{muscleGroup}</p>
+          <h3 className="truncate text-sm font-semibold">
+            {exercise?.name ?? "Exercise"}{" "}
+            {exercise?.guideImage && <ExercisePreview exercise={exercise} />}
+          </h3>
+
+          {exercise?.muscleGroup && (
+            <p className="text-[11px] capitalize text-muted-foreground">{exercise.muscleGroup}</p>
           )}
         </div>
         <DropdownMenu>

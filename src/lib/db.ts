@@ -38,6 +38,7 @@ export interface Exercise {
   aliases?: string[];
   substituteIds?: string[];
   custom?: boolean;
+  guideImage?: string;
 }
 
 export interface WorkoutSet {

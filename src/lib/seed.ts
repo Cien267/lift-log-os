@@ -10,6 +10,7 @@ const EXERCISES: Exercise[] = [
     equipment: "barbell",
     category: "compound",
     substituteIds: ["db-bench", "machine-chest-press"],
+    guideImage: "/images/exercises/bench-press.jpg",
   },
   {
     id: "db-bench",
@@ -19,6 +20,7 @@ const EXERCISES: Exercise[] = [
     equipment: "dumbbell",
     category: "compound",
     substituteIds: ["bench-press"],
+    guideImage: "/images/exercises/dumbbell-bench-press.jpg",
   },
   {
     id: "incline-db-press",
@@ -27,6 +29,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["shoulders"],
     equipment: "dumbbell",
     category: "compound",
+    guideImage: "/images/exercises/incline-dumbbell-press.jpg",
   },
   {
     id: "machine-chest-press",
@@ -35,6 +38,7 @@ const EXERCISES: Exercise[] = [
     equipment: "machine",
     category: "compound",
     substituteIds: ["bench-press"],
+    guideImage: "/images/exercises/machine-chest-press.jpg",
   },
   {
     id: "pushup",
@@ -43,6 +47,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["triceps", "core"],
     equipment: "bodyweight",
     category: "compound",
+    guideImage: "/images/exercises/push-up.jpg",
   },
   {
     id: "cable-fly",
@@ -50,6 +55,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "chest",
     equipment: "cable",
     category: "isolation",
+    guideImage: "/images/exercises/cable-fly.jpg",
   },
   // Back
   {

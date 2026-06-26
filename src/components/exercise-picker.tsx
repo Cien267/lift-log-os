@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { motion } from "framer-motion";
+import { ExercisePreview } from "./exercise-preview";
 
 const GROUPS: ("all" | MuscleGroup)[] = [
   "all",
@@ -127,6 +128,7 @@ export function ExercisePicker({
           e.name.toLowerCase().includes(s) || e.aliases?.some((a) => a.toLowerCase().includes(s)),
       );
     }
+    console.log({ list });
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }, [exercises, q, group, filterEquipment]);
 
@@ -329,6 +331,7 @@ export function ExercisePicker({
                       +1
                     </motion.div>
                   ))}
+                  {ex.guideImage && <ExercisePreview exercise={ex} />}
                   <Button
                     size="icon"
                     variant="ghost"
