@@ -65,6 +65,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["biceps"],
     equipment: "pullup-bar",
     category: "compound",
+    guideImage: "/images/exercises/pull-up.jpg",
   },
   {
     id: "chinup",
@@ -73,6 +74,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["biceps"],
     equipment: "pullup-bar",
     category: "compound",
+    guideImage: "/images/exercises/chin-up.jpg",
   },
   {
     id: "barbell-row",
@@ -81,6 +83,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["biceps"],
     equipment: "barbell",
     category: "compound",
+    guideImage: "/images/exercises/barbell-row.jpg",
   },
   {
     id: "db-row",
@@ -89,6 +92,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["biceps"],
     equipment: "dumbbell",
     category: "compound",
+    guideImage: "/images/exercises/dumbbell-row.jpg",
   },
   {
     id: "lat-pulldown",
@@ -97,6 +101,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["biceps"],
     equipment: "cable",
     category: "compound",
+    guideImage: "/images/exercises/lat-pulldown.jpg",
   },
   {
     id: "deadlift",
@@ -105,6 +110,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["hamstrings", "glutes"],
     equipment: "barbell",
     category: "compound",
+    guideImage: "/images/exercises/deadlift.jpg",
   },
   // Shoulders
   {
