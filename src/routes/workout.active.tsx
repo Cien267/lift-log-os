@@ -449,6 +449,8 @@ function NumberField({
       </button> */}
       <input
         type="number"
+        step="any"
+        pattern="[0-9]*"
         inputMode="decimal"
         value={value || ""}
         onChange={(e) => onChange(Number(e.target.value) || 0)}
