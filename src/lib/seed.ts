@@ -120,6 +120,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["triceps"],
     equipment: "barbell",
     category: "compound",
+    guideImage: "/images/exercises/barbell-overhead-press.jpg",
   },
   {
     id: "db-shoulder-press",
@@ -128,6 +129,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["triceps"],
     equipment: "dumbbell",
     category: "compound",
+    guideImage: "/images/exercises/dumbbell-shoulder-press.jpg",
   },
   {
     id: "lateral-raise",
@@ -135,6 +137,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "shoulders",
     equipment: "dumbbell",
     category: "isolation",
+    guideImage: "/images/exercises/lateral-raise.jpg",
   },
   {
     id: "face-pull",
@@ -143,6 +146,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["back"],
     equipment: "cable",
     category: "isolation",
+    guideImage: "/images/exercises/face-pull.jpg",
   },
   // Arms
   {
