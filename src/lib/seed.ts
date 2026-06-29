@@ -155,6 +155,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "biceps",
     equipment: "barbell",
     category: "isolation",
+    guideImage: "/images/exercises/barbell-curl.jpg",
   },
   {
     id: "db-curl",
@@ -162,6 +163,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "biceps",
     equipment: "dumbbell",
     category: "isolation",
+    guideImage: "/images/exercises/dumbbell-curl.jpg",
   },
   {
     id: "hammer-curl",
@@ -170,6 +172,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["forearms"],
     equipment: "dumbbell",
     category: "isolation",
+    guideImage: "/images/exercises/hammer-curl.jpg",
   },
   {
     id: "tricep-pushdown",
@@ -177,6 +180,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "triceps",
     equipment: "cable",
     category: "isolation",
+    guideImage: "/images/exercises/tricep-pushdown.jpg",
   },
   {
     id: "skullcrusher",
@@ -184,6 +188,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "triceps",
     equipment: "barbell",
     category: "isolation",
+    guideImage: "/images/exercises/skullcrusher.jpg",
   },
   {
     id: "dip",
@@ -192,6 +197,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["chest"],
     equipment: "bodyweight",
     category: "compound",
+    guideImage: "/images/exercises/dip.jpg",
   },
   // Legs
   {
