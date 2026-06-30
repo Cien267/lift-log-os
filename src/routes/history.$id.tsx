@@ -1,6 +1,7 @@
+import { useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
-import { ArrowLeft, Trash2, Save } from "lucide-react";
+import { ArrowLeft, Trash2, Save, Pencil } from "lucide-react";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { formatDuration, formatWeight, e1rm } from "@/lib/analytics";
@@ -20,6 +21,20 @@ import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
 
+import { parseISO, set } from "date-fns";
+
+function changeDateKeepTime(timestamp: number, newDate: string) {
+  const old = new Date(timestamp);
+  const date = parseISO(newDate);
+
+  return set(date, {
+    hours: old.getHours(),
+    minutes: old.getMinutes(),
+    seconds: old.getSeconds(),
+    milliseconds: old.getMilliseconds(),
+  }).getTime();
+}
+
 export const Route = createFileRoute("/history/$id")({
   head: ({ params }) => ({
     meta: [
@@ -37,6 +52,9 @@ function WorkoutDetail() {
   const { id } = Route.useParams();
   const nav = useNavigate();
   const workout = useLiveQuery(() => db.workouts.get(id), [id]);
+  const [form, setForm] = useState({
+    date: "",
+  });
   const entries =
     useLiveQuery(() => db.workoutExercises.where("workoutId").equals(id).sortBy("order"), [id]) ??
     [];
@@ -53,6 +71,31 @@ function WorkoutDetail() {
   const exMap = new Map(exercises.map((e) => [e.id, e]));
   const [tplName, setTplName] = useState("");
   const [open, setOpen] = useState(false);
+  const [openUpdateDate, setOpenUpdateDate] = useState(false);
+
+  const handleSave = async () => {
+    if (!workout) return;
+    if (workout.startTime == null || workout.endTime == null) return;
+
+    const newStartTime = changeDateKeepTime(workout.startTime, form.date);
+    const newEndTime = changeDateKeepTime(workout.endTime, form.date);
+
+    await db.workouts.update(workout.id, {
+      date: form.date,
+      startTime: newStartTime,
+      endTime: newEndTime,
+    });
+
+    setOpenUpdateDate(false);
+  };
+
+  useEffect(() => {
+    if (workout) {
+      setForm({
+        date: workout.date,
+      });
+    }
+  }, [workout]);
 
   if (!workout)
     return (
@@ -72,6 +115,31 @@ function WorkoutDetail() {
             {formatWeight(Math.round(workout.totalVolume ?? 0))}
           </p>
         </div>
+        <Dialog open={openUpdateDate} onOpenChange={setOpenUpdateDate}>
+          <DialogTrigger asChild>
+            <Button size="icon" variant="ghost">
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="w-[95%]">
+            <DialogHeader>
+              <DialogTitle>{t("history.updateSessionDate")}</DialogTitle>
+            </DialogHeader>
+            <Input
+              type="date"
+              value={form.date}
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  date: e.target.value,
+                }))
+              }
+            />
+            <DialogFooter>
+              <Button onClick={() => handleSave()}>{t("common.save")}</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="icon" variant="ghost">

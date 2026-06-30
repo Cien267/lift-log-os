@@ -79,6 +79,7 @@ const dict = {
     "history.saveAsNewPlan": "Save as a new plan",
     "history.saveAsNewPlanPlaceholder": "Plan name",
     "history.sessionInsight": "Session insight",
+    "history.updateSessionDate": "Update session date",
 
     // analytics
     "analytics.workouts": "Workouts",
@@ -233,6 +234,7 @@ const dict = {
     "history.saveAsNewPlan": "Lưu thành kế hoạch mới",
     "history.saveAsNewPlanPlaceholder": "Tên kế hoạch",
     "history.sessionInsight": "Thông tin chi tiết buổi tập",
+    "history.updateSessionDate": "Cập nhật ngày tập",
 
     // analytics
     "analytics.empty": "Chưa có dữ liệu phân tích.",

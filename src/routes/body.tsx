@@ -1,7 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useState } from "react";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, ReferenceLine } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Tooltip,
+  ReferenceLine,
+} from "recharts";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { db, uid, type BodyMeasurement } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
@@ -339,16 +347,11 @@ function TargetJourney({
           {targetLabel}: <span className="num text-foreground">{target} kg</span>
         </span>
         <span className="num">
-          {reached
-            ? reachedLabel
-            : `${Math.abs(delta).toFixed(1)} kg ${toGoLabel} · ${pct}%`}
+          {reached ? reachedLabel : `${Math.abs(delta).toFixed(1)} kg ${toGoLabel} · ${pct}%`}
         </span>
       </div>
       <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-        <div
-          className="h-full bg-primary transition-all"
-          style={{ width: `${pct}%` }}
-        />
+        <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
