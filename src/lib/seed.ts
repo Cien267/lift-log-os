@@ -207,6 +207,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["glutes", "hamstrings"],
     equipment: "barbell",
     category: "compound",
+    guideImage: "/images/exercises/barbell-back-squat.jpg",
   },
   {
     id: "front-squat",
@@ -215,6 +216,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["core"],
     equipment: "barbell",
     category: "compound",
+    guideImage: "/images/exercises/barbell-front-squat.jpg",
   },
   {
     id: "leg-press",
@@ -223,6 +225,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["glutes"],
     equipment: "machine",
     category: "compound",
+    guideImage: "/images/exercises/machine-leg-press.jpg",
   },
   {
     id: "rdl",
@@ -231,6 +234,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["glutes"],
     equipment: "barbell",
     category: "compound",
+    guideImage: "/images/exercises/barbell-romanian-deadlift.jpg",
   },
   {
     id: "leg-curl",
@@ -238,6 +242,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "hamstrings",
     equipment: "machine",
     category: "isolation",
+    guideImage: "/images/exercises/leg-curl.jpg",
   },
   {
     id: "leg-extension",
@@ -245,6 +250,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "quads",
     equipment: "machine",
     category: "isolation",
+    guideImage: "/images/exercises/leg-extension.jpg",
   },
   {
     id: "hip-thrust",
@@ -253,6 +259,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["hamstrings"],
     equipment: "barbell",
     category: "compound",
+    guideImage: "/images/exercises/barbell-hip-thrust.jpg",
   },
   {
     id: "bulgarian-split-squat",
@@ -261,6 +268,7 @@ const EXERCISES: Exercise[] = [
     secondaryMuscles: ["glutes"],
     equipment: "dumbbell",
     category: "compound",
+    guideImage: "/images/exercises/bulgarian-split-squat.jpg",
   },
   {
     id: "calf-raise",
@@ -268,6 +276,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "calves",
     equipment: "machine",
     category: "isolation",
+    guideImage: "/images/exercises/calf-raise.jpg",
   },
   // Core
   {
