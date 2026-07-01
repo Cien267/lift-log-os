@@ -285,6 +285,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "core",
     equipment: "bodyweight",
     category: "isolation",
+    guideImage: "/images/exercises/plank.jpg",
   },
   {
     id: "hanging-leg-raise",
@@ -292,6 +293,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "core",
     equipment: "pullup-bar",
     category: "isolation",
+    guideImage: "/images/exercises/hanging-leg-raise.jpg",
   },
   {
     id: "ab-wheel",
@@ -299,6 +301,7 @@ const EXERCISES: Exercise[] = [
     muscleGroup: "core",
     equipment: "other",
     category: "isolation",
+    guideImage: "/images/exercises/ab-wheel.jpg",
   },
 ];
 
