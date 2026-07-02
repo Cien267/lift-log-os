@@ -312,6 +312,7 @@ const CARDIO_EXERCISES: Exercise[] = [
     muscleGroup: "cardio",
     equipment: "machine",
     category: "cardio",
+    guideImage: "/images/exercises/treadmill-walking.jpg",
   },
   {
     id: "stationary-cycling",
@@ -319,6 +320,7 @@ const CARDIO_EXERCISES: Exercise[] = [
     muscleGroup: "cardio",
     equipment: "machine",
     category: "cardio",
+    guideImage: "/images/exercises/stationary-cycling.jpg",
   },
   {
     id: "jump-rope",
@@ -326,6 +328,7 @@ const CARDIO_EXERCISES: Exercise[] = [
     muscleGroup: "cardio",
     equipment: "other",
     category: "cardio",
+    guideImage: "/images/exercises/jump-rope.jpg",
   },
   {
     id: "burpee",
@@ -333,6 +336,7 @@ const CARDIO_EXERCISES: Exercise[] = [
     muscleGroup: "cardio",
     equipment: "bodyweight",
     category: "cardio",
+    guideImage: "/images/exercises/burpee.jpg",
   },
   {
     id: "mountain-climber",
@@ -340,6 +344,7 @@ const CARDIO_EXERCISES: Exercise[] = [
     muscleGroup: "cardio",
     equipment: "bodyweight",
     category: "cardio",
+    guideImage: "/images/exercises/mountain-climber.jpg",
   },
   {
     id: "battle-ropes",
@@ -347,6 +352,7 @@ const CARDIO_EXERCISES: Exercise[] = [
     muscleGroup: "cardio",
     equipment: "other",
     category: "cardio",
+    guideImage: "/images/exercises/battle-ropes.jpg",
   },
   {
     id: "box-jump",
@@ -354,6 +360,7 @@ const CARDIO_EXERCISES: Exercise[] = [
     muscleGroup: "cardio",
     equipment: "other",
     category: "cardio",
+    guideImage: "/images/exercises/box-jump.jpg",
   },
   {
     id: "high-knees",
@@ -361,6 +368,7 @@ const CARDIO_EXERCISES: Exercise[] = [
     muscleGroup: "cardio",
     equipment: "bodyweight",
     category: "cardio",
+    guideImage: "/images/exercises/high-knees.jpg",
   },
 ];
 
@@ -369,9 +377,25 @@ export async function seedDatabase() {
   if (count === 0) {
     await db.exercises.bulkAdd(EXERCISES);
   } else {
+    // add cardio
     const cardioExercises = await db.exercises.where("category").equals("cardio").toArray();
     if (cardioExercises.length === 0) {
       await db.exercises.bulkAdd(CARDIO_EXERCISES);
+    }
+
+    // add guideImage
+    for (const exercise of EXERCISES) {
+      const existing = await db.exercises.get(exercise.id);
+      if (existing && (existing.guideImage !== exercise.guideImage || !existing.guideImage)) {
+        await db.exercises.update(existing.id, { guideImage: exercise.guideImage });
+      }
+    }
+
+    for (const exercise of CARDIO_EXERCISES) {
+      const existing = await db.exercises.get(exercise.id);
+      if (existing && (existing.guideImage !== exercise.guideImage || !existing.guideImage)) {
+        await db.exercises.update(existing.id, { guideImage: exercise.guideImage });
+      }
     }
   }
 
