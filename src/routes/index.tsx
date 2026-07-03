@@ -30,8 +30,8 @@ function Dashboard() {
   const lang = settings?.language ?? "en";
   const workouts =
     useLiveQuery(() => db.workouts.orderBy("startTime").reverse().limit(50).toArray()) ?? [];
-  const prs = useLiveQuery(() => db.prs.orderBy("date").reverse().limit(5).toArray()) ?? [];
-  const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
+
+
   const measurements =
     useLiveQuery(() => db.measurements.orderBy("date").reverse().limit(2).toArray()) ?? [];
 
