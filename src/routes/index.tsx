@@ -112,43 +112,8 @@ function Dashboard() {
           />
         </div>
 
-        <Section
-          title={t("home.recentPRs")}
-          right={
-            <Link to="/analytics" className="text-xs text-muted-foreground">
-              {t("home.viewAll")}
-            </Link>
-          }
-        >
-          {prs.length === 0 ? (
-            <Empty hint={t("home.finishWorkoutHint")} />
-          ) : (
-            <ul className="divide-y divide-border">
-              {prs.map((pr) => (
-                <li key={pr.id} className="flex items-center gap-3 py-3">
-                  <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary">
-                    <Trophy className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
-                      {exMap.get(pr.exerciseId)?.name ?? "Exercise"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {pr.type === "weight"
-                        ? `${formatWeight(pr.value)} max`
-                        : pr.type === "e1rm"
-                          ? `${formatWeight(Math.round(pr.value))} e1RM`
-                          : `${formatWeight(Math.round(pr.value))} volume`}
-                    </p>
-                  </div>
-                  <span className="num text-xs text-muted-foreground">
-                    {formatDate(pr.date, lang)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Section>
+        <MuscleDistribution />
+
 
         <Section title={t("home.recentActivity")}>
           {workouts.length === 0 ? (
