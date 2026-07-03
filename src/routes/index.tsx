@@ -44,7 +44,7 @@ function Dashboard() {
     weeklyGoal,
   );
   const last = workouts.find((w) => w.endTime);
-  const exMap = new Map(exercises.map((e) => [e.id, e]));
+  
   const bw = measurements[0]?.weight;
   const bwPrev = measurements[1]?.weight;
 
