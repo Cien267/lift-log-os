@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Flame, TrendingUp, Calendar, Dumbbell, Play, Trophy } from "lucide-react";
+import { Flame, TrendingUp, Calendar, Dumbbell, Play } from "lucide-react";
+import { MuscleDistribution } from "@/components/muscle-distribution";
 import { db } from "@/lib/db";
 import { formatDuration, formatWeight, getWeekStart } from "@/lib/analytics";
 import { AppShell } from "@/components/app-shell";
