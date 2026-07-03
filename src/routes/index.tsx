@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Flame, TrendingUp, Calendar, Dumbbell, Play, Trophy } from "lucide-react";
+import { Flame, TrendingUp, Calendar, Dumbbell, Play } from "lucide-react";
+import { MuscleDistribution } from "@/components/muscle-distribution";
 import { db } from "@/lib/db";
 import { formatDuration, formatWeight, getWeekStart } from "@/lib/analytics";
 import { AppShell } from "@/components/app-shell";
@@ -29,8 +30,8 @@ function Dashboard() {
   const lang = settings?.language ?? "en";
   const workouts =
     useLiveQuery(() => db.workouts.orderBy("startTime").reverse().limit(50).toArray()) ?? [];
-  const prs = useLiveQuery(() => db.prs.orderBy("date").reverse().limit(5).toArray()) ?? [];
-  const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
+
+
   const measurements =
     useLiveQuery(() => db.measurements.orderBy("date").reverse().limit(2).toArray()) ?? [];
 
@@ -43,7 +44,7 @@ function Dashboard() {
     weeklyGoal,
   );
   const last = workouts.find((w) => w.endTime);
-  const exMap = new Map(exercises.map((e) => [e.id, e]));
+  
   const bw = measurements[0]?.weight;
   const bwPrev = measurements[1]?.weight;
 
@@ -111,43 +112,8 @@ function Dashboard() {
           />
         </div>
 
-        <Section
-          title={t("home.recentPRs")}
-          right={
-            <Link to="/analytics" className="text-xs text-muted-foreground">
-              {t("home.viewAll")}
-            </Link>
-          }
-        >
-          {prs.length === 0 ? (
-            <Empty hint={t("home.finishWorkoutHint")} />
-          ) : (
-            <ul className="divide-y divide-border">
-              {prs.map((pr) => (
-                <li key={pr.id} className="flex items-center gap-3 py-3">
-                  <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary">
-                    <Trophy className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
-                      {exMap.get(pr.exerciseId)?.name ?? "Exercise"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {pr.type === "weight"
-                        ? `${formatWeight(pr.value)} max`
-                        : pr.type === "e1rm"
-                          ? `${formatWeight(Math.round(pr.value))} e1RM`
-                          : `${formatWeight(Math.round(pr.value))} volume`}
-                    </p>
-                  </div>
-                  <span className="num text-xs text-muted-foreground">
-                    {formatDate(pr.date, lang)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Section>
+        <MuscleDistribution />
+
 
         <Section title={t("home.recentActivity")}>
           {workouts.length === 0 ? (
