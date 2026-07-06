@@ -43,10 +43,7 @@ export function MuscleDistribution() {
     let cancelled = false;
     (async () => {
       const weekStart = getWeekStart().getTime();
-      const workouts = await db.workouts
-        .where("startTime")
-        .aboveOrEqual(weekStart)
-        .toArray();
+      const workouts = await db.workouts.where("startTime").aboveOrEqual(weekStart).toArray();
       const done = workouts.filter((w) => w.endTime);
       const totals: Partial<Record<Bucket, number>> = {};
       for (const w of done) {
@@ -77,9 +74,7 @@ export function MuscleDistribution() {
           <p className="text-[11px] text-muted-foreground">{t("home.thisWeek")}</p>
         </div>
         {total > 0 && (
-          <span className="num text-[11px] text-muted-foreground">
-            {formatWeight(total)} total
-          </span>
+          <span className="num text-[11px] text-muted-foreground">{formatWeight(total)} total</span>
         )}
       </div>
 
@@ -94,14 +89,7 @@ export function MuscleDistribution() {
               <PieChart>
                 <defs>
                   {ORDER.map((b) => (
-                    <linearGradient
-                      key={b}
-                      id={`md-grad-${b}`}
-                      x1="0"
-                      y1="0"
-                      x2="1"
-                      y2="1"
-                    >
+                    <linearGradient key={b} id={`md-grad-${b}`} x1="0" y1="0" x2="1" y2="1">
                       <stop offset="0%" stopColor={COLORS[b].from} stopOpacity={0.95} />
                       <stop offset="100%" stopColor={COLORS[b].to} stopOpacity={0.95} />
                     </linearGradient>
@@ -152,9 +140,7 @@ export function MuscleDistribution() {
                         background: `linear-gradient(135deg, ${c.from}, ${c.to})`,
                       }}
                     />
-                    <span className="flex-1 truncate text-sm text-foreground/90">
-                      {c.label}
-                    </span>
+                    <span className="flex-1 truncate text-sm text-foreground/90">{c.label}</span>
                     <span className="num w-9 text-right text-sm font-medium tabular-nums">
                       {pct}%
                     </span>
