@@ -148,6 +148,8 @@ export function ExercisePicker({
   const [confirmDelete, setConfirmDelete] = useState<Exercise | null>(null);
   const [effects, setEffects] = useState<any[]>([]);
   const [numberAnimating, setNumberAnimating] = useState(false);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     let list = exercises;
@@ -160,7 +162,6 @@ export function ExercisePicker({
           e.name.toLowerCase().includes(s) || e.aliases?.some((a) => a.toLowerCase().includes(s)),
       );
     }
-    console.log({ list });
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }, [exercises, q, group, filterEquipment]);
 
@@ -181,8 +182,19 @@ export function ExercisePicker({
       muscleGroup: ex.muscleGroup,
       equipment: ex.equipment,
       category: ex.category,
+      guideImage: ex.guideImage,
     });
     setEditorOpen(true);
+  };
+
+  const handleImageFile = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const dataUrl = await fileToCompressedDataUrl(file);
+      setDraft((d) => ({ ...d, guideImage: dataUrl }));
+    } catch {
+      toast.error("Could not load image");
+    }
   };
 
   const saveExercise = async () => {
@@ -194,6 +206,7 @@ export function ExercisePicker({
         muscleGroup: draft.muscleGroup,
         equipment: draft.equipment,
         category: draft.category,
+        guideImage: draft.guideImage,
       });
       setEditorOpen(false);
       toast.success("Exercise updated");
@@ -204,6 +217,7 @@ export function ExercisePicker({
         muscleGroup: draft.muscleGroup,
         equipment: draft.equipment,
         category: draft.category,
+        guideImage: draft.guideImage,
         custom: true,
       };
       await db.exercises.add(ex);
@@ -211,6 +225,7 @@ export function ExercisePicker({
       onSelect(ex.id);
     }
   };
+
 
   const deleteExercise = async (ex: Exercise) => {
     await db.exercises.delete(ex.id);
