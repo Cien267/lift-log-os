@@ -116,18 +116,76 @@ function SortableExercise({
   );
 }
 
+interface SortableTemplateProps {
+  template: WorkoutTemplate;
+  exerciseCount: number;
+  exercisesLabel: string;
+  onOpen: (t: WorkoutTemplate) => void;
+}
+
+function SortableTemplate({
+  template,
+  exerciseCount,
+  exercisesLabel,
+  onOpen,
+}: SortableTemplateProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: template.id,
+  });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-1 rounded-xl border border-border bg-card transition-colors hover:bg-surface"
+    >
+      <button
+        type="button"
+        className="cursor-grab touch-none p-3 text-muted-foreground active:cursor-grabbing"
+        aria-label="Drag to reorder"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+      <button
+        onClick={() => onOpen(template)}
+        className="flex min-w-0 flex-1 items-center gap-3 py-3 pr-3 text-left"
+      >
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold">{template.name}</p>
+          <p className="text-xs capitalize text-muted-foreground">
+            {template.location} · {exerciseCount} {exercisesLabel}
+          </p>
+        </div>
+        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+      </button>
+    </li>
+  );
+}
+
 function TemplatesPage() {
   const { t } = useT();
-  const rawTemplates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray());
+  const rawTemplates = useLiveQuery(() => db.templates.toArray());
   const templates = useMemo(() => rawTemplates ?? [], [rawTemplates]);
   const groupedTemplates = useMemo(() => {
-    return templates.reduce(
-      (acc, template) => {
-        (acc[template.location] ??= []).push(template);
-        return acc;
-      },
-      {} as Record<string, WorkoutTemplate[]>,
-    );
+    const groups: Record<string, WorkoutTemplate[]> = {};
+    for (const tpl of templates) {
+      (groups[tpl.location] ??= []).push(tpl);
+    }
+    for (const key of Object.keys(groups)) {
+      groups[key].sort((a, b) => {
+        const ao = a.order ?? Number.MAX_SAFE_INTEGER;
+        const bo = b.order ?? Number.MAX_SAFE_INTEGER;
+        if (ao !== bo) return ao - bo;
+        return b.updatedAt - a.updatedAt;
+      });
+    }
+    return groups;
   }, [templates]);
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
   const exMap = new Map(exercises.map((e) => [e.id, e]));
@@ -147,6 +205,19 @@ function TemplatesPage() {
     const to = Number(over.id);
     const next = arrayMove(editing.exercises, from, to).map((e, i) => ({ ...e, order: i }));
     setEditing({ ...editing, exercises: next });
+  };
+
+  const onTemplateDragEnd = async (location: string, event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const list = groupedTemplates[location] ?? [];
+    const from = list.findIndex((t) => t.id === active.id);
+    const to = list.findIndex((t) => t.id === over.id);
+    if (from < 0 || to < 0) return;
+    const reordered = arrayMove(list, from, to);
+    await db.templates.bulkPut(
+      reordered.map((tpl, i) => ({ ...tpl, order: i })),
+    );
   };
 
   const updateSets = (idx: number, value: number) => {
@@ -204,31 +275,35 @@ function TemplatesPage() {
           {t("plan.empty")}
         </div>
       ) : (
-        <ul className="space-y-4">
-          {Object.entries(groupedTemplates).map(([location, templates]) => (
-            <ul key={location} className="space-y-2">
+        <div className="space-y-4">
+          {Object.entries(groupedTemplates).map(([location, list]) => (
+            <div key={location} className="space-y-2">
               <h2 className="uppercase text-sm font-semibold">📍 {location}</h2>
-              {templates.map((template) => (
-                <li key={template.id}>
-                  <button
-                    onClick={() => setEditing(template)}
-                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-surface"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{template.name}</p>
-
-                      <p className="text-xs capitalize text-muted-foreground">
-                        {template.location} · {template.exercises.length} {t("common.exercises")}
-                      </p>
-                    </div>
-
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </li>
-              ))}
-            </ul>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(e) => onTemplateDragEnd(location, e)}
+              >
+                <SortableContext
+                  items={list.map((t) => t.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <ul className="space-y-2">
+                    {list.map((template) => (
+                      <SortableTemplate
+                        key={template.id}
+                        template={template}
+                        exerciseCount={template.exercises.length}
+                        exercisesLabel={t("common.exercises")}
+                        onOpen={setEditing}
+                      />
+                    ))}
+                  </ul>
+                </SortableContext>
+              </DndContext>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       <Dialog open={!!editing} onOpenChange={(v) => !v && setEditing(null)}>
