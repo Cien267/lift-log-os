@@ -485,7 +485,71 @@ export function ExercisePicker({
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <Label className="mb-1 block text-xs">Guide image</Label>
+              {draft.guideImage ? (
+                <div className="relative overflow-hidden rounded-md border border-border">
+                  <img
+                    src={draft.guideImage}
+                    alt="Guide"
+                    className="max-h-48 w-full object-contain bg-secondary"
+                  />
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="absolute right-1 top-1 h-7 w-7"
+                    onClick={() => setDraft({ ...draft, guideImage: undefined })}
+                    aria-label="Remove image"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 gap-1.5"
+                    onClick={() => cameraInputRef.current?.click()}
+                  >
+                    <Camera className="h-4 w-4" /> Camera
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 gap-1.5"
+                    onClick={() => galleryInputRef.current?.click()}
+                  >
+                    <ImageIcon className="h-4 w-4" /> Gallery
+                  </Button>
+                </div>
+              )}
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => {
+                  handleImageFile(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  handleImageFile(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+            </div>
           </div>
+
           <DialogFooter>
             <Button variant="ghost" onClick={() => setEditorOpen(false)}>
               {t("common.cancel")}
