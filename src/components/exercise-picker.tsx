@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Search, X, Plus, Pencil, Trash2 } from "lucide-react";
+import { Search, X, Plus, Pencil, Trash2, Camera, ImageIcon } from "lucide-react";
+
 import { db, uid, type Equipment, type Exercise, type MuscleGroup } from "@/lib/db";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
