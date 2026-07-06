@@ -99,6 +99,7 @@ export interface WorkoutTemplate {
   description?: string;
   location: Location;
   exercises: TemplateExercise[];
+  order?: number;
   createdAt: number;
   updatedAt: number;
 }

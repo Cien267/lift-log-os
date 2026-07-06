@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Search, X, Plus, Pencil, Trash2 } from "lucide-react";
+import { Search, X, Plus, Pencil, Trash2, Camera, ImageIcon } from "lucide-react";
+
 import { db, uid, type Equipment, type Exercise, type MuscleGroup } from "@/lib/db";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -84,6 +85,7 @@ type Draft = {
   muscleGroup: MuscleGroup;
   equipment: Equipment;
   category: Exercise["category"];
+  guideImage?: string;
 };
 
 const emptyDraft: Draft = {
@@ -91,7 +93,37 @@ const emptyDraft: Draft = {
   muscleGroup: "chest",
   equipment: "barbell",
   category: "compound",
+  guideImage: undefined,
 };
+
+const MAX_IMAGE_DIM = 1280;
+const IMAGE_QUALITY = 0.82;
+
+async function fileToCompressedDataUrl(file: File): Promise<string> {
+  const dataUrl: string = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const el = new Image();
+    el.onload = () => resolve(el);
+    el.onerror = () => reject(new Error("Image decode failed"));
+    el.src = dataUrl;
+  });
+  const scale = Math.min(1, MAX_IMAGE_DIM / Math.max(img.width, img.height));
+  const w = Math.round(img.width * scale);
+  const h = Math.round(img.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return dataUrl;
+  ctx.drawImage(img, 0, 0, w, h);
+  return canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
+}
+
 
 export function ExercisePicker({
   open,
@@ -116,6 +148,8 @@ export function ExercisePicker({
   const [confirmDelete, setConfirmDelete] = useState<Exercise | null>(null);
   const [effects, setEffects] = useState<any[]>([]);
   const [numberAnimating, setNumberAnimating] = useState(false);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     let list = exercises;
@@ -128,7 +162,6 @@ export function ExercisePicker({
           e.name.toLowerCase().includes(s) || e.aliases?.some((a) => a.toLowerCase().includes(s)),
       );
     }
-    console.log({ list });
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }, [exercises, q, group, filterEquipment]);
 
@@ -149,8 +182,19 @@ export function ExercisePicker({
       muscleGroup: ex.muscleGroup,
       equipment: ex.equipment,
       category: ex.category,
+      guideImage: ex.guideImage,
     });
     setEditorOpen(true);
+  };
+
+  const handleImageFile = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const dataUrl = await fileToCompressedDataUrl(file);
+      setDraft((d) => ({ ...d, guideImage: dataUrl }));
+    } catch {
+      toast.error("Could not load image");
+    }
   };
 
   const saveExercise = async () => {
@@ -162,6 +206,7 @@ export function ExercisePicker({
         muscleGroup: draft.muscleGroup,
         equipment: draft.equipment,
         category: draft.category,
+        guideImage: draft.guideImage,
       });
       setEditorOpen(false);
       toast.success("Exercise updated");
@@ -172,6 +217,7 @@ export function ExercisePicker({
         muscleGroup: draft.muscleGroup,
         equipment: draft.equipment,
         category: draft.category,
+        guideImage: draft.guideImage,
         custom: true,
       };
       await db.exercises.add(ex);
@@ -179,6 +225,7 @@ export function ExercisePicker({
       onSelect(ex.id);
     }
   };
+
 
   const deleteExercise = async (ex: Exercise) => {
     await db.exercises.delete(ex.id);
@@ -438,7 +485,71 @@ export function ExercisePicker({
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <Label className="mb-1 block text-xs">Guide image</Label>
+              {draft.guideImage ? (
+                <div className="relative overflow-hidden rounded-md border border-border">
+                  <img
+                    src={draft.guideImage}
+                    alt="Guide"
+                    className="max-h-48 w-full object-contain bg-secondary"
+                  />
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="absolute right-1 top-1 h-7 w-7"
+                    onClick={() => setDraft({ ...draft, guideImage: undefined })}
+                    aria-label="Remove image"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 gap-1.5"
+                    onClick={() => cameraInputRef.current?.click()}
+                  >
+                    <Camera className="h-4 w-4" /> Camera
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 gap-1.5"
+                    onClick={() => galleryInputRef.current?.click()}
+                  >
+                    <ImageIcon className="h-4 w-4" /> Gallery
+                  </Button>
+                </div>
+              )}
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => {
+                  handleImageFile(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  handleImageFile(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+            </div>
           </div>
+
           <DialogFooter>
             <Button variant="ghost" onClick={() => setEditorOpen(false)}>
               {t("common.cancel")}
