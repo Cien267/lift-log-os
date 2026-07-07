@@ -49,6 +49,14 @@ const dict = {
     "settings.aboutMe": "About me",
     "settings.userName": "Name",
     "settings.trainingAssistant": "Training Assistant",
+    "settings.defaultRestDescription":
+      "The default rest timer that starts automatically after you complete a working set. You can still adjust the timer during each workout",
+    "settings.weeklyGoalDescription":
+      "Your target number of workout sessions each week. This goal is used to track your weekly consistency and is displayed on the Home screen.",
+    "settings.targetWeightDescription":
+      "Your desired bodyweight. Forge uses this value to track your progress and compare it with your logged bodyweight over time.",
+    "settings.trainingAssistantDescription":
+      "Provides intelligent workout recommendations based on your training history, such as when to increase weight, maintain your current load, or reduce intensity. Suggestions are never applied automatically—you always stay in control.",
     "lang.en": "English",
     "lang.vi": "Tiếng Việt",
 
@@ -204,6 +212,14 @@ const dict = {
     "settings.aboutMe": "Thông tin cá nhân",
     "settings.userName": "Tên",
     "settings.trainingAssistant": "Trợ lý tập luyện",
+    "settings.defaultRestDescription":
+      "Thời gian nghỉ mặc định sẽ tự động bắt đầu sau khi bạn hoàn thành một working set. Bạn vẫn có thể thay đổi thời gian nghỉ trong từng buổi tập.",
+    "settings.weeklyGoalDescription":
+      "Số buổi tập mục tiêu mỗi tuần. Mục tiêu này được dùng để theo dõi mức độ duy trì thói quen tập luyện và được hiển thị trên trang chủ.",
+    "settings.targetWeightDescription":
+      "Cân nặng mục tiêu của bạn. Forge sử dụng giá trị này để theo dõi tiến trình và so sánh với cân nặng bạn đã ghi lại theo thời gian.",
+    "settings.trainingAssistantDescription":
+      "Đưa ra các gợi ý tập luyện thông minh dựa trên lịch sử tập của bạn, chẳng hạn như khi nào nên tăng tạ, giữ nguyên mức tạ hoặc giảm cường độ. Forge chỉ đưa ra gợi ý, mọi quyết định vẫn do bạn lựa chọn.",
     "lang.en": "English",
     "lang.vi": "Tiếng Việt",
 

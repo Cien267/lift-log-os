@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
-import { Download, Upload, Sun, Moon, Monitor, Trash2, Languages } from "lucide-react";
+import { Download, Upload, Sun, Moon, Monitor, Trash2, Languages, Info } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 import { Switch } from "@/components/ui/switch";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -135,7 +136,23 @@ function SettingsPage() {
         </Section>
 
         <Section title={t("settings.workout")}>
-          <Row label={t("settings.defaultRest")}>
+          <Row
+            label={
+              <div className="flex items-center gap-1">
+                <span>{t("settings.defaultRest")}</span>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground ml-1" />
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-64 text-sm">
+                    {t("settings.defaultRestDescription")}
+                  </PopoverContent>
+                </Popover>
+              </div>
+            }
+          >
             <Input
               type="number"
               className="num w-24 text-right"
@@ -143,7 +160,23 @@ function SettingsPage() {
               onChange={(e) => update({ defaultRest: Number(e.target.value) || 0 })}
             />
           </Row>
-          <Row label={t("settings.weeklyGoal")}>
+          <Row
+            label={
+              <div className="flex items-center gap-1">
+                <span>{t("settings.weeklyGoal")}</span>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground ml-1" />
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-64 text-sm">
+                    {t("settings.weeklyGoalDescription")}
+                  </PopoverContent>
+                </Popover>
+              </div>
+            }
+          >
             <Input
               type="number"
               className="num w-24 text-right"
@@ -151,7 +184,23 @@ function SettingsPage() {
               onChange={(e) => update({ weeklyGoal: Number(e.target.value) || 0 })}
             />
           </Row>
-          <Row label={t("settings.targetWeight")}>
+          <Row
+            label={
+              <div className="flex items-center gap-1">
+                <span>{t("settings.targetWeight")}</span>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground ml-1" />
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-64 text-sm">
+                    {t("settings.targetWeightDescription")}
+                  </PopoverContent>
+                </Popover>
+              </div>
+            }
+          >
             <Input
               type="number"
               inputMode="decimal"
@@ -162,7 +211,23 @@ function SettingsPage() {
               }
             />
           </Row>
-          <Row label={t("settings.trainingAssistant")}>
+          <Row
+            label={
+              <div className="flex items-center gap-1">
+                <span>{t("settings.trainingAssistant")}</span>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground ml-1" />
+                  </PopoverTrigger>
+
+                  <PopoverContent className="w-64 text-sm">
+                    {t("settings.trainingAssistantDescription")}
+                  </PopoverContent>
+                </Popover>
+              </div>
+            }
+          >
             <Switch
               checked={settings.trainingAssistant ?? false}
               onCheckedChange={(checked) => update({ trainingAssistant: checked })}
@@ -217,7 +282,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function Row({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3 py-1">
       <Label className="text-sm text-foreground/90">{label}</Label>
