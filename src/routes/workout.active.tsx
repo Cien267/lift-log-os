@@ -348,6 +348,17 @@ function ExerciseCard({
         </DropdownMenu>
       </header>
 
+      {suggestion && !dismissed && suggestion.verdict !== "new" && (
+        <CoachSuggestion
+          suggestion={suggestion}
+          currentWeight={workingSet?.weight}
+          currentReps={workingSet?.reps}
+          onApply={onApplySuggestion}
+          onDismiss={() => setDismissed(true)}
+        />
+      )}
+
+
       <div className="px-3">
         <div className="grid grid-cols-[28px_1fr_1fr_44px_44px] items-center gap-2 pb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
           <span>Set</span>
