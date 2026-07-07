@@ -302,6 +302,25 @@ function ExerciseCard({
     await addSet(entryId, { weight: s.weight, reps: s.reps });
   };
 
+  const onApplySuggestion = async () => {
+    if (!suggestion) return;
+    // Only update sets that haven't been completed and aren't warmups —
+    // never overwrite what the user already logged.
+    const current = await db.workoutSets.where("exerciseEntryId").equals(entryId).toArray();
+    const editable = current.filter((s) => !s.completed && !s.isWarmup);
+    for (const s of editable) {
+      await updateSet(s.id, { weight: suggestion.weight, reps: suggestion.reps });
+    }
+    // If there are fewer editable sets than suggested, add the missing ones.
+    const missing = Math.max(0, suggestion.sets - editable.length - current.filter((s) => s.completed || s.isWarmup).length);
+    for (let i = 0; i < missing; i++) {
+      await addSet(entryId, { weight: suggestion.weight, reps: suggestion.reps });
+    }
+    setDismissed(true);
+  };
+
+  const workingSet = sorted.find((s) => !s.isWarmup);
+
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-card">
       <header className="flex items-center gap-2 px-3 py-2.5">
