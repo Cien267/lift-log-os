@@ -11,10 +11,14 @@ import {
   deleteSet,
   discardWorkout,
   finishWorkout,
-  getLastPerformance,
   removeExerciseFromWorkout,
   updateSet,
 } from "@/lib/workout-service";
+import {
+  getProgressionSuggestion,
+  type ProgressionSuggestion,
+} from "@/lib/progression";
+import { CoachSuggestion } from "@/components/coach-suggestion";
 import { RestTimerBar, startRest } from "@/components/rest-timer";
 import { ExercisePicker } from "@/components/exercise-picker";
 import { InsightView } from "@/components/workout-insight";
