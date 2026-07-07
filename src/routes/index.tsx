@@ -31,7 +31,6 @@ function Dashboard() {
   const workouts =
     useLiveQuery(() => db.workouts.orderBy("startTime").reverse().limit(50).toArray()) ?? [];
 
-
   const measurements =
     useLiveQuery(() => db.measurements.orderBy("date").reverse().limit(2).toArray()) ?? [];
 
@@ -44,7 +43,7 @@ function Dashboard() {
     weeklyGoal,
   );
   const last = workouts.find((w) => w.endTime);
-  
+
   const bw = measurements[0]?.weight;
   const bwPrev = measurements[1]?.weight;
 
@@ -113,7 +112,6 @@ function Dashboard() {
         </div>
 
         <MuscleDistribution />
-
 
         <Section title={t("home.recentActivity")}>
           {workouts.length === 0 ? (

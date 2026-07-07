@@ -421,6 +421,7 @@ export async function seedDatabase() {
       weeklyGoal: 4,
       createdAt: Date.now(),
       userName: "",
+      trainingAssistant: false,
     };
     await db.settings.put(defaults);
   }

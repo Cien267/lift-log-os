@@ -161,6 +161,7 @@ export interface Settings {
   targetWeight?: number;
   createdAt: number;
   userName?: string;
+  trainingAssistant?: boolean;
 }
 
 class ForgeDB extends Dexie {

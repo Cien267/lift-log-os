@@ -46,7 +46,12 @@ function progressionStep(ex?: Exercise): number {
   if (ex.category === "cardio" || ex.equipment === "bodyweight") return 0;
   if (ex.equipment === "barbell" && ex.category === "compound") {
     // Larger lifts (squat/deadlift-ish, primary movers on legs/back)
-    if (ex.muscleGroup === "quads" || ex.muscleGroup === "hamstrings" || ex.muscleGroup === "glutes" || ex.muscleGroup === "back") {
+    if (
+      ex.muscleGroup === "quads" ||
+      ex.muscleGroup === "hamstrings" ||
+      ex.muscleGroup === "glutes" ||
+      ex.muscleGroup === "back"
+    ) {
       return 5;
     }
     return 2.5;
@@ -122,28 +127,27 @@ interface Localized {
 
 const L: Record<"en" | "vi", Localized> = {
   en: {
-    new: "First time logging this — start light, focus on form.",
+    new: "First time logging this - start light, focus on form.",
     increaseReady: (w) =>
-      `You cleared every set last session — ready to add ${w % 1 === 0 ? w : w.toFixed(1)} kg.`,
+      `You cleared every set last session - ready to add ${w % 1 === 0 ? w : w.toFixed(1)} kg.`,
     increaseStreak: (n) =>
-      `Same weight held clean for ${n} sessions — a small bump is well earned.`,
+      `Same weight held clean for ${n} sessions - a small bump is well earned.`,
     holdBuild: (reps) => `Repeat this weight and aim for ${reps}+ reps to unlock progression.`,
-    holdConsolidate: "Reps still climbing at this weight — keep building before adding load.",
-    deloadDrop: (pct) => `Reps dropped ~${pct}% last time — hold or lighten to reset the pattern.`,
-    deloadInconsistent: "Recent sessions look uneven — stay at this weight until it feels solid.",
-    firstSteady: "One session on record — repeat the weight and see how it moves.",
+    holdConsolidate: "Reps still climbing at this weight - keep building before adding load.",
+    deloadDrop: (pct) => `Reps dropped ~${pct}% last time - hold or lighten to reset the pattern.`,
+    deloadInconsistent: "Recent sessions look uneven - stay at this weight until it feels solid.",
+    firstSteady: "One session on record - repeat the weight and see how it moves.",
   },
   vi: {
-    new: "Lần đầu ghi bài này — bắt đầu nhẹ, tập trung vào kỹ thuật.",
+    new: "Lần đầu tập bài này - bắt đầu nhẹ, tập trung vào kỹ thuật.",
     increaseReady: (w) =>
-      `Bạn hoàn thành sạch toàn bộ set buổi trước — sẵn sàng tăng ${w % 1 === 0 ? w : w.toFixed(1)} kg.`,
-    increaseStreak: (n) =>
-      `Giữ cùng mức tạ sạch ${n} buổi — có thể tăng nhẹ để tiến bộ.`,
+      `Bạn hoàn thành toàn bộ set buổi trước - sẵn sàng tăng ${w % 1 === 0 ? w : w.toFixed(1)} kg.`,
+    increaseStreak: (n) => `Giữ cùng mức tạ ${n} buổi - có thể tăng nhẹ để tiến bộ.`,
     holdBuild: (reps) => `Giữ mức này và cố đạt ${reps}+ reps để mở khoá tăng tạ.`,
-    holdConsolidate: "Reps đang tăng dần ở mức này — tiếp tục củng cố trước khi thêm tạ.",
-    deloadDrop: (pct) => `Reps giảm ~${pct}% buổi trước — giữ nguyên hoặc giảm để lấy lại nhịp.`,
-    deloadInconsistent: "Vài buổi gần đây chưa ổn định — ở lại mức này cho đến khi thấy chắc.",
-    firstSteady: "Mới có một buổi — lặp lại mức tạ này để xem tiến triển.",
+    holdConsolidate: "Reps đang tăng dần ở mức này - tiếp tục củng cố trước khi thêm tạ.",
+    deloadDrop: (pct) => `Reps giảm ~${pct}% buổi trước - giữ nguyên hoặc giảm để lấy lại nhịp.`,
+    deloadInconsistent: "Vài buổi gần đây chưa ổn định - ở lại mức này cho đến khi thấy chắc.",
+    firstSteady: "Mới có một buổi - lặp lại mức tạ này để xem tiến triển.",
   },
 };
 
@@ -199,7 +203,14 @@ export function computeProgressionSuggestion(
   // Detect regression: reps or weight dropped meaningfully
   const repDropPct =
     prev.workingReps.length > 0
-      ? Math.max(0, Math.round(((median(prev.workingReps) - median(last.workingReps)) / Math.max(1, median(prev.workingReps))) * 100))
+      ? Math.max(
+          0,
+          Math.round(
+            ((median(prev.workingReps) - median(last.workingReps)) /
+              Math.max(1, median(prev.workingReps))) *
+              100,
+          ),
+        )
       : 0;
   const weightDropped = last.workingWeight < prev.workingWeight - 0.001;
   const e1rmDropped = last.bestE1rm < prev.bestE1rm * 0.95;
@@ -228,13 +239,11 @@ export function computeProgressionSuggestion(
   const sameWeightPrev = Math.abs(prev.workingWeight - last.workingWeight) < 0.001;
   const prevMin = Math.min(...prev.workingReps);
   const streakReady =
-    sameWeightPrev &&
-    prev.allSetsCompleted &&
-    prevMin >= readyRepFloor &&
-    strongLast;
+    sameWeightPrev && prev.allSetsCompleted && prevMin >= readyRepFloor && strongLast;
 
-  const e1rmTrendUp =
-    history.slice(0, Math.min(3, history.length)).every((h, i, arr) =>
+  const e1rmTrendUp = history
+    .slice(0, Math.min(3, history.length))
+    .every((h, i, arr) =>
       i === arr.length - 1 ? true : h.bestE1rm >= arr[i + 1].bestE1rm - 0.001,
     );
 

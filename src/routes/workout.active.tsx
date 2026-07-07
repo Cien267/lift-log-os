@@ -14,10 +14,7 @@ import {
   removeExerciseFromWorkout,
   updateSet,
 } from "@/lib/workout-service";
-import {
-  getProgressionSuggestion,
-  type ProgressionSuggestion,
-} from "@/lib/progression";
+import { getProgressionSuggestion, type ProgressionSuggestion } from "@/lib/progression";
 import { CoachSuggestion } from "@/components/coach-suggestion";
 import { RestTimerBar, startRest } from "@/components/rest-timer";
 import { ExercisePicker } from "@/components/exercise-picker";
@@ -42,7 +39,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useT } from "@/lib/i18n";
+import { Lang, useT } from "@/lib/i18n";
 import { ExercisePreview } from "@/components/exercise-preview";
 
 const search = z.object({ id: z.string() });
@@ -59,7 +56,7 @@ export const Route = createFileRoute("/workout/active")({
 });
 
 function ActiveWorkoutPage() {
-  const { t } = useT();
+  const { t, lang } = useT();
   const { id } = Route.useSearch();
   const nav = useNavigate();
   const { settings } = useSettings();
@@ -182,6 +179,8 @@ function ActiveWorkoutPage() {
               sets={entrySets}
               defaultRest={entry.restPreset ?? settings?.defaultRest ?? 120}
               targetSets={entry.targetSets}
+              enableTrainingAssistant={settings?.trainingAssistant ?? false}
+              lang={lang}
               onRemove={() => removeExerciseFromWorkout(entry.id)}
             />
           );
@@ -238,6 +237,8 @@ function ExerciseCard({
   sets,
   defaultRest,
   targetSets,
+  enableTrainingAssistant,
+  lang,
   onRemove,
 }: {
   workoutId: string;
@@ -246,13 +247,14 @@ function ExerciseCard({
   sets: WorkoutSet[];
   defaultRest: number;
   targetSets?: number;
+  enableTrainingAssistant: boolean;
+  lang: Lang;
   onRemove: () => void;
 }) {
   const prefillRef = useRef(false);
-  const { t, lang } = useT();
+  const { t } = useT();
   const [suggestion, setSuggestion] = useState<ProgressionSuggestion | null>(null);
   const [dismissed, setDismissed] = useState(false);
-
   useEffect(() => {
     if (prefillRef.current) return;
     prefillRef.current = true;
@@ -276,7 +278,7 @@ function ExerciseCard({
         await addSet(entryId, { weight: baseWeight, reps: baseReps });
       }
     })();
-  }, [entryId, workoutId, targetSets, lang]);
+  }, [entryId, workoutId, targetSets, lang, enableTrainingAssistant]);
 
   const sorted = [...sets].sort((a, b) => a.timestamp - b.timestamp);
 
@@ -303,7 +305,7 @@ function ExerciseCard({
   };
 
   const onApplySuggestion = async () => {
-    if (!suggestion) return;
+    if (!suggestion || !enableTrainingAssistant) return;
     // Only update sets that haven't been completed and aren't warmups —
     // never overwrite what the user already logged.
     const current = await db.workoutSets.where("exerciseEntryId").equals(entryId).toArray();
@@ -312,7 +314,10 @@ function ExerciseCard({
       await updateSet(s.id, { weight: suggestion.weight, reps: suggestion.reps });
     }
     // If there are fewer editable sets than suggested, add the missing ones.
-    const missing = Math.max(0, suggestion.sets - editable.length - current.filter((s) => s.completed || s.isWarmup).length);
+    const missing = Math.max(
+      0,
+      suggestion.sets - editable.length - current.filter((s) => s.completed || s.isWarmup).length,
+    );
     for (let i = 0; i < missing; i++) {
       await addSet(entryId, { weight: suggestion.weight, reps: suggestion.reps });
     }
@@ -348,7 +353,7 @@ function ExerciseCard({
         </DropdownMenu>
       </header>
 
-      {suggestion && !dismissed && suggestion.verdict !== "new" && (
+      {enableTrainingAssistant && suggestion && !dismissed && suggestion.verdict !== "new" && (
         <CoachSuggestion
           suggestion={suggestion}
           currentWeight={workingSet?.weight}
@@ -357,7 +362,6 @@ function ExerciseCard({
           onDismiss={() => setDismissed(true)}
         />
       )}
-
 
       <div className="px-3">
         <div className="grid grid-cols-[28px_1fr_1fr_44px_44px] items-center gap-2 pb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">

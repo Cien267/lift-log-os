@@ -10,6 +10,7 @@ import { exportAll, importAll } from "@/lib/workout-service";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
+import { Switch } from "@/components/ui/switch";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -159,6 +160,12 @@ function SettingsPage() {
               onChange={(e) =>
                 update({ targetWeight: e.target.value ? Number(e.target.value) : undefined })
               }
+            />
+          </Row>
+          <Row label={t("settings.trainingAssistant")}>
+            <Switch
+              checked={settings.trainingAssistant ?? false}
+              onCheckedChange={(checked) => update({ trainingAssistant: checked })}
             />
           </Row>
         </Section>

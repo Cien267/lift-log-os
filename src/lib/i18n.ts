@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useSettings } from "@/hooks/use-settings";
 
 export type Lang = "en" | "vi";
@@ -47,6 +48,7 @@ const dict = {
       "Delete ALL workouts, templates, and measurements? This cannot be undone.",
     "settings.aboutMe": "About me",
     "settings.userName": "Name",
+    "settings.trainingAssistant": "Training Assistant",
     "lang.en": "English",
     "lang.vi": "Tiếng Việt",
 
@@ -201,6 +203,7 @@ const dict = {
     "settings.confirmClear": "Xóa TẤT CẢ buổi tập, kế hoạch và đo lường? Không thể hoàn tác.",
     "settings.aboutMe": "Thông tin cá nhân",
     "settings.userName": "Tên",
+    "settings.trainingAssistant": "Trợ lý tập luyện",
     "lang.en": "English",
     "lang.vi": "Tiếng Việt",
 

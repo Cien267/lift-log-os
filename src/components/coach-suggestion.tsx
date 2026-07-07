@@ -61,7 +61,13 @@ const labelFor = (v: ProgressionVerdict, lang: "en" | "vi") => {
   return L[lang][v];
 };
 
-export function CoachSuggestion({ suggestion, currentWeight, currentReps, onApply, onDismiss }: Props) {
+export function CoachSuggestion({
+  suggestion,
+  currentWeight,
+  currentReps,
+  onApply,
+  onDismiss,
+}: Props) {
   const { lang } = useT();
   const s = styleFor(suggestion.verdict);
   const { Icon } = s;
@@ -79,9 +85,11 @@ export function CoachSuggestion({ suggestion, currentWeight, currentReps, onAppl
   const setsWord = lang === "vi" ? "sets" : "sets";
 
   return (
-    <div className={`mx-3 mt-2 rounded-xl border ${s.border} ${s.bg} px-3 py-2.5`}>
+    <div className={`mx-3 mt-2 mb-4 rounded-xl border ${s.border} ${s.bg} px-3 py-2.5`}>
       <div className="flex items-start gap-2.5">
-        <div className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full ${s.bg} ${s.color}`}>
+        <div
+          className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full ${s.bg} ${s.color}`}
+        >
           <Icon className="h-3.5 w-3.5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -90,19 +98,29 @@ export function CoachSuggestion({ suggestion, currentWeight, currentReps, onAppl
               {labelFor(suggestion.verdict, lang)}
             </p>
             <p className="num text-[11px] text-muted-foreground">
-              {targetLabel}: {suggestion.weight % 1 === 0 ? suggestion.weight : suggestion.weight.toFixed(1)} kg × {suggestion.reps} · {suggestion.sets} {setsWord}
+              {targetLabel}:{" "}
+              {suggestion.weight % 1 === 0 ? suggestion.weight : suggestion.weight.toFixed(1)} kg ×{" "}
+              {suggestion.reps} · {suggestion.sets} {setsWord}
             </p>
           </div>
-          <p className="mt-0.5 text-[12px] leading-snug text-foreground/85">
-            {suggestion.reason}
-          </p>
+          <p className="mt-0.5 text-[12px] leading-snug text-foreground/85">{suggestion.reason}</p>
         </div>
       </div>
       <div className="mt-2 flex items-center justify-end gap-1.5">
         {alreadyApplied ? (
-          <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-            <Check className="h-3 w-3" /> {appliedLabel}
-          </span>
+          <>
+            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+              <Check className="h-3 w-3" /> {appliedLabel}
+            </span>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 px-2 text-[11px] ml-3"
+              onClick={onDismiss}
+            >
+              {dismissLabel}
+            </Button>
+          </>
         ) : (
           <>
             <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px]" onClick={onDismiss}>
