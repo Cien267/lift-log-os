@@ -44,10 +44,7 @@ const MESSAGES: Record<BanterTrigger, Line[]> = {
     "Bonus reps. Future you says thanks.",
     "That's the good stuff.",
   ],
-  "set.warmupMarked": [
-    "Warm-up flagged. Smart cookie.",
-    "Prime the engine first. I approve.",
-  ],
+  "set.warmupMarked": ["Warm-up flagged. Smart cookie.", "Prime the engine first. I approve."],
   "workout.discarded": [
     "Poof. Gone. We won't speak of this.",
     "Session discarded. Even the best days have restarts.",
@@ -72,7 +69,10 @@ const MESSAGES: Record<BanterTrigger, Line[]> = {
     "The gym remembers. Start light, build back up.",
   ],
   "workout.newPR": [
-    (c) => (c.count > 1 ? `${c.count} PRs today?! Someone call the record book.` : "New PR. Absolute unit."),
+    (c) =>
+      c.count > 1
+        ? `${c.count} PRs today?! Someone call the record book.`
+        : "New PR. Absolute unit.",
     "PR landed. The iron bows.",
     "That's a record. Screenshot it, frame it, brag about it.",
     "Numbers went up. Serotonin went up. Beautiful.",
@@ -81,10 +81,7 @@ const MESSAGES: Record<BanterTrigger, Line[]> = {
     (c) => `${c.minutes ?? "That"} minutes in the gym. Hydrate, hero.`,
     "Long session. The couch will feel divine tonight.",
   ],
-  "rest.skipped": [
-    "Skipping rest? Living dangerously.",
-    "No rest for the ambitious.",
-  ],
+  "rest.skipped": ["Skipping rest? Living dangerously.", "No rest for the ambitious."],
 };
 
 function pick(trigger: BanterTrigger, ctx: Ctx): string | null {
@@ -105,7 +102,7 @@ export function banter(trigger: BanterTrigger, ctx: Ctx = {}) {
   lastFired[trigger] = now;
   const msg = pick(trigger, ctx);
   if (!msg) return;
-  toast(msg, { duration: 3200 });
+  toast(msg, { duration: 3200, position: "bottom-right" });
 }
 
 /** Register additional messages at runtime (for future extensions). */

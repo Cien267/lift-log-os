@@ -64,18 +64,15 @@ export async function startWorkout(
   }
   setActiveWorkoutId(id);
   // Long-break welcome-back banter
-  try {
-    const prev = await db.workouts
-      .where("startTime")
-      .below(now)
-      .reverse()
-      .limit(1)
-      .toArray();
-    if (prev[0]?.endTime) {
-      const days = Math.floor((now - prev[0].endTime) / 86_400_000);
-      if (days >= 7) banter("workout.longBreakReturn", { days });
-    }
-  } catch {}
+  // try {
+  //   const prev = await db.workouts.where("startTime").below(now).reverse().limit(1).toArray();
+  //   if (prev[0]?.endTime) {
+  //     const days = Math.floor((now - prev[0].endTime) / 86_400_000);
+  //     if (days >= 7) banter("workout.longBreakReturn", { days });
+  //   }
+  // } catch (e: any) {
+  //   console.error(e);
+  // }
   return id;
 }
 
@@ -88,7 +85,7 @@ export async function addExerciseToWorkout(workoutId: string, exerciseId: string
     order: existing.length,
   };
   await db.workoutExercises.add(entry);
-  if (existing.length > 0) banter("exercise.added");
+  // if (existing.length > 0) banter("exercise.added");
   return entry;
 }
 
@@ -118,17 +115,19 @@ export async function addSet(entryId: string, init?: Partial<WorkoutSet>) {
   await db.workoutSets.add(s);
   // Extra-set banter: only when user has already completed at least one set
   // for this entry (skips prefill / template-driven adds).
-  try {
-    const entry = await db.workoutExercises.get(entryId);
-    if (entry?.targetSets) {
-      const all = await db.workoutSets.where("exerciseEntryId").equals(entryId).toArray();
-      const completed = all.filter((x) => x.completed && !x.isWarmup).length;
-      const nonWarmup = all.filter((x) => !x.isWarmup).length;
-      if (completed >= entry.targetSets && nonWarmup > entry.targetSets) {
-        banter("set.extra");
-      }
-    }
-  } catch {}
+  // try {
+  //   const entry = await db.workoutExercises.get(entryId);
+  //   if (entry?.targetSets) {
+  //     const all = await db.workoutSets.where("exerciseEntryId").equals(entryId).toArray();
+  //     const completed = all.filter((x) => x.completed && !x.isWarmup).length;
+  //     const nonWarmup = all.filter((x) => !x.isWarmup).length;
+  //     if (completed >= entry.targetSets && nonWarmup > entry.targetSets) {
+  //       banter("set.extra");
+  //     }
+  //   }
+  // } catch (e: any) {
+  //   console.error(e);
+  // }
   return s;
 }
 
@@ -185,10 +184,12 @@ export async function finishWorkout(workoutId: string) {
       if (incomplete === 0) banter("workout.finishedClean");
       else banter("workout.finishedIncomplete", { incomplete });
     }
-    if (prsAdded > 0) setTimeout(() => banter("workout.newPR", { count: prsAdded }), 900);
-    const minutes = Math.round(durationSec / 60);
-    if (minutes >= 120) setTimeout(() => banter("workout.marathon", { minutes }), 1800);
-  } catch {}
+    // if (prsAdded > 0) setTimeout(() => banter("workout.newPR", { count: prsAdded }), 900);
+    // const minutes = Math.round(durationSec / 60);
+    // if (minutes >= 120) setTimeout(() => banter("workout.marathon", { minutes }), 1800);
+  } catch (e: any) {
+    console.error(e);
+  }
   // Insight must be computed AFTER PRs are detected and durations are saved
   const { computeWorkoutInsight } = await import("./insight");
   const insight = await computeWorkoutInsight(workoutId);
@@ -208,7 +209,7 @@ export async function discardWorkout(workoutId: string) {
   await db.workouts.delete(workoutId);
   if (getActiveWorkoutId() === workoutId) setActiveWorkoutId(null);
   clearRestTimer();
-  banter("workout.discarded");
+  // banter("workout.discarded");
 }
 
 async function detectPRs(workoutId: string): Promise<number> {
