@@ -116,6 +116,19 @@ export async function addSet(entryId: string, init?: Partial<WorkoutSet>) {
     timestamp: Date.now(),
   };
   await db.workoutSets.add(s);
+  // Extra-set banter: only when user has already completed at least one set
+  // for this entry (skips prefill / template-driven adds).
+  try {
+    const entry = await db.workoutExercises.get(entryId);
+    if (entry?.targetSets) {
+      const all = await db.workoutSets.where("exerciseEntryId").equals(entryId).toArray();
+      const completed = all.filter((x) => x.completed && !x.isWarmup).length;
+      const nonWarmup = all.filter((x) => !x.isWarmup).length;
+      if (completed >= entry.targetSets && nonWarmup > entry.targetSets) {
+        banter("set.extra");
+      }
+    }
+  } catch {}
   return s;
 }
 
@@ -158,7 +171,36 @@ export async function finishWorkout(workoutId: string) {
     totalVolume: agg.totalVolume,
     estimatedCalories: estimateCalories(durationSec, agg.totalVolume),
   });
-  await detectPRs(workoutId);
+export async function finishWorkout(workoutId: string) {
+  const agg = await computeWorkoutAggregate(workoutId);
+  const w = await db.workouts.get(workoutId);
+  if (!w) return null;
+  const end = Date.now();
+  const durationSec = Math.floor((end - w.startTime) / 1000);
+  await db.workouts.update(workoutId, {
+    endTime: end,
+    durationSec,
+    totalVolume: agg.totalVolume,
+    estimatedCalories: estimateCalories(durationSec, agg.totalVolume),
+  });
+  const prsAdded = await detectPRs(workoutId);
+  // Banter: completion quality + PRs + marathon
+  try {
+    const entries = await db.workoutExercises.where("workoutId").equals(workoutId).toArray();
+    const allSets = await db.workoutSets
+      .where("exerciseEntryId")
+      .anyOf(entries.map((e) => e.id))
+      .toArray();
+    const working = allSets.filter((s) => !s.isWarmup);
+    const incomplete = working.filter((s) => !s.completed).length;
+    if (working.length > 0) {
+      if (incomplete === 0) banter("workout.finishedClean");
+      else banter("workout.finishedIncomplete", { incomplete });
+    }
+    if (prsAdded > 0) setTimeout(() => banter("workout.newPR", { count: prsAdded }), 900);
+    const minutes = Math.round(durationSec / 60);
+    if (minutes >= 120) setTimeout(() => banter("workout.marathon", { minutes }), 1800);
+  } catch {}
   // Insight must be computed AFTER PRs are detected and durations are saved
   const { computeWorkoutInsight } = await import("./insight");
   const insight = await computeWorkoutInsight(workoutId);
@@ -178,11 +220,12 @@ export async function discardWorkout(workoutId: string) {
   await db.workouts.delete(workoutId);
   if (getActiveWorkoutId() === workoutId) setActiveWorkoutId(null);
   clearRestTimer();
+  banter("workout.discarded");
 }
 
 async function detectPRs(workoutId: string) {
   const w = await db.workouts.get(workoutId);
-  if (!w) return;
+  if (!w) return 0;
   const entries = await db.workoutExercises.where("workoutId").equals(workoutId).toArray();
   for (const entry of entries) {
     const sets = await db.workoutSets.where("exerciseEntryId").equals(entry.id).toArray();
