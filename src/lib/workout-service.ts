@@ -8,6 +8,7 @@ import {
   type PersonalRecord,
 } from "./db";
 import { computeWorkoutAggregate, e1rm, estimateCalories } from "./analytics";
+import { banter } from "./banter";
 
 const ACTIVE_KEY = "forge.activeWorkoutId";
 const REST_KEY = "forge.restTimer";
@@ -62,6 +63,19 @@ export async function startWorkout(
     }
   }
   setActiveWorkoutId(id);
+  // Long-break welcome-back banter
+  try {
+    const prev = await db.workouts
+      .where("startTime")
+      .below(now)
+      .reverse()
+      .limit(1)
+      .toArray();
+    if (prev[0]?.endTime) {
+      const days = Math.floor((now - prev[0].endTime) / 86_400_000);
+      if (days >= 7) banter("workout.longBreakReturn", { days });
+    }
+  } catch {}
   return id;
 }
 
@@ -74,13 +88,17 @@ export async function addExerciseToWorkout(workoutId: string, exerciseId: string
     order: existing.length,
   };
   await db.workoutExercises.add(entry);
+  if (existing.length > 0) banter("exercise.added");
   return entry;
 }
 
 export async function removeExerciseFromWorkout(entryId: string) {
+  const entry = await db.workoutExercises.get(entryId);
+  const ex = entry ? await db.exercises.get(entry.exerciseId) : null;
   const sets = await db.workoutSets.where("exerciseEntryId").equals(entryId).primaryKeys();
   await db.workoutSets.bulkDelete(sets);
   await db.workoutExercises.delete(entryId);
+  banter("exercise.removed", { name: ex?.name });
 }
 
 export async function addSet(entryId: string, init?: Partial<WorkoutSet>) {
