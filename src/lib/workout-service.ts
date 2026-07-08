@@ -171,18 +171,6 @@ export async function finishWorkout(workoutId: string) {
     totalVolume: agg.totalVolume,
     estimatedCalories: estimateCalories(durationSec, agg.totalVolume),
   });
-export async function finishWorkout(workoutId: string) {
-  const agg = await computeWorkoutAggregate(workoutId);
-  const w = await db.workouts.get(workoutId);
-  if (!w) return null;
-  const end = Date.now();
-  const durationSec = Math.floor((end - w.startTime) / 1000);
-  await db.workouts.update(workoutId, {
-    endTime: end,
-    durationSec,
-    totalVolume: agg.totalVolume,
-    estimatedCalories: estimateCalories(durationSec, agg.totalVolume),
-  });
   const prsAdded = await detectPRs(workoutId);
   // Banter: completion quality + PRs + marathon
   try {
