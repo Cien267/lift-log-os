@@ -211,9 +211,10 @@ export async function discardWorkout(workoutId: string) {
   banter("workout.discarded");
 }
 
-async function detectPRs(workoutId: string) {
+async function detectPRs(workoutId: string): Promise<number> {
   const w = await db.workouts.get(workoutId);
   if (!w) return 0;
+  let added = 0;
   const entries = await db.workoutExercises.where("workoutId").equals(workoutId).toArray();
   for (const entry of entries) {
     const sets = await db.workoutSets.where("exerciseEntryId").equals(entry.id).toArray();
@@ -247,9 +248,11 @@ async function detectPRs(workoutId: string) {
           date: w.date,
           workoutId,
         });
+        if (prev) added += 1; // don't count first-ever entries as celebrated PRs
       }
     }
   }
+  return added;
 }
 
 export async function createTemplateFromWorkout(workoutId: string, name: string) {
