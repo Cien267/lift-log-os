@@ -328,9 +328,7 @@ export async function getPreviousSessionSets(
     .sort((a, b) => b.workout!.startTime - a.workout!.startTime);
   for (const r of rows) {
     const sets = await db.workoutSets.where("exerciseEntryId").equals(r.entry.id).toArray();
-    const working = sets
-      .filter((s) => !s.isWarmup)
-      .sort((a, b) => a.timestamp - b.timestamp);
+    const working = sets.filter((s) => !s.isWarmup).sort((a, b) => a.timestamp - b.timestamp);
     if (working.length === 0) continue;
     return working.map((s) => ({ weight: s.weight, reps: s.reps, isWarmup: s.isWarmup }));
   }

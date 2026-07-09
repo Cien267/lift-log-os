@@ -499,6 +499,25 @@ function NumberField({
   step?: number;
   suffix?: string;
 }) {
+  const [raw, setRaw] = useState(value ? String(value) : "");
+  const isFocused = useRef(false);
+
+  // Đồng bộ lại raw khi value thay đổi từ bên ngoài (VD: onApplySuggestion),
+  // nhưng KHÔNG ghi đè khi user đang gõ dở trong ô input
+  useEffect(() => {
+    if (isFocused.current) return;
+    setRaw(value ? String(value) : "");
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const next = e.target.value.replace(/[^0-9.,]/g, "");
+    setRaw(next);
+
+    const normalized = next.replace(",", ".");
+    const num = parseFloat(normalized);
+    onChange(isNaN(num) ? 0 : num);
+  };
+
   return (
     <div className="relative flex items-center rounded-lg border border-border bg-secondary">
       {/* <button
@@ -509,10 +528,12 @@ function NumberField({
         <Minus className="h-3.5 w-3.5" />
       </button> */}
       <input
-        type="number"
+        type="text"
         inputMode="decimal"
-        value={value || ""}
-        onChange={(e) => onChange(Number(e.target.value) || 0)}
+        value={raw}
+        onChange={handleChange}
+        onFocus={() => (isFocused.current = true)}
+        onBlur={() => (isFocused.current = false)}
         className="num h-9 w-full bg-transparent text-center text-base font-semibold focus:outline-none"
         placeholder="0"
       />
