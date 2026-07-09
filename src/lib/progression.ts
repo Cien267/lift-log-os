@@ -309,3 +309,30 @@ export async function getProgressionSuggestion(
   ]);
   return computeProgressionSuggestion(ex, history, opts);
 }
+
+/**
+ * Get the previous session's non-warmup sets for an exercise, in the order they
+ * were performed. Used purely for prefill — independent of the progression engine.
+ */
+export async function getPreviousSessionSets(
+  exerciseId: string,
+  excludeWorkoutId?: string,
+): Promise<Array<{ weight: number; reps: number; isWarmup?: boolean }>> {
+  const entries = await db.workoutExercises.where("exerciseId").equals(exerciseId).toArray();
+  if (entries.length === 0) return [];
+  const workouts = await db.workouts.bulkGet([...new Set(entries.map((e) => e.workoutId))]);
+  const wMap = new Map(workouts.filter(Boolean).map((w) => [w!.id, w!]));
+  const rows = entries
+    .map((e) => ({ entry: e, workout: wMap.get(e.workoutId) }))
+    .filter((r) => r.workout && r.workout.endTime && r.workout.id !== excludeWorkoutId)
+    .sort((a, b) => b.workout!.startTime - a.workout!.startTime);
+  for (const r of rows) {
+    const sets = await db.workoutSets.where("exerciseEntryId").equals(r.entry.id).toArray();
+    const working = sets
+      .filter((s) => !s.isWarmup)
+      .sort((a, b) => a.timestamp - b.timestamp);
+    if (working.length === 0) continue;
+    return working.map((s) => ({ weight: s.weight, reps: s.reps, isWarmup: s.isWarmup }));
+  }
+  return [];
+}
