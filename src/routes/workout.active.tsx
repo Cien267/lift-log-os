@@ -265,21 +265,30 @@ function ExerciseCard({
     (async () => {
       const entry = await db.workoutExercises.get(entryId);
       if (!entry) return;
-      const sug = await getProgressionSuggestion(entry.exerciseId, workoutId, {
-        targetSets,
-        lang,
-      });
-      setSuggestion(sug);
+
+      // 1) Prefill from previous session — always, independent of Training Assistant.
       const existing = await db.workoutSets.where("exerciseEntryId").equals(entryId).count();
-      if (existing > 0) return;
-      const count = Math.max(sug.sets, 1);
-      for (let i = 0; i < count; i++) {
-        // Prefill uses the previous session's weight/reps as the baseline —
-        // the coach card surfaces the smart suggestion (increase / hold / deload)
-        // and the user applies it explicitly. That keeps the athlete in control.
-        const baseWeight = sug.prevWeight ?? sug.weight;
-        const baseReps = sug.prevReps ?? sug.reps;
-        await addSet(entryId, { weight: baseWeight, reps: baseReps });
+      if (existing === 0) {
+        const prevSets = await getPreviousSessionSets(entry.exerciseId, workoutId);
+        if (prevSets.length > 0) {
+          for (const s of prevSets) {
+            await addSet(entryId, { weight: s.weight, reps: s.reps });
+          }
+        } else {
+          const count = Math.max(targetSets ?? 3, 1);
+          for (let i = 0; i < count; i++) {
+            await addSet(entryId, {});
+          }
+        }
+      }
+
+      // 2) Compute progression suggestion only if the Training Assistant is enabled.
+      if (enableTrainingAssistant) {
+        const sug = await getProgressionSuggestion(entry.exerciseId, workoutId, {
+          targetSets,
+          lang,
+        });
+        setSuggestion(sug);
       }
     })();
   }, [entryId, workoutId, targetSets, lang, enableTrainingAssistant]);
