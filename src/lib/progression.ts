@@ -228,28 +228,34 @@ export function computeProgressionSuggestion(
     };
   }
 
-  // "Ready to progress" heuristic:
-  //   - last session completed every working set (allSetsCompleted)
-  //   - min reps at working weight >= a threshold based on category
-  //   - AND either (a) reps also met the threshold in prev session at same weight,
-  //     or (b) e1RM has been non-decreasing across the last 2-3 sessions
+  // Rep range for the current weight. Progression to a heavier weight is only
+  // unlocked once the athlete owns the top of this range across consecutive
+  // sessions — the low end is where a new weight starts.
   const readyRepFloor = exercise?.category === "compound" ? 5 : 8;
-  const strongLast = last.allSetsCompleted && minReps >= readyRepFloor;
+  const readyRepCeiling = isBodyweight ? 15 : exercise?.category === "compound" ? 8 : 12;
 
-  const sameWeightPrev = Math.abs(prev.workingWeight - last.workingWeight) < 0.001;
+  // Count consecutive recent sessions performed at the current working weight.
+  const sessionsAtWeight = (() => {
+    let n = 0;
+    for (const h of history) {
+      if (Math.abs(h.workingWeight - prevWeight) < 0.001) n += 1;
+      else break;
+    }
+    return n;
+  })();
+
+  // Mastery of the current weight: all sets completed AND every working set
+  // reached the top of the rep range.
+  const masteredLast = last.allSetsCompleted && minReps >= readyRepCeiling;
   const prevMin = Math.min(...prev.workingReps);
-  const streakReady =
-    sameWeightPrev && prev.allSetsCompleted && prevMin >= readyRepFloor && strongLast;
+  const sameWeightPrev = Math.abs(prev.workingWeight - last.workingWeight) < 0.001;
+  const masteredPrev = sameWeightPrev && prev.allSetsCompleted && prevMin >= readyRepCeiling;
 
-  const e1rmTrendUp = history
-    .slice(0, Math.min(3, history.length))
-    .every((h, i, arr) =>
-      i === arr.length - 1 ? true : h.bestE1rm >= arr[i + 1].bestE1rm - 0.001,
-    );
-
-  if (strongLast && (streakReady || e1rmTrendUp)) {
+  // Only increase when the athlete has demonstrated the top of the range for
+  // at least two consecutive sessions at the same weight. This prevents a
+  // weight bump the workout right after a freshly-introduced load.
+  if (masteredLast && masteredPrev && sessionsAtWeight >= 2) {
     if (isBodyweight) {
-      // Progress by reps
       return {
         verdict: "increase",
         weight: prevWeight,
@@ -262,11 +268,8 @@ export function computeProgressionSuggestion(
       };
     }
     const nextWeight = roundToStep(prevWeight + step, step);
-    // When bumping weight, reps typically dip — suggest lower end of the rep range
-    const nextReps = Math.max(readyRepFloor, prevRepsMedian - 1);
-    const sameStreak = history
-      .slice(0, 4)
-      .filter((h) => Math.abs(h.workingWeight - prevWeight) < 0.001).length;
+    // Fresh weight — reset reps to the bottom of the range and rebuild up.
+    const nextReps = readyRepFloor;
     return {
       verdict: "increase",
       weight: nextWeight,
@@ -274,28 +277,32 @@ export function computeProgressionSuggestion(
       sets: targetSets,
       prevWeight,
       prevReps: prevRepsMedian,
-      reason: sameStreak >= 3 ? loc.increaseStreak(sameStreak) : loc.increaseReady(step),
+      reason:
+        sessionsAtWeight >= 3
+          ? loc.increaseStreak(sessionsAtWeight)
+          : loc.increaseReady(step),
       sessionsAnalyzed: history.length,
     };
   }
 
-  // Otherwise: hold — encourage more reps at current weight
-  const nextRepTarget = Math.max(prevRepsMedian, readyRepFloor);
+  // Otherwise: hold at the current weight and chase one more rep. The target
+  // climbs from the last session's reps toward the ceiling, so the assistant
+  // guides the athlete up the rep range before adding load again.
+  const nextRepTarget = Math.min(readyRepCeiling, Math.max(prevRepsMedian + 1, readyRepFloor));
   return {
     verdict: "hold",
     weight: prevWeight,
-    reps: prevRepsMedian,
+    reps: nextRepTarget,
     sets: targetSets,
     prevWeight,
     prevReps: prevRepsMedian,
     reason:
-      prevRepsMedian < readyRepFloor
-        ? loc.holdBuild(readyRepFloor)
-        : nextRepTarget > prevRepsMedian
-          ? loc.holdBuild(nextRepTarget)
-          : loc.holdConsolidate,
+      prevRepsMedian < readyRepCeiling
+        ? loc.holdBuild(readyRepCeiling)
+        : loc.holdConsolidate,
     sessionsAnalyzed: history.length,
   };
+
 }
 
 export async function getProgressionSuggestion(
