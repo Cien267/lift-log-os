@@ -278,9 +278,7 @@ export function computeProgressionSuggestion(
       prevWeight,
       prevReps: prevRepsMedian,
       reason:
-        sessionsAtWeight >= 3
-          ? loc.increaseStreak(sessionsAtWeight)
-          : loc.increaseReady(step),
+        sessionsAtWeight >= 3 ? loc.increaseStreak(sessionsAtWeight) : loc.increaseReady(step),
       sessionsAnalyzed: history.length,
     };
   }
@@ -296,13 +294,9 @@ export function computeProgressionSuggestion(
     sets: targetSets,
     prevWeight,
     prevReps: prevRepsMedian,
-    reason:
-      prevRepsMedian < readyRepCeiling
-        ? loc.holdBuild(readyRepCeiling)
-        : loc.holdConsolidate,
+    reason: prevRepsMedian < readyRepCeiling ? loc.holdBuild(readyRepCeiling) : loc.holdConsolidate,
     sessionsAnalyzed: history.length,
   };
-
 }
 
 export async function getProgressionSuggestion(
