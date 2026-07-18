@@ -164,6 +164,19 @@ export interface Settings {
   trainingAssistant?: boolean;
 }
 
+export type NotificationType = "whats_new" | "weekly_summary";
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  createdAt: number;
+  read: boolean;
+  key?: string;
+  title: string;
+  subtitle?: string;
+  payload?: any;
+}
+
 class ForgeDB extends Dexie {
   exercises!: Table<Exercise, string>;
   workouts!: Table<Workout, string>;
@@ -175,6 +188,7 @@ class ForgeDB extends Dexie {
   recovery!: Table<RecoveryLog, string>;
   prs!: Table<PersonalRecord, string>;
   settings!: Table<Settings, string>;
+  notifications!: Table<AppNotification, string>;
 
   constructor() {
     super("forge-db");
@@ -189,6 +203,19 @@ class ForgeDB extends Dexie {
       recovery: "id, date",
       prs: "id, exerciseId, type, date",
       settings: "id",
+    });
+    this.version(2).stores({
+      exercises: "id, name, muscleGroup, equipment, category",
+      workouts: "id, date, startTime, location, templateId",
+      workoutExercises: "id, workoutId, exerciseId, order",
+      workoutSets: "id, exerciseEntryId, timestamp, completed",
+      templates: "id, name, location, updatedAt",
+      measurements: "id, date",
+      photos: "id, date",
+      recovery: "id, date",
+      prs: "id, exerciseId, type, date",
+      settings: "id",
+      notifications: "id, type, createdAt, read, key",
     });
   }
 }
