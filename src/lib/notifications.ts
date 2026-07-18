@@ -50,11 +50,10 @@ export async function markRead(id: string) {
 }
 
 export async function markAllRead() {
-  const unread = await db.notifications.where("read").equals(0 as any).toArray();
-  // fallback: just update everything unread
   const list = await db.notifications.toArray();
-  await Promise.all(list.filter((n) => !n.read).map((n) => db.notifications.update(n.id, { read: true })));
-  void unread;
+  await Promise.all(
+    list.filter((n) => !n.read).map((n) => db.notifications.update(n.id, { read: true })),
+  );
 }
 
 export async function deleteNotification(id: string) {
