@@ -48,7 +48,18 @@ function Dashboard() {
   const bwPrev = measurements[1]?.weight;
 
   return (
-    <AppShell title="Forge" header={settings?.userName && <Welcome userName={settings.userName} />}>
+    <AppShell
+      title="Forge"
+      action={<NotificationBell />}
+      header={
+        settings?.userName ? (
+          <div className="flex items-center justify-between px-4 py-3">
+            <Welcome userName={settings.userName} />
+            <NotificationBell />
+          </div>
+        ) : undefined
+      }
+    >
       <div className="space-y-4">
         <HeroCard streak={streak} />
 
