@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Flame, TrendingUp, Calendar, Dumbbell, Play } from "lucide-react";
 import { MuscleDistribution } from "@/components/muscle-distribution";
+import { NotificationBell } from "@/components/notification-inbox";
 import { db } from "@/lib/db";
 import { formatDuration, formatWeight, getWeekStart } from "@/lib/analytics";
 import { AppShell } from "@/components/app-shell";
@@ -48,7 +49,18 @@ function Dashboard() {
   const bwPrev = measurements[1]?.weight;
 
   return (
-    <AppShell title="Forge" header={settings?.userName && <Welcome userName={settings.userName} />}>
+    <AppShell
+      title="Forge"
+      action={<NotificationBell />}
+      header={
+        settings?.userName ? (
+          <div className="flex items-center justify-between px-4 py-3">
+            <Welcome userName={settings.userName} />
+            <NotificationBell />
+          </div>
+        ) : undefined
+      }
+    >
       <div className="space-y-4">
         <HeroCard streak={streak} />
 
@@ -151,7 +163,7 @@ function Welcome({ userName }: { userName: string }) {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="flex items-center justify-start px-4 py-3 text-lg font-semibold tracking-tight">
+    <div className="flex min-w-0 items-center justify-start text-lg font-semibold tracking-tight">
       {greeting}
       <span className="truncate max-w-1/2">{`, ${userName}`}</span> 👋
     </div>
