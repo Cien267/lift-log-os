@@ -110,6 +110,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  if (typeof window !== "undefined") {
+    // Kick off local notification jobs once per session (idempotent).
+    import("@/lib/notifications").then((m) => m.runNotificationJobs());
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
