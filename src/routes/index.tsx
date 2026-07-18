@@ -163,7 +163,7 @@ function Welcome({ userName }: { userName: string }) {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="flex items-center justify-start px-4 py-3 text-lg font-semibold tracking-tight">
+    <div className="flex min-w-0 items-center justify-start text-lg font-semibold tracking-tight">
       {greeting}
       <span className="truncate max-w-1/2">{`, ${userName}`}</span> 👋
     </div>
