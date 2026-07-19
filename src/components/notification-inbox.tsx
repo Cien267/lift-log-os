@@ -9,13 +9,7 @@ import {
   type WeeklySummaryPayload,
 } from "@/lib/notifications";
 import { formatWeight, formatDuration } from "@/lib/analytics";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
 export function NotificationBell() {
@@ -42,7 +36,10 @@ export function NotificationBell() {
           )}
         </button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full max-w-md p-0 sm:max-w-md">
+      <SheetContent
+        side="right"
+        className="mx-auto flex min-h-screen w-full flex-col [&>button]:top-10.5 [&>button]:right-4 [&>button]:translate-y-0"
+      >
         <SheetHeader className="flex flex-row items-center justify-between space-y-0 border-b border-border px-4 py-3">
           <SheetTitle className="text-base">Notifications</SheetTitle>
           {items.length > 0 && (
@@ -95,15 +92,10 @@ function NotificationCard({ n }: { n: AppNotification }) {
   return (
     <li
       className={`overflow-hidden rounded-xl border transition-colors ${
-        n.read
-          ? "border-border bg-card"
-          : "border-primary/30 bg-primary/[0.04]"
+        n.read ? "border-border bg-card" : "border-primary/30 bg-primary/[0.04]"
       }`}
     >
-      <button
-        onClick={toggle}
-        className="flex w-full items-start gap-3 px-3 py-3 text-left"
-      >
+      <button onClick={toggle} className="flex w-full items-start gap-3 px-3 py-3 text-left">
         <div
           className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg ${
             n.type === "weekly_summary"
@@ -118,9 +110,7 @@ function NotificationCard({ n }: { n: AppNotification }) {
             <p className="truncate text-sm font-semibold">{n.title}</p>
             {!n.read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />}
           </div>
-          {n.subtitle && (
-            <p className="mt-0.5 text-xs text-muted-foreground">{n.subtitle}</p>
-          )}
+          {n.subtitle && <p className="mt-0.5 text-xs text-muted-foreground">{n.subtitle}</p>}
           <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
             {relativeTime(n.createdAt)}
           </p>
@@ -130,9 +120,7 @@ function NotificationCard({ n }: { n: AppNotification }) {
       {expanded && (
         <div className="border-t border-border px-3 py-3">
           {n.type === "whats_new" ? (
-            <p className="text-sm leading-relaxed text-foreground/85">
-              {n.payload?.body}
-            </p>
+            <p className="text-sm leading-relaxed text-foreground/85">{n.payload?.body}</p>
           ) : n.type === "weekly_summary" ? (
             <WeeklySummaryBody payload={n.payload as WeeklySummaryPayload} />
           ) : null}
@@ -203,9 +191,7 @@ function WeeklySummaryBody({ payload }: { payload: WeeklySummaryPayload }) {
         <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           Coach note
         </p>
-        <p className="mt-1 text-sm leading-relaxed text-foreground/90">
-          {payload.coachComment}
-        </p>
+        <p className="mt-1 text-sm leading-relaxed text-foreground/90">{payload.coachComment}</p>
       </div>
     </div>
   );
@@ -232,9 +218,7 @@ function Insights({
   items: string[];
 }) {
   const color =
-    tone === "win"
-      ? "text-emerald-400 bg-emerald-500/10"
-      : "text-amber-400 bg-amber-500/10";
+    tone === "win" ? "text-emerald-400 bg-emerald-500/10" : "text-amber-400 bg-amber-500/10";
   return (
     <div>
       <div className="mb-1.5 flex items-center gap-1.5">
