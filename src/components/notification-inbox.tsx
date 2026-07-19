@@ -38,7 +38,7 @@ export function NotificationBell() {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="mx-auto flex min-h-screen w-full flex-col [&>button]:top-10.5 [&>button]:right-4 [&>button]:translate-y-0"
+        className="flex min-h-screen p-0 pt-10 w-full flex-col [&>button]:top-14.5 [&>button]:right-4 [&>button]:translate-y-0"
       >
         <SheetHeader className="flex flex-row items-center justify-between space-y-0 border-b border-border px-4 py-3">
           <SheetTitle className="text-base">Notifications</SheetTitle>
@@ -46,7 +46,7 @@ export function NotificationBell() {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 gap-1.5 text-xs"
+              className="h-8 gap-1.5 text-xs mr-10"
               onClick={() => markAllRead()}
               disabled={unread === 0}
             >
