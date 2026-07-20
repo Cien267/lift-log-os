@@ -11,9 +11,11 @@ import {
 import { formatWeight, formatDuration } from "@/lib/analytics";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n";
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
+  const { t } = useT();
   const items = useLiveQuery(
     () => db.notifications.orderBy("createdAt").reverse().toArray(),
     [],
@@ -38,10 +40,10 @@ export function NotificationBell() {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="flex min-h-screen p-0 pt-10 w-full flex-col [&>button]:top-14.5 [&>button]:right-4 [&>button]:translate-y-0"
+        className="flex min-h-screen p-0 pt-14 w-full flex-col [&>button]:top-18.5 [&>button]:right-4 [&>button]:translate-y-0"
       >
         <SheetHeader className="flex flex-row items-center justify-between space-y-0 border-b border-border px-4 py-3">
-          <SheetTitle className="text-base">Notifications</SheetTitle>
+          <SheetTitle className="text-base">{t("title.notifications")}</SheetTitle>
           {items.length > 0 && (
             <Button
               variant="ghost"
@@ -51,7 +53,7 @@ export function NotificationBell() {
               disabled={unread === 0}
             >
               <CheckCheck className="h-3.5 w-3.5" />
-              Mark all read
+              {t("notifications.markAllRead")}
             </Button>
           )}
         </SheetHeader>
@@ -61,9 +63,9 @@ export function NotificationBell() {
               <div className="grid h-14 w-14 place-items-center rounded-full border border-border bg-surface-elevated">
                 <Bell className="h-5 w-5 text-muted-foreground" />
               </div>
-              <p className="text-sm font-medium">You're all caught up</p>
+              <p className="text-sm font-medium">{t("notifications.emptyTitle")}</p>
               <p className="max-w-[26ch] text-xs text-muted-foreground">
-                Weekly summaries, PR alerts, and app updates will show up here.
+                {t("notifications.emptyMessage")}
               </p>
             </div>
           ) : (
@@ -81,6 +83,7 @@ export function NotificationBell() {
 
 function NotificationCard({ n }: { n: AppNotification }) {
   const [expanded, setExpanded] = useState(false);
+  const { t } = useT();
 
   const toggle = () => {
     setExpanded((v) => !v);
@@ -132,7 +135,7 @@ function NotificationCard({ n }: { n: AppNotification }) {
               onClick={() => deleteNotification(n.id)}
             >
               <Trash2 className="h-3 w-3" />
-              Delete
+              {t("common.delete")}
             </Button>
           </div>
         </div>

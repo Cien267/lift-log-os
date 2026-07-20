@@ -77,9 +77,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { title: "Forge — Personal Training OS" },
-      { name: "description", content: "Local-first workout tracker and progression analytics. Your personal physical development OS." },
+      {
+        name: "description",
+        content:
+          "Local-first workout tracker and progression analytics. Your personal physical development OS.",
+      },
       { property: "og:title", content: "Forge — Personal Training OS" },
-      { property: "og:description", content: "Track strength, analyze progression, build a lifetime of training." },
+      {
+        property: "og:description",
+        content: "Track strength, analyze progression, build a lifetime of training.",
+      },
       { property: "og:type", content: "website" },
     ],
     links: [

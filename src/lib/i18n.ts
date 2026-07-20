@@ -22,6 +22,7 @@ const dict = {
     "title.body": "Body",
     "title.plans": "Plans",
     "title.settings": "Settings",
+    "title.notifications": "Notifications",
 
     // settings
     "settings.appearance": "Appearance",
@@ -128,6 +129,12 @@ const dict = {
     "exercise.deleteDescription":
       "This removes the exercise from your library. Past workout history that references it is kept, but the name may no longer display correctly.",
 
+    // notifications
+    "notifications.markAllRead": "Mark all read",
+    "notifications.emptyTitle": "You're all caught up",
+    "notifications.emptyMessage":
+      " Weekly summaries, PR alerts, and app updates will show up here.",
+
     // common
     "common.empty": "Empty",
     "common.start": "Start",
@@ -186,6 +193,7 @@ const dict = {
     "title.body": "Cơ thể",
     "title.plans": "Kế hoạch",
     "title.settings": "Cài đặt",
+    "title.notifications": "Thông báo",
 
     // settings
     "settings.appearance": "Giao diện",
@@ -293,6 +301,12 @@ const dict = {
     "exercise.category": "Thể loại",
     "exercise.deleteDescription":
       "Điều này sẽ xóa bài tập khỏi thư viện của bạn. Lịch sử tập luyện trước đó tham chiếu đến nó sẽ được giữ lại, nhưng tên có thể không còn hiển thị chính xác.",
+
+    // notifications
+    "notifications.markAllRead": "Đánh dấu tất cả đã đọc",
+    "notifications.emptyTitle": "Bạn đã xem tất cả thông báo",
+    "notifications.emptyMessage":
+      "Các tóm tắt hàng tuần, thông báo PR và cập nhật ứng dụng sẽ xuất hiện ở đây.",
 
     // common
     "common.empty": "Trống",

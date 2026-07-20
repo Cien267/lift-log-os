@@ -1,5 +1,6 @@
 import { db, uid, type AppNotification, type NotificationType, type MuscleGroup } from "./db";
 import { computeWorkoutAggregate, getWeekStart, formatWeight, formatDuration } from "./analytics";
+import { format, parseISO } from "date-fns";
 
 // Bump this when publishing new features that should show a "What's New" card.
 export const APP_VERSION = "1.1.0";
@@ -116,12 +117,10 @@ export interface WeeklySummaryPayload {
 }
 
 function fmtISO(d: Date) {
-  return d.toISOString().slice(0, 10);
+  return format(d, "yyyy-MM-dd");
 }
 
-async function buildWeeklySummary(
-  weekStart: Date,
-): Promise<WeeklySummaryPayload | null> {
+async function buildWeeklySummary(weekStart: Date): Promise<WeeklySummaryPayload | null> {
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 6);
   const startMs = weekStart.getTime();
@@ -180,8 +179,7 @@ async function buildWeeklySummary(
   const improvements: string[] = [];
   if (weeklyGoal > 0 && !goalMet)
     improvements.push(`Missed weekly goal — ${done.length}/${weeklyGoal} sessions.`);
-  if (neglected.length > 0)
-    improvements.push(`No volume on: ${neglected.slice(0, 3).join(", ")}.`);
+  if (neglected.length > 0) improvements.push(`No volume on: ${neglected.slice(0, 3).join(", ")}.`);
   if (muscles[0] && muscles[0].pct > 55)
     improvements.push(
       `Distribution leans heavy on ${muscles[0].label} (${muscles[0].pct}%). Consider balancing.`,
@@ -227,14 +225,7 @@ async function ensureWeeklySummary() {
 
   const payload = await buildWeeklySummary(lastWeek);
   if (!payload) return; // no activity — skip
-
-  const rangeLabel = `${new Date(payload.weekStart).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  })} – ${new Date(payload.weekEnd).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  })}`;
+  const rangeLabel = `${format(parseISO(payload.weekStart), "MMM d")} – ${format(parseISO(payload.weekEnd), "MMM d")}`;
 
   await createNotification({
     type: "weekly_summary",
