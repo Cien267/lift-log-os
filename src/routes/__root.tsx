@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
+import { useSettings } from "@/hooks/use-settings";
 
 function NotFoundComponent() {
   return (
@@ -116,10 +117,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { settings } = useSettings();
+  if (!settings) return null;
+  const lang = settings.language;
 
   if (typeof window !== "undefined") {
     // Kick off local notification jobs once per session (idempotent).
-    import("@/lib/notifications").then((m) => m.runNotificationJobs());
+    import("@/lib/notifications").then((m) => m.runNotificationJobs(lang));
   }
 
   return (

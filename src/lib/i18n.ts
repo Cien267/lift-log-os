@@ -174,6 +174,10 @@ const dict = {
     "common.rest": "rest",
     "common.Rest": "Rest",
     "common.skipRest": "Skip rest",
+    "common.time": "Time",
+    "common.muscleDistribution": "Muscle distribution",
+    "common.achievements": "Achievements",
+    "common.coachNote": "Coach note",
   },
   vi: {
     // bottom nav
@@ -347,6 +351,10 @@ const dict = {
     "common.rest": "nghỉ",
     "common.Rest": "Nghỉ",
     "common.skipRest": "Bỏ qua nghỉ",
+    "common.time": "Thời gian",
+    "common.muscleDistribution": "Phân phối cơ bắp",
+    "common.achievements": "Thành tựu",
+    "common.coachNote": "Ghi chú của huấn luyện viên",
   },
 } as const;
 

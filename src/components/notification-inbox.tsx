@@ -83,7 +83,7 @@ export function NotificationBell() {
 
 function NotificationCard({ n }: { n: AppNotification }) {
   const [expanded, setExpanded] = useState(false);
-  const { t } = useT();
+  const { t, lang } = useT();
 
   const toggle = () => {
     setExpanded((v) => !v);
@@ -115,7 +115,7 @@ function NotificationCard({ n }: { n: AppNotification }) {
           </div>
           {n.subtitle && <p className="mt-0.5 text-xs text-muted-foreground">{n.subtitle}</p>}
           <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-            {relativeTime(n.createdAt)}
+            {relativeTime(n.createdAt, lang)}
           </p>
         </div>
       </button>
@@ -145,19 +145,20 @@ function NotificationCard({ n }: { n: AppNotification }) {
 }
 
 function WeeklySummaryBody({ payload }: { payload: WeeklySummaryPayload }) {
+  const { t } = useT();
   if (!payload) return null;
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-3 gap-2">
-        <Metric label="Sessions" value={String(payload.sessions)} />
-        <Metric label="Volume" value={formatWeight(payload.totalVolume)} />
-        <Metric label="Time" value={formatDuration(payload.totalDurationSec)} />
+        <Metric label={t("home.sessions")} value={String(payload.sessions)} />
+        <Metric label={t("common.volume")} value={formatWeight(payload.totalVolume)} />
+        <Metric label={t("common.time")} value={formatDuration(payload.totalDurationSec)} />
       </div>
 
       {payload.muscles.length > 0 && (
         <div>
           <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Muscle distribution
+            {t("common.muscleDistribution")}
           </p>
           <ul className="space-y-1">
             {payload.muscles.map((m) => (
@@ -179,7 +180,7 @@ function WeeklySummaryBody({ payload }: { payload: WeeklySummaryPayload }) {
       )}
 
       {payload.wins.length > 0 && (
-        <Insights icon={Trophy} tone="win" title="Achievements" items={payload.wins} />
+        <Insights icon={Trophy} tone="win" title={t("common.achievements")} items={payload.wins} />
       )}
       {payload.improvements.length > 0 && (
         <Insights
@@ -192,7 +193,7 @@ function WeeklySummaryBody({ payload }: { payload: WeeklySummaryPayload }) {
 
       <div className="rounded-lg border border-border bg-surface-elevated p-3">
         <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Coach note
+          {t("common.coachNote")}
         </p>
         <p className="mt-1 text-sm leading-relaxed text-foreground/90">{payload.coachComment}</p>
       </div>
@@ -243,14 +244,14 @@ function Insights({
   );
 }
 
-function relativeTime(ts: number) {
+function relativeTime(ts: number, lang = "en") {
   const diff = Date.now() - ts;
   const m = Math.floor(diff / 60_000);
-  if (m < 1) return "just now";
-  if (m < 60) return `${m}m ago`;
+  if (m < 1) return lang === "en" ? "just now" : "vừa xong";
+  if (m < 60) return lang === "en" ? `${m}m ago` : `${m} phút trước`;
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
+  if (h < 24) return lang === "en" ? `${h}h ago` : `${h} giờ trước`;
   const d = Math.floor(h / 24);
-  if (d < 7) return `${d}d ago`;
+  if (d < 7) return lang === "en" ? `${d}d ago` : `${d} ngày trước`;
   return new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }

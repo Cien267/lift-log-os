@@ -70,7 +70,9 @@ export function MuscleDistribution() {
     <section className="rounded-2xl border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-foreground/90">Muscle distribution</h3>
+          <h3 className="text-sm font-semibold text-foreground/90">
+            {t("common.muscleDistribution")}
+          </h3>
           <p className="text-[11px] text-muted-foreground">{t("home.thisWeek")}</p>
         </div>
         {total > 0 && (

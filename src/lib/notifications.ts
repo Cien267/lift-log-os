@@ -13,15 +13,22 @@ interface WhatsNewEntry {
 }
 
 // Ordered newest → oldest. Add new entries to the top.
-const WHATS_NEW: WhatsNewEntry[] = [
+const WHATS_NEW = (lang = "en"): WhatsNewEntry[] => [
   {
     version: "1.1.0",
-    title: "Notifications are here",
-    subtitle: "A quieter way to catch up on your training",
+    title: lang === "en" ? "Notifications are here" : "Thông báo đã có mặt",
+    subtitle:
+      lang === "en"
+        ? "A quieter way to catch up on your training"
+        : "Một cách yên tĩnh hơn để theo dõi việc tập luyện của bạn",
     body:
-      "Forge now has an inbox. You'll receive a weekly training summary every Monday " +
-      "with your sessions, muscle distribution, PRs, and coaching notes. " +
-      "This is where future insights, achievements, and app updates will live too.",
+      lang === "en"
+        ? "Forge now has an inbox. You'll receive a weekly training summary every Monday " +
+          "with your sessions, muscle distribution, PRs, and coaching notes. " +
+          "This is where future insights, achievements, and app updates will live too."
+        : "Forge hiện có hộp thư đến. Bạn sẽ nhận được tóm tắt đào tạo hàng tuần vào mỗi thứ Hai " +
+          "với các buổi tập của bạn, phân phối cơ bắp, kỉ lục cá nhân và ghi chú huấn luyện. " +
+          "Đây cũng là nơi lưu trữ các thông tin chi tiết, thành tựu và cập nhật ứng dụng trong tương lai.",
   },
 ];
 
@@ -62,8 +69,8 @@ export async function deleteNotification(id: string) {
 }
 
 // -------- What's New --------
-async function ensureWhatsNew() {
-  for (const entry of WHATS_NEW) {
+async function ensureWhatsNew(lang: string) {
+  for (const entry of WHATS_NEW(lang)) {
     await createNotification({
       type: "whats_new",
       key: `whats_new:${entry.version}`,
@@ -120,7 +127,10 @@ function fmtISO(d: Date) {
   return format(d, "yyyy-MM-dd");
 }
 
-async function buildWeeklySummary(weekStart: Date): Promise<WeeklySummaryPayload | null> {
+async function buildWeeklySummary(
+  weekStart: Date,
+  lang: string,
+): Promise<WeeklySummaryPayload | null> {
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 6);
   const startMs = weekStart.getTime();
@@ -171,30 +181,85 @@ async function buildWeeklySummary(weekStart: Date): Promise<WeeklySummaryPayload
   const goalMet = weeklyGoal > 0 ? done.length >= weeklyGoal : undefined;
 
   const wins: string[] = [];
-  if (done.length >= 4) wins.push(`Strong consistency with ${done.length} sessions.`);
-  if (prCount > 0) wins.push(`${prCount} personal record${prCount > 1 ? "s" : ""} set.`);
-  if (goalMet) wins.push(`Weekly goal of ${weeklyGoal} sessions reached.`);
-  if (muscles[0]) wins.push(`Top focus: ${muscles[0].label} (${muscles[0].pct}%).`);
+  if (done.length >= 4) {
+    wins.push(
+      lang === "en"
+        ? `Strong consistency with ${done.length} sessions.`
+        : `Kiên trì tập luyện với ${done.length} buổi.`,
+    );
+  }
+  if (prCount > 0) {
+    wins.push(
+      lang === "en"
+        ? `${prCount} personal record${prCount > 1 ? "s" : ""} set.`
+        : `Đã thiết lập ${prCount} kỷ lục cá nhân.`,
+    );
+  }
+  if (goalMet) {
+    wins.push(
+      lang === "en"
+        ? `Weekly goal of ${weeklyGoal} sessions reached.`
+        : `Đã hoàn thành mục tiêu ${weeklyGoal} buổi trong tuần.`,
+    );
+  }
+  if (muscles[0]) {
+    wins.push(
+      lang === "en"
+        ? `Top focus: ${muscles[0].label} (${muscles[0].pct}%).`
+        : `Trọng tâm hàng đầu: ${muscles[0].label} (${muscles[0].pct}%).`,
+    );
+  }
 
   const improvements: string[] = [];
-  if (weeklyGoal > 0 && !goalMet)
-    improvements.push(`Missed weekly goal — ${done.length}/${weeklyGoal} sessions.`);
-  if (neglected.length > 0) improvements.push(`No volume on: ${neglected.slice(0, 3).join(", ")}.`);
-  if (muscles[0] && muscles[0].pct > 55)
+  if (weeklyGoal > 0 && !goalMet) {
     improvements.push(
-      `Distribution leans heavy on ${muscles[0].label} (${muscles[0].pct}%). Consider balancing.`,
+      lang === "en"
+        ? `Missed weekly goal — ${done.length}/${weeklyGoal} sessions.`
+        : `Đã bỏ lỡ mục tiêu hàng tuần — ${done.length}/${weeklyGoal} buổi.`,
     );
+  }
+
+  if (neglected.length > 0) {
+    improvements.push(
+      lang === "en"
+        ? `No volume on: ${neglected.slice(0, 3).join(", ")}.`
+        : `Không có khối lượng trên: ${neglected.slice(0, 3).join(", ")}.`,
+    );
+  }
+  if (muscles[0] && muscles[0].pct > 55) {
+    improvements.push(
+      lang === "en"
+        ? `Distribution leans heavy on ${muscles[0].label} (${muscles[0].pct}%). Consider balancing.`
+        : `Phân bổ nặng nghiêng về ${muscles[0].label} (${muscles[0].pct}%). Cân nhắc cân bằng các nhóm cơ.`,
+    );
+  }
 
   let coachComment: string;
   if (goalMet && prCount > 0)
-    coachComment = "Excellent week — consistent and pushing new ground. Recover well.";
+    coachComment =
+      lang === "en"
+        ? "Excellent week — consistent and pushing new ground. Recover well."
+        : "Một tuần xuất sắc — nhất quán và đạt được những thành tựu mới. Hãy hồi phục tốt.";
   else if (goalMet)
-    coachComment = "You showed up. That's the foundation everything else is built on.";
+    coachComment =
+      lang === "en"
+        ? "You showed up. That's the foundation everything else is built on."
+        : "Bạn đã đến phòng tập. Đó là nền tảng cho mọi thứ khác.";
   else if (done.length >= 3)
-    coachComment = "Solid work. Keep the rhythm and the numbers will follow.";
+    coachComment =
+      lang === "en"
+        ? "Solid work. Keep the rhythm and the numbers will follow."
+        : "Làm tốt lắm. Hãy duy trì nhịp độ, kết quả sẽ đến.";
   else if (done.length >= 1)
-    coachComment = "A short week — every session still counts. Aim for one more next week.";
-  else coachComment = "Quiet week. When you're ready, ease back in with something light.";
+    coachComment =
+      lang === "en"
+        ? "A short week — every session still counts. Aim for one more next week."
+        : "Một tuần ngắn — mỗi buổi tập vẫn có giá trị. Hãy đặt mục tiêu thêm một buổi nữa vào tuần tới.";
+  else
+    coachComment =
+      lang === "en"
+        ? "Quiet week. When you're ready, ease back in with something light."
+        : "Tuần hơi trầm. Khi bạn đã sẵn sàng, hãy trở lại với một cái gì đó nhẹ nhàng.";
 
   return {
     weekStart: fmtISO(weekStart),
@@ -213,7 +278,7 @@ async function buildWeeklySummary(weekStart: Date): Promise<WeeklySummaryPayload
   };
 }
 
-async function ensureWeeklySummary() {
+async function ensureWeeklySummary(lang = "en") {
   // Generate the summary for LAST week, once, at the start of the current week.
   const currentWeek = getWeekStart();
   const lastWeek = new Date(currentWeek);
@@ -223,14 +288,14 @@ async function ensureWeeklySummary() {
   const existing = await db.notifications.where("key").equals(key).first();
   if (existing) return;
 
-  const payload = await buildWeeklySummary(lastWeek);
+  const payload = await buildWeeklySummary(lastWeek, lang);
   if (!payload) return; // no activity — skip
   const rangeLabel = `${format(parseISO(payload.weekStart), "MMM d")} – ${format(parseISO(payload.weekEnd), "MMM d")}`;
 
   await createNotification({
     type: "weekly_summary",
     key,
-    title: "Last week in review",
+    title: lang === "en" ? "Last week in review" : "Xem lại tuần trước",
     subtitle: `${rangeLabel} · ${payload.sessions} session${payload.sessions > 1 ? "s" : ""} · ${formatWeight(payload.totalVolume)} · ${formatDuration(payload.totalDurationSec)}`,
     payload,
   });
@@ -238,12 +303,12 @@ async function ensureWeeklySummary() {
 
 // Called once from the app root on mount.
 let ran = false;
-export async function runNotificationJobs() {
+export async function runNotificationJobs(lang = "en") {
   if (ran) return;
   ran = true;
   try {
-    await ensureWhatsNew();
-    await ensureWeeklySummary();
+    await ensureWhatsNew(lang);
+    await ensureWeeklySummary(lang);
   } catch (err) {
     console.error("notification jobs failed", err);
   }
