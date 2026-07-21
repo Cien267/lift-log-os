@@ -76,7 +76,9 @@ export function MuscleDistribution() {
           <p className="text-[11px] text-muted-foreground">{t("home.thisWeek")}</p>
         </div>
         {total > 0 && (
-          <span className="num text-[11px] text-muted-foreground">{formatWeight(total)} total</span>
+          <span className="num text-[11px] text-muted-foreground">
+            {formatWeight(total)} {t("muscleDistribution.totalVolume")}
+          </span>
         )}
       </div>
 
@@ -122,7 +124,7 @@ export function MuscleDistribution() {
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
               <span className="num text-2xl font-semibold tracking-tight">{data.length}</span>
               <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                groups
+                {t("muscleDistribution.muscleGroup")}
               </span>
             </div>
           </div>
@@ -160,14 +162,15 @@ export function MuscleDistribution() {
 }
 
 function EmptyState() {
+  const { t } = useT();
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-4 py-8 text-center">
       <div className="relative grid h-14 w-14 place-items-center rounded-full border border-border bg-gradient-to-br from-surface-elevated to-surface">
         <Sparkles className="h-5 w-5 text-muted-foreground" />
       </div>
-      <p className="text-sm font-medium text-foreground/90">No training data for this week.</p>
+      <p className="text-sm font-medium text-foreground/90">{t("muscleDistribution.empty")}</p>
       <p className="max-w-[24ch] text-xs text-muted-foreground">
-        Start your first workout to build your muscle distribution.
+        {t("muscleDistribution.emptyMessage")}
       </p>
     </div>
   );

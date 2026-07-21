@@ -135,6 +135,13 @@ const dict = {
     "notifications.emptyMessage":
       " Weekly summaries, PR alerts, and app updates will show up here.",
 
+    // muscle distribution
+    "muscleDistribution.empty": "No training data for this week.",
+    "muscleDistribution.emptyMessage":
+      "Start your first workout to build your muscle distribution.",
+    "muscleDistribution.totalVolume": "total",
+    "muscleDistribution.muscleGroup": "groups",
+
     // common
     "common.empty": "Empty",
     "common.start": "Start",
@@ -311,6 +318,13 @@ const dict = {
     "notifications.emptyTitle": "Bạn đã xem tất cả thông báo",
     "notifications.emptyMessage":
       "Các tóm tắt hàng tuần, thông báo PR và cập nhật ứng dụng sẽ xuất hiện ở đây.",
+
+    // muscle distribution
+    "muscleDistribution.empty": "Chưa có dữ liệu tập luyện cho tuần này.",
+    "muscleDistribution.emptyMessage":
+      "Bắt đầu buổi tập đầu tiên của bạn để xây dựng thống kê phân phối cơ bắp của bạn.",
+    "muscleDistribution.totalVolume": "tổng khối lượng",
+    "muscleDistribution.muscleGroup": "nhóm cơ",
 
     // common
     "common.empty": "Trống",
