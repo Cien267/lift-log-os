@@ -19,7 +19,7 @@ import { useT } from "@/lib/i18n";
 export const Route = createFileRoute("/analytics")({
   head: () => ({
     meta: [
-      { title: "Analytics — Forge" },
+      { title: "Analytics | Forge" },
       {
         name: "description",
         content: "Strength progression, volume trends, muscle balance, and insights.",

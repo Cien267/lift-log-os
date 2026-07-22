@@ -89,13 +89,13 @@ export async function addExerciseToWorkout(workoutId: string, exerciseId: string
   return entry;
 }
 
-export async function removeExerciseFromWorkout(entryId: string) {
+export async function removeExerciseFromWorkout(entryId: string, lang: string = "en") {
   const entry = await db.workoutExercises.get(entryId);
   const ex = entry ? await db.exercises.get(entry.exerciseId) : null;
   const sets = await db.workoutSets.where("exerciseEntryId").equals(entryId).primaryKeys();
   await db.workoutSets.bulkDelete(sets);
   await db.workoutExercises.delete(entryId);
-  banter("exercise.removed", { name: ex?.name });
+  banter("exercise.removed", { name: ex?.name }, lang);
 }
 
 export async function addSet(entryId: string, init?: Partial<WorkoutSet>) {
@@ -158,7 +158,7 @@ export async function getLastPerformance(exerciseId: string, excludeWorkoutId?: 
   return null;
 }
 
-export async function finishWorkout(workoutId: string) {
+export async function finishWorkout(workoutId: string, lang: string = "en") {
   const agg = await computeWorkoutAggregate(workoutId);
   const w = await db.workouts.get(workoutId);
   if (!w) return null;
@@ -181,8 +181,8 @@ export async function finishWorkout(workoutId: string) {
     const working = allSets.filter((s) => !s.isWarmup);
     const incomplete = working.filter((s) => !s.completed).length;
     if (working.length > 0) {
-      if (incomplete === 0) banter("workout.finishedClean");
-      else banter("workout.finishedIncomplete", { incomplete });
+      if (incomplete === 0) banter("workout.finishedClean", {}, lang);
+      else banter("workout.finishedIncomplete", { incomplete }, lang);
     }
     // if (prsAdded > 0) setTimeout(() => banter("workout.newPR", { count: prsAdded }), 900);
     // const minutes = Math.round(durationSec / 60);

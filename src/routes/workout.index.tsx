@@ -12,7 +12,7 @@ import { useT } from "@/lib/i18n";
 export const Route = createFileRoute("/workout/")({
   head: () => ({
     meta: [
-      { title: "Workout — Forge" },
+      { title: "Workout | Forge" },
       { name: "description", content: "Start a new workout from a template or empty session." },
     ],
   }),

@@ -38,7 +38,7 @@ function changeDateKeepTime(timestamp: number, newDate: string) {
 export const Route = createFileRoute("/history/$id")({
   head: ({ params }) => ({
     meta: [
-      { title: `Workout — Forge` },
+      { title: `Workout | Forge` },
       { name: "description", content: `Workout session details for ${params.id}` },
     ],
   }),

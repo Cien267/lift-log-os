@@ -12,7 +12,7 @@ import { format } from "date-fns";
 export const Route = createFileRoute("/history/")({
   head: () => ({
     meta: [
-      { title: "History — Forge" },
+      { title: "History | Forge" },
       { name: "description", content: "Browse every workout you've completed." },
     ],
   }),

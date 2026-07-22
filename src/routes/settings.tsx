@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — Forge" },
+      { title: "Settings | Forge" },
       { name: "description", content: "Customize units, rest timer, theme, and manage your data." },
     ],
   }),

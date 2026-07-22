@@ -52,7 +52,7 @@ export const Route = createFileRoute("/workout/active")({
   validateSearch: (s) => search.parse(s),
   head: () => ({
     meta: [
-      { title: "Active workout — Forge" },
+      { title: "Active workout | Forge" },
       { name: "description", content: "Log sets, rest, and crush PRs in live workout mode." },
     ],
   }),
@@ -106,7 +106,7 @@ function ActiveWorkoutPage() {
   };
 
   const onFinish = async () => {
-    const result = await finishWorkout(id);
+    const result = await finishWorkout(id, lang);
     if (result) setInsight(result);
     else nav({ to: "/history" });
   };
@@ -185,7 +185,7 @@ function ActiveWorkoutPage() {
               targetSets={entry.targetSets}
               enableTrainingAssistant={settings?.trainingAssistant ?? false}
               lang={lang}
-              onRemove={() => removeExerciseFromWorkout(entry.id)}
+              onRemove={() => removeExerciseFromWorkout(entry.id, lang)}
             />
           );
         })}

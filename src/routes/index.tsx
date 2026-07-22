@@ -14,7 +14,7 @@ import { formatDate } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Forge" },
+      { title: "Dashboard | Forge" },
       {
         name: "description",
         content: "Your training overview: streaks, PRs, weekly volume, and what's next.",

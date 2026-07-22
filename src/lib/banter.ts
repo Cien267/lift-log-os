@@ -25,7 +25,7 @@ export type BanterTrigger =
 type Ctx = Record<string, any>;
 type Line = string | ((ctx: Ctx) => string);
 
-const MESSAGES: Record<BanterTrigger, Line[]> = {
+const MESSAGES_EN: Record<BanterTrigger, Line[]> = {
   "exercise.removed": [
     (c) => `${c.name ?? "That one"}? Bold move. We'll pretend it never existed.`,
     "Ghosted. Your triceps just breathed a sigh of relief.",
@@ -84,8 +84,85 @@ const MESSAGES: Record<BanterTrigger, Line[]> = {
   "rest.skipped": ["Skipping rest? Living dangerously.", "No rest for the ambitious."],
 };
 
-function pick(trigger: BanterTrigger, ctx: Ctx): string | null {
-  const pool = MESSAGES[trigger];
+const MESSAGES_VI: Record<BanterTrigger, Line[]> = {
+  "exercise.removed": [
+    (c) => `${c.name ?? "Bài này"} à? Thôi bỏ cũng được.`,
+    (c) => `Cho ${c.name ?? "bài này"} nghỉ hưu luôn nhỉ.`,
+    "Xóa rồi. Thanh tạ sẽ nhớ bạn.",
+    "Bớt một bài. Bớt một cái cớ.",
+    "Cơ bắp nào đó vừa thở phào.",
+  ],
+
+  "exercise.added": [
+    "Thêm bài nữa à? Quyết tâm ghê.",
+    "Được đấy, chơi lớn luôn.",
+    "Thêm tí thử thách. Thích rồi đó.",
+    "Thêm vào. Đốt thêm chút nào.",
+  ],
+
+  "set.extra": [
+    "Thêm một set. Có vẻ còn sung.",
+    "Set bonus luôn à?",
+    "Cố thêm chút nữa. Tương lai sẽ cảm ơn bạn.",
+    "Đúng bài. Đúng chất.",
+  ],
+
+  "set.warmupMarked": [
+    "Đánh dấu khởi động. Hợp lý.",
+    "Khởi động trước đi rồi chiến.",
+    "Máy đã nổ. Vào việc thôi.",
+  ],
+
+  "workout.discarded": [
+    "Xóa buổi tập rồi. Làm lại từ đầu nhé.",
+    "Không sao, hôm khác chiến tiếp.",
+    "Reset. Mai quay lại mạnh hơn.",
+  ],
+
+  "workout.finishedClean": [
+    "Hoàn thành hết. Đẹp.",
+    "Không sót set nào. Quá gọn.",
+    "Kết thúc chuẩn chỉnh.",
+    "Buổi tập này đáng điểm 10.",
+  ],
+
+  "workout.finishedIncomplete": [
+    (c) => `Còn ${c.incomplete ?? "vài"} set chưa làm. Lần sau chốt nốt nhé.`,
+    (c) => `${c.incomplete ?? "Vài"} set còn dang dở. Không sao, vẫn hơn nằm nhà.`,
+    "Hơi tiếc một chút. Nhưng có tập là thắng rồi.",
+    "Tiến bộ quan trọng hơn hoàn hảo.",
+  ],
+
+  "workout.longBreakReturn": [
+    (c) => `${c.days ?? "Mấy"} ngày mới quay lại. Thanh tạ nhớ bạn lắm.`,
+    (c) => `Chào mừng trở lại sau ${c.days ?? "một thời gian"} ngày.`,
+    "Quay lại là tốt rồi. Nhẹ trước, khỏe sau.",
+    "Đừng sĩ diện. Hôm nay cứ vào nhịp lại đã.",
+  ],
+
+  "workout.newPR": [
+    (c) =>
+      c.count > 1 ? `${c.count} PR trong một buổi? Hôm nay cháy thật đấy.` : "PR mới! Quá đã.",
+    "Kỷ lục mới. Xứng đáng ăn mừng.",
+    "Con số đẹp lên rồi.",
+    "Sức mạnh vừa lên level.",
+  ],
+
+  "workout.marathon": [
+    (c) => `${c.minutes ?? "Khá nhiều"} phút trong phòng gym. Nhớ uống nước nhé.`,
+    "Buổi tập dài phết. Tối nay ngủ ngon đây.",
+    "Chiến lâu thế này thì cơ bắp phải biết điều thôi.",
+  ],
+
+  "rest.skipped": [
+    "Bỏ nghỉ luôn à? Máu đấy.",
+    "Không nghỉ luôn? Ghê thật.",
+    "Nhớ đừng quá sức nhé.",
+  ],
+};
+
+function pick(trigger: BanterTrigger, ctx: Ctx, lang: string): string | null {
+  const pool = lang === "vi" ? MESSAGES_VI[trigger] : MESSAGES_EN[trigger];
   if (!pool || pool.length === 0) return null;
   const line = pool[Math.floor(Math.random() * pool.length)];
   return typeof line === "function" ? line(ctx) : line;
@@ -95,18 +172,22 @@ function pick(trigger: BanterTrigger, ctx: Ctx): string | null {
 const lastFired: Record<string, number> = {};
 const DEDUPE_MS = 1500;
 
-export function banter(trigger: BanterTrigger, ctx: Ctx = {}) {
+export function banter(trigger: BanterTrigger, ctx: Ctx = {}, lang: string = "en") {
   if (typeof window === "undefined") return;
   const now = Date.now();
   if (lastFired[trigger] && now - lastFired[trigger] < DEDUPE_MS) return;
   lastFired[trigger] = now;
-  const msg = pick(trigger, ctx);
+  const msg = pick(trigger, ctx, lang);
   if (!msg) return;
-  toast(msg, { duration: 3200, position: "bottom-right" });
+  toast(msg, { duration: 3000, position: "bottom-right" });
 }
 
 /** Register additional messages at runtime (for future extensions). */
-export function registerBanterLines(trigger: BanterTrigger, lines: Line[]) {
-  const existing = MESSAGES[trigger] ?? [];
-  MESSAGES[trigger] = [...existing, ...lines];
+export function registerBanterLines(trigger: BanterTrigger, lines: Line[], lang: string) {
+  const existing = lang === "vi" ? (MESSAGES_VI[trigger] ?? []) : (MESSAGES_EN[trigger] ?? []);
+  if (lang === "vi") {
+    MESSAGES_VI[trigger] = [...existing, ...lines];
+  } else {
+    MESSAGES_EN[trigger] = [...existing, ...lines];
+  }
 }

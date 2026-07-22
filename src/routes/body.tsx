@@ -41,7 +41,7 @@ import { useSettings } from "@/hooks/use-settings";
 export const Route = createFileRoute("/body")({
   head: () => ({
     meta: [
-      { title: "Body — Forge" },
+      { title: "Body | Forge" },
       { name: "description", content: "Track bodyweight, measurements, and progression." },
     ],
   }),

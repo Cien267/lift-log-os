@@ -45,7 +45,7 @@ import { useT } from "@/lib/i18n";
 export const Route = createFileRoute("/templates")({
   head: () => ({
     meta: [
-      { title: "Plans — Forge" },
+      { title: "Plans | Forge" },
       { name: "description", content: "Build and manage workout templates." },
     ],
   }),
@@ -215,9 +215,7 @@ function TemplatesPage() {
     const to = list.findIndex((t) => t.id === over.id);
     if (from < 0 || to < 0) return;
     const reordered = arrayMove(list, from, to);
-    await db.templates.bulkPut(
-      reordered.map((tpl, i) => ({ ...tpl, order: i })),
-    );
+    await db.templates.bulkPut(reordered.map((tpl, i) => ({ ...tpl, order: i })));
   };
 
   const updateSets = (idx: number, value: number) => {
