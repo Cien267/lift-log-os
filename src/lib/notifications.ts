@@ -30,6 +30,18 @@ const WHATS_NEW = (lang = "en"): WhatsNewEntry[] => [
           "với các buổi tập của bạn, phân phối cơ bắp, kỉ lục cá nhân và ghi chú huấn luyện. " +
           "Đây cũng là nơi lưu trữ các thông tin chi tiết, thành tựu và cập nhật ứng dụng trong tương lai.",
   },
+  {
+    version: "1.1.1",
+    title: lang === "en" ? "New muscle group added" : "Đã thêm nhóm cơ mới",
+    subtitle:
+      lang === "en"
+        ? "Track your Adductor training more accurately"
+        : "Theo dõi bài tập cơ khép đùi chính xác hơn",
+    body:
+      lang === "en"
+        ? "Forge now includes a dedicated Adductors muscle group. Hip Adduction exercises and other adductor-focused movements can now be logged separately for more accurate muscle distribution and training statistics."
+        : "Forge hiện đã bổ sung nhóm cơ Adductors (cơ khép đùi). Các bài tập Hip Adduction và những bài tập tập trung vào cơ khép đùi giờ đây có thể được ghi lại rõ ràng, giúp thống kê phân bổ nhóm cơ và quá trình tập luyện chính xác hơn.",
+  },
 ];
 
 export async function createNotification(
@@ -87,6 +99,7 @@ const BUCKET: Record<MuscleGroup, Bucket> = {
   quads: "legs",
   hamstrings: "legs",
   glutes: "legs",
+  adductors: "legs",
   calves: "legs",
   back: "back",
   chest: "chest",

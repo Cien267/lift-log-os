@@ -38,6 +38,7 @@ const MUSCLES: MuscleGroup[] = [
   "quads",
   "hamstrings",
   "glutes",
+  "adductors",
   "calves",
   "core",
 ];

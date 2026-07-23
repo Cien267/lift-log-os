@@ -49,6 +49,7 @@ const GROUPS: ("all" | MuscleGroup)[] = [
   "quads",
   "hamstrings",
   "glutes",
+  "adductors",
   "calves",
   "core",
 ];
@@ -62,6 +63,7 @@ const MUSCLE_OPTIONS: MuscleGroup[] = [
   "quads",
   "hamstrings",
   "glutes",
+  "adductors",
   "calves",
   "core",
   "forearms",
@@ -123,7 +125,6 @@ async function fileToCompressedDataUrl(file: File): Promise<string> {
   ctx.drawImage(img, 0, 0, w, h);
   return canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
 }
-
 
 export function ExercisePicker({
   open,
@@ -225,7 +226,6 @@ export function ExercisePicker({
       onSelect(ex.id);
     }
   };
-
 
   const deleteExercise = async (ex: Exercise) => {
     await db.exercises.delete(ex.id);

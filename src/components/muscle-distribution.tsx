@@ -11,6 +11,7 @@ const GROUP: Record<MuscleGroup, Bucket> = {
   quads: "legs",
   hamstrings: "legs",
   glutes: "legs",
+  adductors: "legs",
   calves: "legs",
   back: "back",
   chest: "chest",
