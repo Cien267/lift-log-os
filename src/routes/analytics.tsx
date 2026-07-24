@@ -276,7 +276,7 @@ function Insights({
   ).length;
   if (prevWeek > 0 && lastWeek < prevWeek)
     insights.push(
-      `${t("analytics.insightFrequencyDrop")} ${lastWeek} ${t("common.from")} ${prevWeek} ${t("common.lastWeek")}.`,
+      `${t("analytics.insightFrequencyDrop")} ${lastWeek} ${t("common.session")} ${t("common.from")} ${prevWeek} ${t("common.session")}  ${t("common.lastWeek")}.`,
     );
   if (lastWeek >= 4)
     insights.push(

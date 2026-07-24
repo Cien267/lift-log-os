@@ -185,6 +185,7 @@ const dict = {
     "common.muscleDistribution": "Muscle distribution",
     "common.achievements": "Achievements",
     "common.coachNote": "Coach note",
+    "common.session": "sessions",
   },
   vi: {
     // bottom nav
@@ -369,6 +370,7 @@ const dict = {
     "common.muscleDistribution": "Phân phối cơ bắp",
     "common.achievements": "Thành tựu",
     "common.coachNote": "Ghi chú của huấn luyện viên",
+    "common.session": "buổi",
   },
 } as const;
 
