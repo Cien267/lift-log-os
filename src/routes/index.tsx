@@ -55,7 +55,7 @@ function Dashboard() {
       header={
         settings?.userName ? (
           <div className="flex items-center justify-between px-4 py-3">
-            <Welcome userName={settings.userName} />
+            <Welcome userName={settings.userName} lang={lang} />
             <NotificationBell />
           </div>
         ) : undefined
@@ -157,10 +157,21 @@ function Dashboard() {
   );
 }
 
-function Welcome({ userName }: { userName: string }) {
+function Welcome({ userName, lang }: { userName: string; lang: string }) {
   const hour = new Date().getHours();
 
-  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const greeting =
+    hour < 12
+      ? lang === "en"
+        ? "Good morning"
+        : "Chào ngày mới"
+      : hour < 18
+        ? lang === "en"
+          ? "Good afternoon"
+          : "Buổi chiều vui vẻ"
+        : lang === "en"
+          ? "Good evening"
+          : "Buổi tối vui vẻ";
 
   return (
     <div className="flex min-w-0 items-center justify-start text-lg font-semibold tracking-tight">
