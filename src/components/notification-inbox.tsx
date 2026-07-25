@@ -30,7 +30,7 @@ export function NotificationBell() {
           className="relative grid h-9 w-9 place-items-center rounded-full border border-border bg-card text-foreground/80 transition-colors hover:bg-surface"
           aria-label="Notifications"
         >
-          <Bell className="h-4 w-4" />
+          <Bell className={`h-4 w-4 ${unread > 0 ? "animate-bell" : ""}`} />
           {unread > 0 && (
             <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-[16px] place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
               {unread > 9 ? "9+" : unread}
