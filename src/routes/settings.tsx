@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DEFAULT_SETTINGS } from "@/lib/seed";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -69,6 +70,7 @@ function SettingsPage() {
         db.photos.clear(),
         db.recovery.clear(),
         db.prs.clear(),
+        db.settings.put(DEFAULT_SETTINGS),
       ]);
     });
   };

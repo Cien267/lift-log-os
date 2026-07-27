@@ -372,6 +372,29 @@ const CARDIO_EXERCISES: Exercise[] = [
   },
 ];
 
+export const DEFAULT_SETTINGS: Settings = {
+  id: "app",
+  unit: "kg",
+  theme: "dark",
+  language: "en",
+  defaultRest: 120,
+  notificationsEnabled: false,
+  availableEquipment: [
+    "barbell",
+    "dumbbell",
+    "bench",
+    "pullup-bar",
+    "machine",
+    "cable",
+    "bodyweight",
+    "band",
+  ],
+  weeklyGoal: 4,
+  createdAt: Date.now(),
+  userName: "",
+  trainingAssistant: false,
+};
+
 export async function seedDatabase() {
   const count = await db.exercises.count();
   if (count === 0) {
@@ -401,28 +424,6 @@ export async function seedDatabase() {
 
   const s = await db.settings.get("app");
   if (!s) {
-    const defaults: Settings = {
-      id: "app",
-      unit: "kg",
-      theme: "dark",
-      language: "en",
-      defaultRest: 120,
-      notificationsEnabled: false,
-      availableEquipment: [
-        "barbell",
-        "dumbbell",
-        "bench",
-        "pullup-bar",
-        "machine",
-        "cable",
-        "bodyweight",
-        "band",
-      ],
-      weeklyGoal: 4,
-      createdAt: Date.now(),
-      userName: "",
-      trainingAssistant: false,
-    };
-    await db.settings.put(defaults);
+    await db.settings.put(DEFAULT_SETTINGS);
   }
 }
