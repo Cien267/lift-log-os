@@ -11,6 +11,7 @@ import {
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { useSettings } from "@/hooks/use-settings";
+import { FullscreenLoading } from "@/components/fullscreen-loading";
 
 function NotFoundComponent() {
   return (
@@ -118,7 +119,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { settings } = useSettings();
-  if (!settings) return null;
+  if (!settings) return <FullscreenLoading />;
   const lang = settings.language;
 
   if (typeof window !== "undefined") {
