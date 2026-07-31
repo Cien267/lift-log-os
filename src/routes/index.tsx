@@ -146,7 +146,7 @@ function Dashboard() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">
-                      {w.name ?? w.template?.name ?? "Workout"}
+                      {w.name ?? w.template?.name ?? "Workout"}{" "}
                       <span className="text-xs text-muted-foreground capitalize">
                         ({w.location})
                       </span>
