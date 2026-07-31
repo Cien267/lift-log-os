@@ -125,14 +125,10 @@ function HistoryPage() {
 
                                 <div className="min-w-0 flex-1">
                                   <p className="truncate text-sm font-semibold uppercase">
-                                    {w.name ?? `${w.location} workout`}
-
-                                    {w.template?.name && (
-                                      <span className="text-muted-foreground">
-                                        {" "}
-                                        ({w.template.name})
-                                      </span>
-                                    )}
+                                    {w.name ?? w.template?.name ?? "Workout"}{" "}
+                                    <span className="text-xs text-muted-foreground capitalize">
+                                      ({w.location})
+                                    </span>
                                   </p>
 
                                   <p className="num text-xs text-muted-foreground">
