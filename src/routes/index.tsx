@@ -30,7 +30,16 @@ function Dashboard() {
   const { settings } = useSettings();
   const lang = settings?.language ?? "en";
   const workouts =
-    useLiveQuery(() => db.workouts.orderBy("startTime").reverse().limit(50).toArray()) ?? [];
+    useLiveQuery(async () => {
+      const ws = await db.workouts.orderBy("startTime").reverse().limit(50).toArray();
+
+      return Promise.all(
+        ws.map(async (w) => ({
+          ...w,
+          template: w.templateId ? await db.templates.get(w.templateId) : undefined,
+        })),
+      );
+    }, []) ?? [];
 
   const measurements =
     useLiveQuery(() => db.measurements.orderBy("date").reverse().limit(2).toArray()) ?? [];
@@ -137,7 +146,10 @@ function Dashboard() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">
-                      {w.name ?? `${w.location} workout`}
+                      {w.name ?? w.template?.name ?? "Workout"}
+                      <span className="text-xs text-muted-foreground capitalize">
+                        ({w.location})
+                      </span>
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {formatDate(w.date, lang)} ·{" "}

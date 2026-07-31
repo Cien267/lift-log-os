@@ -68,11 +68,16 @@ function ActiveWorkoutPage() {
   const [elapsed, setElapsed] = useState(0);
   const [insight, setInsight] = useState<WorkoutInsight | null>(null);
 
-  const workout = useLiveQuery(() => db.workouts.get(id), [id]);
-  const template = useLiveQuery(
-    () => db.templates.get(workout?.templateId ?? ""),
-    [workout?.templateId],
-  );
+  const workout = useLiveQuery(async () => {
+    const w = await db.workouts.get(id);
+
+    if (!w) return undefined;
+
+    return {
+      ...w,
+      template: w.templateId ? await db.templates.get(w.templateId) : undefined,
+    };
+  }, [id]);
 
   const entries =
     useLiveQuery(() => db.workoutExercises.where("workoutId").equals(id).sortBy("order"), [id]) ??
@@ -130,7 +135,7 @@ function ActiveWorkoutPage() {
           </Button> */}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">
-              {workout.name ?? template?.name ?? `${workout.location} workout`}
+              {workout.name ?? workout?.template?.name ?? `${workout.location} workout`}
             </p>
             <p className="num text-[11px] text-muted-foreground">
               {formatDuration(elapsed)} · {completedSets} sets ·{" "}
