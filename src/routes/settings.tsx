@@ -42,7 +42,7 @@ function SettingsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `forge-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `forge-backup-${settings.userName ?? "unknown"}-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
