@@ -136,11 +136,11 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent
-        className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:h-[92dvh] sm:max-w-lg sm:rounded-3xl sm:border"
+        className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:h-[92dvh] sm:max-w-lg sm:rounded-3xl sm:border [&>button]:hidden"
       >
         <DialogTitle className="sr-only">Workout photo overlay</DialogTitle>
         <header className="flex items-center gap-2 border-b border-border px-3 py-2.5 pt-safe">
-          <Button size="icon" variant="ghost" onClick={onClose}>
+          <Button size="icon" variant="ghost" onClick={onClose} className="shrink-0">
             <X className="h-5 w-5" />
           </Button>
           <div className="min-w-0 flex-1">
@@ -149,7 +149,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
               Photo + stats, ready in a few taps
             </p>
           </div>
-          <Button size="sm" onClick={onShare} disabled={busy} className="gap-1.5">
+          <Button size="sm" onClick={onShare} disabled={busy} className="shrink-0 gap-1.5">
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
             Share
           </Button>
