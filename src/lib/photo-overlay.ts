@@ -294,7 +294,7 @@ export function renderOverlay(
     (ctx as any).letterSpacing = "0px";
     ctx.font = FONT(500, fs(24));
     ctx.fillStyle = muted;
-    ctx.fillText("· strength log", pad + bw + 14 * u, y);
+    ctx.fillText("· strength log", pad + bw + 22 * u, y);
   };
 
   const drawStats = () => {
@@ -358,7 +358,7 @@ export function renderOverlay(
       ? [
           [drawDate, 46],
           [drawName, 110],
-          [drawMuscles, 104],
+          [drawMuscles, 118],
           [drawStats, 132],
           [drawBrand, 60],
         ]
@@ -371,7 +371,7 @@ export function renderOverlay(
         : [
             [drawDate, 46],
             [drawName, 100],
-            [drawMuscles, 100],
+            [drawMuscles, 114],
             [drawStats, 126],
             [drawBrand, 56],
           ];
