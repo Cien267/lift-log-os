@@ -288,9 +288,9 @@ export function renderOverlay(
   const drawBrand = () => {
     ctx.font = FONT(800, fs(26));
     ctx.fillStyle = hexAlpha(text, 0.9);
-    ctx.letterSpacing = `${Math.round(3 * u)}px`;
+    (ctx as any).letterSpacing = `${Math.round(3 * u)}px`;
     ctx.fillText("FORGE", pad, y);
-    ctx.letterSpacing = "0px";
+    (ctx as any).letterSpacing = "0px";
     ctx.font = FONT(500, fs(24));
     ctx.fillStyle = muted;
     const bw = ctx.measureText("FORGE").width;
@@ -308,9 +308,9 @@ export function renderOverlay(
       ctx.fillText(s.value, x, y);
       ctx.font = FONT(600, fs(20));
       ctx.fillStyle = muted;
-      ctx.letterSpacing = `${Math.round(2 * u)}px`;
+      (ctx as any).letterSpacing = `${Math.round(2 * u)}px`;
       ctx.fillText(s.label, x, y - fs(isPoster ? 78 : 72));
-      ctx.letterSpacing = "0px";
+      (ctx as any).letterSpacing = "0px";
     });
   };
 
@@ -328,9 +328,9 @@ export function renderOverlay(
       ctx.lineWidth = 1.5 * u;
       ctx.stroke();
       ctx.fillStyle = text;
-      ctx.letterSpacing = `${Math.round(1.5 * u)}px`;
+      (ctx as any).letterSpacing = `${Math.round(1.5 * u)}px`;
       ctx.fillText(m.toUpperCase(), x + 17 * u, y);
-      ctx.letterSpacing = "0px";
+      (ctx as any).letterSpacing = "0px";
       x += w + 14 * u;
     });
   };
@@ -347,9 +347,9 @@ export function renderOverlay(
     if (!o.fields.date) return;
     ctx.font = FONT(600, fs(26));
     ctx.fillStyle = muted;
-    ctx.letterSpacing = `${Math.round(2 * u)}px`;
+    (ctx as any).letterSpacing = `${Math.round(2 * u)}px`;
     ctx.fillText(`${stats.dateLabel.toUpperCase()} · ${stats.timeLabel}`, pad, y);
-    ctx.letterSpacing = "0px";
+    (ctx as any).letterSpacing = "0px";
   };
 
   // ordering per template

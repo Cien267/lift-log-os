@@ -137,7 +137,6 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent
         className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:h-[92dvh] sm:max-w-lg sm:rounded-3xl sm:border"
-        showCloseButton={false}
       >
         <DialogTitle className="sr-only">Workout photo overlay</DialogTitle>
         <header className="flex items-center gap-2 border-b border-border px-3 py-2.5 pt-safe">
