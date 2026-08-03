@@ -309,7 +309,7 @@ export function renderOverlay(
       ctx.font = FONT(600, fs(20));
       ctx.fillStyle = muted;
       (ctx as any).letterSpacing = `${Math.round(2 * u)}px`;
-      ctx.fillText(s.label, x, y - fs(isPoster ? 46 : 42));
+      ctx.fillText(s.label, x, y - fs(isPoster ? 56 : 52));
       (ctx as any).letterSpacing = "0px";
     });
   };
@@ -360,20 +360,20 @@ export function renderOverlay(
           [drawName, 110],
           [drawMuscles, 118],
           [drawStats, 132],
-          [drawBrand, 60],
+          [drawBrand, 68],
         ]
       : o.template === "bold"
         ? [
             [drawName, 108],
             [drawStats, 126],
-            [drawBrand, 56],
+            [drawBrand, 64],
           ]
         : [
             [drawDate, 46],
             [drawName, 100],
             [drawMuscles, 114],
             [drawStats, 126],
-            [drawBrand, 56],
+            [drawBrand, 64],
           ];
 
   if (o.position === "top") {
