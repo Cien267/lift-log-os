@@ -226,7 +226,8 @@ function ActiveWorkoutPage() {
           <div className="flex-1 overflow-y-auto px-4 py-4">
             <InsightView insight={insight} />
           </div>
-          <div className="sticky bottom-0 border-t border-border bg-background/95 p-4 pb-safe backdrop-blur">
+          <div className="sticky bottom-0 space-y-2 border-t border-border bg-background/95 p-4 pb-safe backdrop-blur">
+            <WorkoutPhotoShare workoutId={id} variant="outline" className="w-full" />
             <Button
               size="lg"
               className="w-full"
