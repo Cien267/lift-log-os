@@ -289,12 +289,12 @@ export function renderOverlay(
     ctx.font = FONT(800, fs(26));
     ctx.fillStyle = hexAlpha(text, 0.9);
     (ctx as any).letterSpacing = `${Math.round(3 * u)}px`;
+    const bw = ctx.measureText("FORGE").width;
     ctx.fillText("FORGE", pad, y);
     (ctx as any).letterSpacing = "0px";
     ctx.font = FONT(500, fs(24));
     ctx.fillStyle = muted;
-    const bw = ctx.measureText("FORGE").width;
-    ctx.fillText("· strength log", pad + bw + 18 * u, y);
+    ctx.fillText("· strength log", pad + bw + 14 * u, y);
   };
 
   const drawStats = () => {
