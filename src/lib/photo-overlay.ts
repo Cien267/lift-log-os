@@ -357,23 +357,23 @@ export function renderOverlay(
     o.template === "poster"
       ? [
           [drawDate, 46],
-          [drawName, 104],
-          [drawMuscles, 78],
-          [drawStats, 116],
-          [drawBrand, 56],
+          [drawName, 110],
+          [drawMuscles, 104],
+          [drawStats, 124],
+          [drawBrand, 60],
         ]
       : o.template === "bold"
         ? [
-            [drawName, 104],
-            [drawStats, 112],
-            [drawBrand, 52],
+            [drawName, 108],
+            [drawStats, 118],
+            [drawBrand, 56],
           ]
         : [
-            [drawDate, 44],
-            [drawName, 92],
-            [drawMuscles, 74],
-            [drawStats, 108],
-            [drawBrand, 52],
+            [drawDate, 46],
+            [drawName, 100],
+            [drawMuscles, 100],
+            [drawStats, 118],
+            [drawBrand, 56],
           ];
 
   if (o.position === "top") {
