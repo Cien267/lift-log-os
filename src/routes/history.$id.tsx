@@ -182,6 +182,8 @@ function WorkoutDetail() {
         </Button>
       </header>
 
+      <WorkoutPhotoShare workoutId={id} variant="outline" className="mb-4 w-full" />
+
       {workout.insight && (
         <div className="mb-4">
           <InsightView insight={workout.insight} />
