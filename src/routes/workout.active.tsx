@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Lang, useT } from "@/lib/i18n";
 import { ExercisePreview } from "@/components/exercise-preview";
+import { WorkoutPhotoShare } from "@/components/workout-photo-share";
 
 const search = z.object({ id: z.string() });
 
@@ -226,7 +227,8 @@ function ActiveWorkoutPage() {
           <div className="flex-1 overflow-y-auto px-4 py-4">
             <InsightView insight={insight} />
           </div>
-          <div className="sticky bottom-0 border-t border-border bg-background/95 p-4 pb-safe backdrop-blur">
+          <div className="sticky bottom-0 space-y-2 border-t border-border bg-background/95 p-4 pb-safe backdrop-blur">
+            <WorkoutPhotoShare workoutId={id} variant="outline" className="w-full" />
             <Button
               size="lg"
               className="w-full"
