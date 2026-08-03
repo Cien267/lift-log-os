@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Lang, useT } from "@/lib/i18n";
 import { ExercisePreview } from "@/components/exercise-preview";
+import { WorkoutPhotoShare } from "@/components/workout-photo-share";
 
 const search = z.object({ id: z.string() });
 
