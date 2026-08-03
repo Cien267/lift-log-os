@@ -52,10 +52,10 @@ export function WorkoutPhotoShare({
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant={variant} className={cn("gap-2", className)} onClick={() => setOpen(true)}>
+      {/* <Button variant={variant} className={cn("gap-2", className)} onClick={() => setOpen(true)}>
         <Camera className="h-4 w-4" /> {label}
       </Button>
-      {open && <PhotoOverlayEditor workoutId={workoutId} onClose={() => setOpen(false)} />}
+      {open && <PhotoOverlayEditor workoutId={workoutId} onClose={() => setOpen(false)} />} */}
     </>
   );
 }
@@ -135,9 +135,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
 
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
-      <DialogContent
-        className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:h-[92dvh] sm:max-w-lg sm:rounded-3xl sm:border [&>button]:hidden"
-      >
+      <DialogContent className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:h-[92dvh] sm:max-w-lg sm:rounded-3xl sm:border [&>button]:hidden">
         <DialogTitle className="sr-only">Workout photo overlay</DialogTitle>
         <header className="flex items-center gap-2 border-b border-border px-3 py-2.5 pt-safe">
           <Button size="icon" variant="ghost" onClick={onClose} className="shrink-0">
@@ -164,13 +162,29 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
               <canvas ref={previewRef} className="h-full w-full" />
             </div>
             <div className="mx-auto mt-3 flex max-w-[300px] gap-2">
-              <Button variant="outline" size="sm" className="flex-1 gap-1.5" onClick={() => cameraRef.current?.click()}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 gap-1.5"
+                onClick={() => cameraRef.current?.click()}
+              >
                 <Camera className="h-4 w-4" /> Camera
               </Button>
-              <Button variant="outline" size="sm" className="flex-1 gap-1.5" onClick={() => galleryRef.current?.click()}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 gap-1.5"
+                onClick={() => galleryRef.current?.click()}
+              >
                 <ImageIcon className="h-4 w-4" /> Gallery
               </Button>
-              <Button variant="outline" size="icon" onClick={onDownload} disabled={busy} aria-label="Save image">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={onDownload}
+                disabled={busy}
+                aria-label="Save image"
+              >
                 <Download className="h-4 w-4" />
               </Button>
             </div>
@@ -257,9 +271,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
                   <Sparkles className="h-4 w-4 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Gym Boost</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      Extra contrast & definition
-                    </p>
+                    <p className="text-[11px] text-muted-foreground">Extra contrast & definition</p>
                   </div>
                 </div>
                 <Switch checked={opts.gymBoost} onCheckedChange={(v) => set("gymBoost", v)} />
