@@ -142,6 +142,24 @@ const dict = {
     "muscleDistribution.totalVolume": "total",
     "muscleDistribution.muscleGroup": "groups",
 
+    // photo-share
+    "photoShare.camera": "Camera",
+    "photoShare.gallery": "Gallery",
+    "photoShare.shareYourSession": "Share your session",
+    "photoShare.description": "Photo + stats, ready in a few taps",
+    "photoShare.share": "Share",
+    "photoShare.gymBoost": "Gym Boost",
+    "photoShare.extraContrast": "Extra contrast & definition",
+    "photoShare.brightness": "Brightness",
+    "photoShare.contrast": "Contrast",
+    "photoShare.cropPosition": "Crop position",
+    "photoShare.statsShown": "Stats shown",
+    "photoShare.template": "Template",
+    "photoShare.frame": "Frame",
+    "photoShare.overlayPosition": "Overlay position",
+    "photoShare.text": "Text",
+    "photoShare.photo": "Photo",
+
     // common
     "common.empty": "Empty",
     "common.start": "Start",
@@ -326,6 +344,24 @@ const dict = {
       "Bắt đầu buổi tập đầu tiên của bạn để xây dựng thống kê phân phối cơ bắp của bạn.",
     "muscleDistribution.totalVolume": "tổng khối lượng",
     "muscleDistribution.muscleGroup": "nhóm cơ",
+
+    // photo-share
+    "photoShare.camera": "Chụp",
+    "photoShare.gallery": "Thư viện",
+    "photoShare.shareYourSession": "Chia sẻ buổi tập của bạn",
+    "photoShare.description": "Ảnh + thống kê, nhanh chóng",
+    "photoShare.share": "Chia sẻ",
+    "photoShare.gymBoost": "Gym Boost",
+    "photoShare.extraContrast": "Độ tương phản cao",
+    "photoShare.brightness": "Độ sáng",
+    "photoShare.contrast": "Độ tương phản",
+    "photoShare.cropPosition": "Vị trí cắt",
+    "photoShare.statsShown": "Thống kê hiển thị",
+    "photoShare.template": "Mẫu",
+    "photoShare.frame": "Khung",
+    "photoShare.overlayPosition": "Vị trí lớp phủ",
+    "photoShare.text": "Văn bản",
+    "photoShare.photo": "Ảnh",
 
     // common
     "common.empty": "Trống",

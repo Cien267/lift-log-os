@@ -228,7 +228,12 @@ function ActiveWorkoutPage() {
             <InsightView insight={insight} />
           </div>
           <div className="sticky bottom-0 space-y-2 border-t border-border bg-background/95 p-4 pb-safe backdrop-blur">
-            <WorkoutPhotoShare workoutId={id} variant="outline" className="w-full" />
+            <WorkoutPhotoShare
+              workoutId={id}
+              variant="outline"
+              className="w-full"
+              label={lang === "vi" ? "Chụp ảnh với thông số" : "Take Photo with Stats"}
+            />
             <Button
               size="lg"
               className="w-full"

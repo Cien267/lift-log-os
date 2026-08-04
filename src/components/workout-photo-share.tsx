@@ -20,6 +20,7 @@ import {
   type OverlayTemplate,
   type ShareStats,
 } from "@/lib/photo-overlay";
+import { useT } from "@/lib/i18n";
 
 const TEMPLATES: { id: OverlayTemplate; label: string }[] = [
   { id: "premium", label: "Premium" },
@@ -31,7 +32,9 @@ const TEMPLATES: { id: OverlayTemplate; label: string }[] = [
 
 const COLORS = ["#FFFFFF", "#F5E9D0", "#0B0B0D", "#F97316", "#22D3EE"];
 const ASPECTS: OverlayAspect[] = ["4:5", "1:1", "9:16"];
-const POSITIONS: OverlayPosition[] = ["top", "center", "bottom"];
+const POSITIONS = (lang: string) => {
+  return lang === "vi" ? ["trên", "giữa", "dưới"] : ["top", "center", "bottom"];
+};
 const SIZES: { label: string; value: number }[] = [
   { label: "S", value: 0.85 },
   { label: "M", value: 1 },
@@ -62,6 +65,7 @@ export function WorkoutPhotoShare({
 
 function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose: () => void }) {
   const { settings } = useSettings();
+  const { t } = useT();
   const lang = settings?.language ?? "en";
   const [stats, setStats] = useState<ShareStats | null>(null);
   const [img, setImg] = useState<HTMLImageElement | null>(null);
@@ -135,21 +139,21 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
 
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:h-[92dvh] sm:max-w-lg sm:rounded-3xl sm:border [&>button]:hidden">
+      <DialogContent className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:h-[92dvh] sm:max-w-lg sm:rounded-3xl sm:border [&>button]:hidden pt-14">
         <DialogTitle className="sr-only">Workout photo overlay</DialogTitle>
         <header className="flex items-center gap-2 border-b border-border px-3 py-2.5 pt-safe">
           <Button size="icon" variant="ghost" onClick={onClose} className="shrink-0">
             <X className="h-5 w-5" />
           </Button>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold">Share your session</p>
+            <p className="text-sm font-semibold">{t("photoShare.shareYourSession")}</p>
             <p className="truncate text-[11px] text-muted-foreground">
-              Photo + stats, ready in a few taps
+              {t("photoShare.description")}
             </p>
           </div>
           <Button size="sm" onClick={onShare} disabled={busy} className="shrink-0 gap-1.5">
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
-            Share
+            {t("photoShare.share")}
           </Button>
         </header>
 
@@ -168,7 +172,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
                 className="flex-1 gap-1.5"
                 onClick={() => cameraRef.current?.click()}
               >
-                <Camera className="h-4 w-4" /> Camera
+                <Camera className="h-4 w-4" /> {t("photoShare.camera")}
               </Button>
               <Button
                 variant="outline"
@@ -176,7 +180,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
                 className="flex-1 gap-1.5"
                 onClick={() => galleryRef.current?.click()}
               >
-                <ImageIcon className="h-4 w-4" /> Gallery
+                <ImageIcon className="h-4 w-4" /> {t("photoShare.gallery")}
               </Button>
               <Button
                 variant="outline"
@@ -206,7 +210,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
           </div>
 
           <div className="space-y-5 px-4 py-4">
-            <Section title="Template">
+            <Section title={t("photoShare.template")}>
               <Chips
                 items={TEMPLATES.map((t) => ({ id: t.id, label: t.label }))}
                 value={opts.template}
@@ -214,7 +218,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
               />
             </Section>
 
-            <Section title="Frame">
+            <Section title={t("photoShare.frame")}>
               <Chips
                 items={ASPECTS.map((a) => ({ id: a, label: a }))}
                 value={opts.aspect}
@@ -222,15 +226,18 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
               />
             </Section>
 
-            <Section title="Overlay position">
+            <Section title={t("photoShare.overlayPosition")}>
               <Chips
-                items={POSITIONS.map((p) => ({ id: p, label: p[0].toUpperCase() + p.slice(1) }))}
+                items={POSITIONS(lang).map((p) => ({
+                  id: p,
+                  label: p[0].toUpperCase() + p.slice(1),
+                }))}
                 value={opts.position}
                 onChange={(v) => set("position", v as OverlayPosition)}
               />
             </Section>
 
-            <Section title="Text">
+            <Section title={t("photoShare.text")}>
               <div className="flex items-center gap-3">
                 <div className="flex gap-2">
                   {COLORS.map((c) => (
@@ -265,33 +272,35 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
               </div>
             </Section>
 
-            <Section title="Photo">
+            <Section title={t("photoShare.photo")}>
               <div className="flex items-center justify-between rounded-xl border border-border bg-card px-3 py-2.5">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Gym Boost</p>
-                    <p className="text-[11px] text-muted-foreground">Extra contrast & definition</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {t("photoShare.extraContrast")}
+                    </p>
                   </div>
                 </div>
                 <Switch checked={opts.gymBoost} onCheckedChange={(v) => set("gymBoost", v)} />
               </div>
               <LabeledSlider
-                label="Brightness"
+                label={t("photoShare.brightness")}
                 value={opts.brightness}
                 min={0.7}
                 max={1.3}
                 onChange={(v) => set("brightness", v)}
               />
               <LabeledSlider
-                label="Contrast"
+                label={t("photoShare.contrast")}
                 value={opts.contrast}
                 min={0.7}
                 max={1.4}
                 onChange={(v) => set("contrast", v)}
               />
               <LabeledSlider
-                label="Crop position"
+                label={t("photoShare.cropPosition")}
                 value={opts.offset}
                 min={0}
                 max={1}
@@ -299,7 +308,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
               />
             </Section>
 
-            <Section title="Stats shown">
+            <Section title={t("photoShare.statsShown")}>
               <div className="flex flex-wrap gap-2">
                 {(Object.keys(FIELD_LABELS) as FieldKey[]).map((k) => (
                   <button
