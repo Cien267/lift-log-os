@@ -310,7 +310,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
 
             <Section title={t("photoShare.statsShown")}>
               <div className="flex flex-wrap gap-2">
-                {(Object.keys(FIELD_LABELS) as FieldKey[]).map((k) => (
+                {(Object.keys(FIELD_LABELS(lang)) as FieldKey[]).map((k) => (
                   <button
                     key={k}
                     onClick={() => set("fields", { ...opts.fields, [k]: !opts.fields[k] })}
@@ -321,7 +321,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
                         : "border-border text-muted-foreground",
                     )}
                   >
-                    {FIELD_LABELS[k]}
+                    {FIELD_LABELS(lang)[k]}
                   </button>
                 ))}
               </div>

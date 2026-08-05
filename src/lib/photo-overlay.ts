@@ -16,22 +16,35 @@ export interface ShareStats {
   muscles: string[];
 }
 
+export type FieldKey = keyof ReturnType<typeof FIELD_LABELS>;
+
 export interface OverlayField {
-  key: keyof typeof FIELD_LABELS;
+  key: FieldKey;
   label: string;
 }
 
-export const FIELD_LABELS = {
-  name: "Workout name",
-  date: "Date & time",
-  duration: "Duration",
-  volume: "Volume",
-  exercises: "Exercises",
-  sets: "Sets",
-  muscles: "Muscle groups",
-} as const;
-
-export type FieldKey = keyof typeof FIELD_LABELS;
+export const FIELD_LABELS = (lang: string = "en") => {
+  if (lang === "vi") {
+    return {
+      name: "Buổi tập",
+      date: "Ngày & giờ",
+      duration: "Thời gian",
+      volume: "Khối lượng",
+      exercises: "Bài tập",
+      sets: "Sets",
+      muscles: "Nhóm cơ",
+    } as const;
+  }
+  return {
+    name: "Workout name",
+    date: "Date & time",
+    duration: "Duration",
+    volume: "Volume",
+    exercises: "Exercises",
+    sets: "Sets",
+    muscles: "Muscle groups",
+  } as const;
+};
 
 const GROUP_LABEL: Record<MuscleGroup, string> = {
   chest: "Chest",
@@ -49,12 +62,17 @@ const GROUP_LABEL: Record<MuscleGroup, string> = {
   cardio: "Cardio",
 };
 
-export async function buildShareStats(workoutId: string, lang: "en" | "vi" = "en"): Promise<ShareStats> {
+export async function buildShareStats(
+  workoutId: string,
+  lang: "en" | "vi" = "en",
+): Promise<ShareStats> {
   const [workout, entries, agg] = await Promise.all([
     db.workouts.get(workoutId),
     db.workoutExercises.where("workoutId").equals(workoutId).toArray(),
     computeWorkoutAggregate(workoutId),
   ]);
+
+  const template = workout?.templateId ? await db.templates.get(workout.templateId) : undefined;
 
   const start = new Date(workout?.startTime ?? Date.now());
   const dateFmt = new Intl.DateTimeFormat(lang === "vi" ? "vi-VN" : "en-US", {
@@ -74,7 +92,7 @@ export async function buildShareStats(workoutId: string, lang: "en" | "vi" = "en
     .slice(0, 3);
 
   return {
-    name: workout?.name ?? `${workout?.location ?? "Gym"} workout`,
+    name: workout?.name ?? template?.name ?? `${workout?.location} workout`,
     dateLabel: dateFmt.format(start),
     timeLabel: timeFmt.format(start),
     durationLabel: formatDuration(agg.durationSec || workout?.durationSec || 0),
@@ -144,7 +162,13 @@ function drawCover(
 }
 
 /** Average luminance of a region, used to auto-adapt scrims. */
-function regionLuminance(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
+function regionLuminance(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+) {
   try {
     const data = ctx.getImageData(x, y, Math.max(1, w), Math.max(1, h)).data;
     let sum = 0;
@@ -291,26 +315,25 @@ export function renderOverlay(
     (ctx as any).letterSpacing = `${Math.round(3 * u)}px`;
     const bw = ctx.measureText("FORGE").width;
     ctx.fillText("FORGE", pad, y);
-    (ctx as any).letterSpacing = "0px";
-    ctx.font = FONT(500, fs(24));
-    ctx.fillStyle = muted;
-    ctx.fillText("· strength log", pad + bw + 22 * u, y);
   };
 
   const drawStats = () => {
     if (!items.length) return;
-    const colW = (W - pad * 2) / items.length;
-    items.forEach((s, i) => {
-      const x = pad + colW * i;
+    const minColW = fs(180);
+    const gap = fs(24);
+
+    let x = pad;
+
+    items.forEach((s) => {
       ctx.textAlign = "left";
       ctx.font = FONT(800, fs(isPoster ? 62 : 56));
+      const valueWidth = ctx.measureText(s.value).width;
       ctx.fillStyle = text;
       ctx.fillText(s.value, x, y);
       ctx.font = FONT(600, fs(20));
       ctx.fillStyle = muted;
-      (ctx as any).letterSpacing = `${Math.round(2 * u)}px`;
       ctx.fillText(s.label, x, y - fs(isPoster ? 56 : 52));
-      (ctx as any).letterSpacing = "0px";
+      x += Math.max(minColW, valueWidth) + gap;
     });
   };
 
