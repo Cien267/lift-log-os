@@ -379,7 +379,7 @@ export function renderOverlay(
   const order: Array<[() => void, number]> =
     o.template === "poster"
       ? [
-          [drawDate, 46],
+          [drawDate, 84],
           [drawName, 110],
           [drawMuscles, 118],
           [drawStats, 132],
@@ -392,7 +392,7 @@ export function renderOverlay(
             [drawBrand, 64],
           ]
         : [
-            [drawDate, 46],
+            [drawDate, 84],
             [drawName, 100],
             [drawMuscles, 114],
             [drawStats, 126],

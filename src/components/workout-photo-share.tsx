@@ -32,9 +32,11 @@ const TEMPLATES: { id: OverlayTemplate; label: string }[] = [
 
 const COLORS = ["#FFFFFF", "#F5E9D0", "#0B0B0D", "#F97316", "#22D3EE"];
 const ASPECTS: OverlayAspect[] = ["4:5", "1:1", "9:16"];
-const POSITIONS = (lang: string) => {
-  return lang === "vi" ? ["trên", "giữa", "dưới"] : ["top", "center", "bottom"];
-};
+const POSITIONS = [
+  { value: "top", label: { vi: "Trên", en: "Top" } },
+  { value: "center", label: { vi: "Giữa", en: "Center" } },
+  { value: "bottom", label: { vi: "Dưới", en: "Bottom" } },
+] as const;
 const SIZES: { label: string; value: number }[] = [
   { label: "S", value: 0.85 },
   { label: "M", value: 1 },
@@ -83,8 +85,9 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
     if (previewRef.current && stats) renderOverlay(previewRef.current, img, stats, opts, 720);
   }, [img, stats, opts]);
 
-  const set = <K extends keyof OverlayOptions>(k: K, v: OverlayOptions[K]) =>
+  const set = <K extends keyof OverlayOptions>(k: K, v: OverlayOptions[K]) => {
     setOpts((o) => ({ ...o, [k]: v }));
+  };
 
   const onFile = async (file?: File | null) => {
     if (!file) return;
@@ -228,9 +231,9 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
 
             <Section title={t("photoShare.overlayPosition")}>
               <Chips
-                items={POSITIONS(lang).map((p) => ({
-                  id: p,
-                  label: p[0].toUpperCase() + p.slice(1),
+                items={POSITIONS.map((p) => ({
+                  id: p.value,
+                  label: p.label[lang],
                 }))}
                 value={opts.position}
                 onChange={(v) => set("position", v as OverlayPosition)}
