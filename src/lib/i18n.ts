@@ -349,7 +349,7 @@ const dict = {
     "photoShare.camera": "Chụp",
     "photoShare.gallery": "Thư viện",
     "photoShare.shareYourSession": "Chia sẻ buổi tập của bạn",
-    "photoShare.description": "Ảnh + thống kê, nhanh chóng",
+    "photoShare.description": "Ảnh + thống kê",
     "photoShare.share": "Chia sẻ",
     "photoShare.gymBoost": "Gym Boost",
     "photoShare.extraContrast": "Độ tương phản cao",

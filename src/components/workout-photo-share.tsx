@@ -161,55 +161,57 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
         </header>
 
         <div className="flex-1 overflow-y-auto pb-safe">
-          <div className="bg-secondary/30 px-4 py-4">
-            <div
-              className="mx-auto max-w-[300px] overflow-hidden rounded-2xl border border-border shadow-lg"
-              style={{ aspectRatio: previewAspect }}
-            >
-              <canvas ref={previewRef} className="h-full w-full" />
+          <div className="sticky z-50 top-0 bg-background">
+            <div className="bg-secondary/30 px-4 py-4">
+              <div
+                className="mx-auto max-w-[300px] overflow-hidden rounded-2xl border border-border shadow-lg"
+                style={{ aspectRatio: previewAspect }}
+              >
+                <canvas ref={previewRef} className="h-full w-full" />
+              </div>
+              <div className="mx-auto mt-3 flex max-w-[300px] gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-1.5"
+                  onClick={() => cameraRef.current?.click()}
+                >
+                  <Camera className="h-4 w-4" /> {t("photoShare.camera")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 gap-1.5"
+                  onClick={() => galleryRef.current?.click()}
+                >
+                  <ImageIcon className="h-4 w-4" /> {t("photoShare.gallery")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onDownload}
+                  disabled={busy}
+                  aria-label="Save image"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+              <input
+                ref={cameraRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => onFile(e.target.files?.[0])}
+              />
+              <input
+                ref={galleryRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => onFile(e.target.files?.[0])}
+              />
             </div>
-            <div className="mx-auto mt-3 flex max-w-[300px] gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 gap-1.5"
-                onClick={() => cameraRef.current?.click()}
-              >
-                <Camera className="h-4 w-4" /> {t("photoShare.camera")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 gap-1.5"
-                onClick={() => galleryRef.current?.click()}
-              >
-                <ImageIcon className="h-4 w-4" /> {t("photoShare.gallery")}
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={onDownload}
-                disabled={busy}
-                aria-label="Save image"
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
-            <input
-              ref={cameraRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={(e) => onFile(e.target.files?.[0])}
-            />
-            <input
-              ref={galleryRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => onFile(e.target.files?.[0])}
-            />
           </div>
 
           <div className="space-y-5 px-4 py-4">
