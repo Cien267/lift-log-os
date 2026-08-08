@@ -57,10 +57,10 @@ export function WorkoutPhotoShare({
   const [open, setOpen] = useState(false);
   return (
     <>
-      {/* <Button variant={variant} className={cn("gap-2", className)} onClick={() => setOpen(true)}>
+      <Button variant={variant} className={cn("gap-2", className)} onClick={() => setOpen(true)}>
         <Camera className="h-4 w-4" /> {label}
       </Button>
-      {open && <PhotoOverlayEditor workoutId={workoutId} onClose={() => setOpen(false)} />} */}
+      {open && <PhotoOverlayEditor workoutId={workoutId} onClose={() => setOpen(false)} />}
     </>
   );
 }

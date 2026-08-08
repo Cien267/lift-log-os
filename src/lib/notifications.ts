@@ -42,6 +42,19 @@ const WHATS_NEW = (lang = "en"): WhatsNewEntry[] => [
         ? "Forge now includes a dedicated Adductors muscle group. Hip Adduction exercises and other adductor-focused movements can now be logged separately for more accurate muscle distribution and training statistics."
         : "Forge hiện đã bổ sung nhóm cơ Adductors (cơ khép đùi). Các bài tập Hip Adduction và những bài tập tập trung vào cơ khép đùi giờ đây có thể được ghi lại rõ ràng, giúp thống kê phân bổ nhóm cơ và quá trình tập luyện chính xác hơn.",
   },
+  {
+    version: "1.1.2",
+    title:
+      lang === "en"
+        ? "Your progress deserves to be seen"
+        : "Thành quả của bạn xứng đáng được chia sẻ",
+    subtitle:
+      lang === "en" ? "A new way to share every workout" : "Một cách mới để chia sẻ mỗi buổi tập",
+    body:
+      lang === "en"
+        ? "Capture your best post-workout photo and let Forge automatically overlay your workout summary. You can also create a shareable image from any previous workout in History. Multiple layouts, customizable colors, and social-ready exports are included. Finish your next workout to unlock and try this feature."
+        : "Chụp lại khoảnh khắc sau buổi tập và để Forge tự động thêm các chỉ số tập luyện lên ảnh. Bạn cũng có thể tạo ảnh từ bất kỳ buổi tập nào trong Lịch sử. Hỗ trợ nhiều bố cục, tùy chỉnh màu sắc và xuất ảnh sẵn sàng để chia sẻ lên mạng xã hội. Hoàn thành buổi tập tiếp theo để mở khóa và trải nghiệm tính năng này.",
+  },
 ];
 
 export async function createNotification(
