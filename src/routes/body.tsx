@@ -48,16 +48,20 @@ export const Route = createFileRoute("/body")({
   component: BodyPage,
 });
 
-const FIELDS: { key: keyof BodyMeasurement; label: string; unit: string }[] = [
-  { key: "weight", label: "Weight", unit: "kg" },
-  { key: "height", label: "Height", unit: "cm" },
-  { key: "bodyFat", label: "Body fat", unit: "%" },
-  { key: "chest", label: "Chest", unit: "cm" },
-  { key: "waist", label: "Waist", unit: "cm" },
-  { key: "arm", label: "Arm", unit: "cm" },
-  { key: "thigh", label: "Thigh", unit: "cm" },
-  { key: "shoulder", label: "Shoulder", unit: "cm" },
-];
+const FIELDS = (
+  lang: string = "en",
+): { key: keyof BodyMeasurement; label: string; unit: string }[] => {
+  return [
+    { key: "weight", label: lang === "vi" ? "Cân nặng" : "Weight", unit: "kg" },
+    { key: "height", label: lang === "vi" ? "Chiều cao" : "Height", unit: "cm" },
+    { key: "bodyFat", label: lang === "vi" ? "Tỷ lệ mỡ" : "Body fat", unit: "%" },
+    { key: "chest", label: lang === "vi" ? "Ngực" : "Chest", unit: "cm" },
+    { key: "waist", label: lang === "vi" ? "Eo" : "Waist", unit: "cm" },
+    { key: "arm", label: lang === "vi" ? "Cánh tay" : "Arm", unit: "cm" },
+    { key: "thigh", label: lang === "vi" ? "Đùi" : "Thigh", unit: "cm" },
+    { key: "shoulder", label: lang === "vi" ? "Vai" : "Shoulder", unit: "cm" },
+  ];
+};
 
 const emptyForm = (): Partial<BodyMeasurement> => ({
   date: new Date().toISOString().slice(0, 10),
@@ -139,7 +143,7 @@ function BodyPage() {
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <Label className="mb-1 block text-xs">Date</Label>
+              <Label className="mb-1 block text-xs">{t("common.date")}</Label>
               <Input
                 type="date"
                 value={form.date as string}
@@ -147,7 +151,7 @@ function BodyPage() {
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {FIELDS.map((f) => (
+              {FIELDS(lang).map((f) => (
                 <div key={f.key as string}>
                   <Label className="mb-1 block text-xs">
                     {f.label} ({f.unit})
@@ -288,7 +292,8 @@ function BodyPage() {
                     </div>
                   </div>
                   <p className="num mt-1 text-xs text-muted-foreground">
-                    {FIELDS.filter((f) => f.key !== "weight" && (m as any)[f.key])
+                    {FIELDS(lang)
+                      .filter((f) => f.key !== "weight" && (m as any)[f.key])
                       .map((f) => `${f.label} ${(m as any)[f.key]}${f.unit}`)
                       .join(" · ") || "—"}
                   </p>

@@ -204,6 +204,7 @@ const dict = {
     "common.achievements": "Achievements",
     "common.coachNote": "Coach note",
     "common.session": "sessions",
+    "common.date": "Date",
   },
   vi: {
     // bottom nav
@@ -407,6 +408,7 @@ const dict = {
     "common.achievements": "Thành tựu",
     "common.coachNote": "Ghi chú của huấn luyện viên",
     "common.session": "buổi",
+    "common.date": "Ngày",
   },
 } as const;
 
