@@ -7,9 +7,11 @@ interface Props {
   suggestion: ProgressionSuggestion;
   currentWeight?: number;
   currentReps?: number;
+  currentMinutes?: number;
   onApply: () => void;
   onDismiss: () => void;
 }
+
 
 const styleFor = (v: ProgressionVerdict) => {
   switch (v) {
