@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
-import { formatDuration, formatWeight } from "@/lib/analytics";
+import { formatDuration, formatSessionVolume } from "@/lib/analytics";
 import { Dumbbell, ChevronRight } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils";
