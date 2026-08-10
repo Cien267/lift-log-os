@@ -104,6 +104,7 @@ export async function addSet(entryId: string, init?: Partial<WorkoutSet>) {
     exerciseEntryId: entryId,
     weight: init?.weight ?? 0,
     reps: init?.reps ?? 0,
+    durationMin: init?.durationMin,
     rir: init?.rir,
     rpe: init?.rpe,
     restTime: init?.restTime,
@@ -113,6 +114,7 @@ export async function addSet(entryId: string, init?: Partial<WorkoutSet>) {
     timestamp: Date.now(),
   };
   await db.workoutSets.add(s);
+
   // Extra-set banter: only when user has already completed at least one set
   // for this entry (skips prefill / template-driven adds).
   // try {
@@ -168,8 +170,10 @@ export async function finishWorkout(workoutId: string, lang: string = "en") {
     endTime: end,
     durationSec,
     totalVolume: agg.totalVolume,
+    totalCardioMin: agg.totalCardioMin,
     estimatedCalories: estimateCalories(durationSec, agg.totalVolume),
   });
+
   const prsAdded = await detectPRs(workoutId);
   // Banter: completion quality + PRs + marathon
   try {
