@@ -1,13 +1,37 @@
-import { db, type MuscleGroup, type WorkoutSet, type Exercise } from "./db";
+import { db, type MuscleGroup, type WorkoutSet, type Exercise, type Workout } from "./db";
 
 // Epley estimated 1RM
 export const e1rm = (weight: number, reps: number) => (reps <= 0 ? 0 : weight * (1 + reps / 30));
+
+/** Cardio exercises are tracked in minutes, not weight × reps. */
+export const isCardioExercise = (ex?: Pick<Exercise, "muscleGroup" | "category">) =>
+  ex?.muscleGroup === "cardio" || ex?.category === "cardio";
+
+/** Minutes logged for a cardio set (0 when not completed). */
+export const setMinutes = (s: WorkoutSet) => (s.completed ? (s.durationMin ?? 0) : 0);
 
 export const setVolume = (s: WorkoutSet) => (s.completed ? s.weight * s.reps : 0);
 
 export function formatWeight(kg: number, unit: "kg" | "lb" = "kg") {
   if (unit === "lb") return `${(kg * 2.20462).toFixed(1)} lb`;
   return `${kg % 1 === 0 ? kg : kg.toFixed(1)} kg`;
+}
+
+export function formatMinutes(min: number) {
+  const v = Math.round(min * 10) / 10;
+  return `${v % 1 === 0 ? v : v.toFixed(1)} min`;
+}
+
+/**
+ * One-line volume summary for a session: strength volume in kg plus cardio
+ * minutes. Falls back to cardio-only when the session had no strength work.
+ */
+export function formatSessionVolume(w: Pick<Workout, "totalVolume" | "totalCardioMin">) {
+  const vol = Math.round(w.totalVolume ?? 0);
+  const cardio = w.totalCardioMin ?? 0;
+  if (cardio > 0 && vol > 0) return `${formatWeight(vol)} · ${formatMinutes(cardio)}`;
+  if (cardio > 0) return formatMinutes(cardio);
+  return formatWeight(vol);
 }
 
 export function formatDuration(sec: number) {
@@ -23,6 +47,7 @@ export function estimateCalories(durationSec: number, totalVolume: number) {
   const minutes = durationSec / 60;
   return Math.round(minutes * 5 + totalVolume * 0.04);
 }
+
 
 export interface WorkoutAggregate {
   workoutId: string;
