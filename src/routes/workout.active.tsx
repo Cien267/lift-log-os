@@ -481,6 +481,7 @@ function ExerciseCard({
 function SetRow({
   index,
   set,
+  cardio = false,
   onChange,
   onComplete,
   onDuplicate,
@@ -488,6 +489,7 @@ function SetRow({
 }: {
   index: number;
   set: WorkoutSet;
+  cardio?: boolean;
   onChange: (p: Partial<WorkoutSet>) => void;
   onComplete: () => void;
   onDuplicate: () => void;
@@ -500,18 +502,32 @@ function SetRow({
   return (
     <li
       className={
-        "grid grid-cols-[28px_1fr_1fr_44px_44px] items-center gap-2 rounded-lg px-1 py-1 transition-colors " +
+        "grid items-center gap-2 rounded-lg px-1 py-1 transition-colors " +
+        (cardio ? "grid-cols-[28px_1fr_44px_44px] " : "grid-cols-[28px_1fr_1fr_44px_44px] ") +
         (isWarmup ? "bg-warning/10" : done ? "bg-primary/10" : "")
       }
     >
       <span className="num text-center text-xs font-bold text-muted-foreground">{index}</span>
-      <NumberField
-        value={set.weight}
-        onChange={(v) => onChange({ weight: v })}
-        step={2.5}
-        suffix="kg"
-      />
-      <NumberField value={set.reps} onChange={(v) => onChange({ reps: v })} step={1} />
+      {cardio ? (
+        // Cardio sets are logged in minutes — no weight, no reps.
+        <NumberField
+          value={set.durationMin ?? 0}
+          onChange={(v) => onChange({ durationMin: v })}
+          step={1}
+          suffix="min"
+        />
+      ) : (
+        <>
+          <NumberField
+            value={set.weight}
+            onChange={(v) => onChange({ weight: v })}
+            step={2.5}
+            suffix="kg"
+          />
+          <NumberField value={set.reps} onChange={(v) => onChange({ reps: v })} step={1} />
+        </>
+      )}
+
       <button
         onClick={onComplete}
         className={
