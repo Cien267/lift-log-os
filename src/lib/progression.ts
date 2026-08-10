@@ -199,7 +199,13 @@ const L: Record<"en" | "vi", Localized> = {
     deloadDrop: (pct) => `Reps giảm ~${pct}% buổi trước - giữ nguyên hoặc giảm để lấy lại nhịp.`,
     deloadInconsistent: "Vài buổi gần đây chưa ổn định - ở lại mức này cho đến khi thấy chắc.",
     firstSteady: "Mới có một buổi - lặp lại mức tạ này để xem tiến triển.",
+    cardioNew: "Buổi cardio đầu tiên - chọn thời lượng bạn giữ được thoải mái.",
+    cardioFirstSteady: "Mới có một buổi - lặp lại đúng thời lượng này để xem cảm giác.",
+    cardioIncrease: (min) => `Bạn hoàn thành mọi set - thử ${min} phút mỗi set hôm nay.`,
+    cardioHold: (min) => `Giữ ${min} phút mỗi set và hoàn thành hết để tiến bộ.`,
+    cardioDeload: "Buổi trước chưa trọn vẹn - giữ thời lượng này cho đến khi thấy nhẹ.",
   },
+
 };
 
 export interface ComputeOptions {
