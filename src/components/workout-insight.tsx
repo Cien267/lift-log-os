@@ -91,14 +91,24 @@ export function InsightView({
             {t("common.volume")}
           </p>
           <p className="num text-base font-bold">
-            {formatWeight(Math.round(insight.current.totalVolume))}
+            {formatSessionVolume({
+              totalVolume: insight.current.totalVolume,
+              totalCardioMin: insight.current.totalCardioMin,
+            })}
           </p>
-          {hasPrev && (
+          {hasPrev && insight.current.totalVolume > 0 && (
             <p className={cn("num text-[11px] font-medium", volColor)}>
               {fmtPct(insight.totalVolumePct)}
             </p>
           )}
+          {hasPrev && insight.current.totalVolume === 0 && !!insight.cardioMinDelta && (
+            <p className="num text-[11px] text-muted-foreground">
+              {insight.cardioMinDelta > 0 ? "+" : ""}
+              {Math.round(insight.cardioMinDelta)}m {t("common.vsLast")}
+            </p>
+          )}
         </div>
+
         <div className="rounded-xl border border-border bg-card p-3">
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Sets</p>
           <p className="num text-base font-bold">{insight.current.totalSets}</p>
