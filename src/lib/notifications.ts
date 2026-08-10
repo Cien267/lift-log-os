@@ -55,6 +55,18 @@ const WHATS_NEW = (lang = "en"): WhatsNewEntry[] => [
         ? "Capture your best post-workout photo and let Forge automatically overlay your workout summary. You can also create a shareable image from any previous workout in History. Multiple layouts, customizable colors, and social-ready exports are included. Finish your next workout to unlock and try this feature."
         : "Chụp lại khoảnh khắc sau buổi tập và để Forge tự động thêm các chỉ số tập luyện lên ảnh. Bạn cũng có thể tạo ảnh từ bất kỳ buổi tập nào trong Lịch sử. Hỗ trợ nhiều bố cục, tùy chỉnh màu sắc và xuất ảnh sẵn sàng để chia sẻ lên mạng xã hội. Hoàn thành buổi tập tiếp theo để mở khóa và trải nghiệm tính năng này.",
   },
+  {
+    version: "1.2.3",
+    title: lang === "en" ? "Cardio tracking is here" : "Đã hỗ trợ theo dõi Cardio",
+    subtitle:
+      lang === "en"
+        ? "Track cardio by time, not reps"
+        : "Theo dõi Cardio theo thời gian thay vì số reps",
+    body:
+      lang === "en"
+        ? "Forge now supports Cardio as a dedicated training type. Cardio exercises use minutes instead of reps and no longer require weight, making it easier to track running, cycling, walking, and other time-based cardio sessions."
+        : "Forge giờ đây hỗ trợ Cardio như một loại hình tập luyện riêng. Các bài Cardio sử dụng số phút thay vì số reps và không yêu cầu mức tạ, giúp bạn dễ dàng theo dõi chạy bộ, đạp xe, đi bộ và các bài tập Cardio dựa trên thời gian.",
+  },
 ];
 
 export async function createNotification(

@@ -43,7 +43,6 @@ export interface ProgressionSuggestion {
   sessionsAnalyzed: number;
 }
 
-
 const median = (xs: number[]) => {
   if (xs.length === 0) return 0;
   const s = [...xs].sort((a, b) => a - b);
@@ -169,7 +168,6 @@ interface Localized {
   cardioDeload: string;
 }
 
-
 const L: Record<"en" | "vi", Localized> = {
   en: {
     new: "First time logging this - start light, focus on form.",
@@ -205,7 +203,6 @@ const L: Record<"en" | "vi", Localized> = {
     cardioHold: (min) => `Giữ ${min} phút mỗi set và hoàn thành hết để tiến bộ.`,
     cardioDeload: "Buổi trước chưa trọn vẹn - giữ thời lượng này cho đến khi thấy nhẹ.",
   },
-
 };
 
 export interface ComputeOptions {
@@ -262,7 +259,9 @@ function cardioSuggestion(
   const prev = history[1];
   const prevTotal = prev.totalMinutes;
   const dropPct =
-    prevTotal > 0 ? Math.max(0, Math.round(((prevTotal - last.totalMinutes) / prevTotal) * 100)) : 0;
+    prevTotal > 0
+      ? Math.max(0, Math.round(((prevTotal - last.totalMinutes) / prevTotal) * 100))
+      : 0;
 
   if (!last.allSetsCompleted || dropPct >= 15) {
     return {
@@ -303,7 +302,6 @@ function cardioSuggestion(
   };
 }
 
-
 export function computeProgressionSuggestion(
   exercise: Exercise | undefined,
   history: SessionSnapshot[],
@@ -329,7 +327,6 @@ export function computeProgressionSuggestion(
       sessionsAnalyzed: 0,
     };
   }
-
 
   const last = history[0];
   const prevWeight = last.workingWeight;
@@ -494,4 +491,3 @@ export async function getPreviousSessionSets(
   }
   return [];
 }
-
