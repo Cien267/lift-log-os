@@ -292,8 +292,10 @@ function ExerciseCard({
 }) {
   const prefillRef = useRef(false);
   const { t } = useT();
+  const cardio = isCardioExercise(exercise);
   const [suggestion, setSuggestion] = useState<ProgressionSuggestion | null>(null);
   const [dismissed, setDismissed] = useState(false);
+
   useEffect(() => {
     if (prefillRef.current) return;
     prefillRef.current = true;
