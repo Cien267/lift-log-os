@@ -7,7 +7,7 @@ import {
   type WorkoutTemplate,
   type PersonalRecord,
 } from "./db";
-import { computeWorkoutAggregate, e1rm, estimateCalories } from "./analytics";
+import { computeWorkoutAggregate, e1rm, estimateCalories, isCardioExercise } from "./analytics";
 import { banter } from "./banter";
 
 const ACTIVE_KEY = "forge.activeWorkoutId";
@@ -225,21 +225,33 @@ async function detectPRs(workoutId: string): Promise<number> {
     const sets = await db.workoutSets.where("exerciseEntryId").equals(entry.id).toArray();
     const completed = sets.filter((s) => s.completed && !s.isWarmup);
     if (completed.length === 0) continue;
+    const ex = await db.exercises.get(entry.exerciseId);
     const allPrev = await db.prs.where("exerciseId").equals(entry.exerciseId).toArray();
-    const bestWeight = Math.max(...completed.map((s) => s.weight));
-    const bestE1rm = Math.max(...completed.map((s) => e1rm(s.weight, s.reps)));
-    const totalVol = completed.reduce((a, s) => a + s.weight * s.reps, 0);
 
     const checks: {
       type: PersonalRecord["type"];
       value: number;
       weight?: number;
       reps?: number;
-    }[] = [
-      { type: "weight", value: bestWeight, weight: bestWeight },
-      { type: "e1rm", value: bestE1rm },
-      { type: "volume", value: totalVol },
-    ];
+    }[] = [];
+
+    if (isCardioExercise(ex)) {
+      // Cardio records are duration-based: longest single set and total minutes.
+      const bestMin = Math.max(...completed.map((s) => s.durationMin ?? 0));
+      const totalMin = completed.reduce((a, s) => a + (s.durationMin ?? 0), 0);
+      if (totalMin <= 0) continue;
+      checks.push({ type: "duration", value: bestMin }, { type: "volume", value: totalMin });
+    } else {
+      const bestWeight = Math.max(...completed.map((s) => s.weight));
+      const bestE1rm = Math.max(...completed.map((s) => e1rm(s.weight, s.reps)));
+      const totalVol = completed.reduce((a, s) => a + s.weight * s.reps, 0);
+      checks.push(
+        { type: "weight", value: bestWeight, weight: bestWeight },
+        { type: "e1rm", value: bestE1rm },
+        { type: "volume", value: totalVol },
+      );
+    }
+
     for (const c of checks) {
       const prev = allPrev.filter((p) => p.type === c.type).sort((a, b) => b.value - a.value)[0];
       if (!prev || c.value > prev.value) {

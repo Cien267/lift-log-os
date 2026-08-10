@@ -148,7 +148,7 @@ export interface RecoveryLog {
 export interface PersonalRecord {
   id: string;
   exerciseId: string;
-  type: "weight" | "reps" | "volume" | "e1rm";
+  type: "weight" | "reps" | "volume" | "e1rm" | "duration";
   value: number;
   weight?: number;
   reps?: number;
