@@ -121,8 +121,9 @@ function WorkoutDetail() {
           <h1 className="text-lg font-semibold">{workout.name ?? `${workout.location} workout`}</h1>
           <p className="num text-xs text-muted-foreground">
             {formatDate(workout.date, lang)} · {formatDuration(workout.durationSec ?? 0)} ·{" "}
-            {formatWeight(Math.round(workout.totalVolume ?? 0))}
+            {formatSessionVolume(workout)}
           </p>
+
         </div>
         <Dialog open={openUpdateDate} onOpenChange={setOpenUpdateDate}>
           <DialogTrigger asChild>
