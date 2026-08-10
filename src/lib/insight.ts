@@ -157,6 +157,8 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
     prevAgg && prevAgg.totalVolume > 0 ? (totalVolumeDelta / prevAgg.totalVolume) * 100 : 0;
   const totalSetsDelta = curAgg.totalSets - (prevAgg?.totalSets ?? 0);
   const durationDelta = curDur - prevDur;
+  const cardioMinDelta = curAgg.totalCardioMin - (prevAgg?.totalCardioMin ?? 0);
+  const cardioOnly = curAgg.totalVolume === 0 && curAgg.totalCardioMin > 0;
 
   let headline: string;
   if (!prev) {
@@ -166,6 +168,15 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
     const regress = exercises.filter((e) => e.verdict === "regress").length;
     if (prs > 0) {
       headline = `${prs} new personal record${prs > 1 ? "s" : ""}!`;
+    } else if (cardioOnly) {
+      // Cardio sessions are compared by minutes, not kilograms.
+      const min = Math.round(curAgg.totalCardioMin);
+      headline =
+        cardioMinDelta > 0
+          ? `Longer cardio session — ${min} min, +${Math.round(cardioMinDelta)} min vs last time.`
+          : cardioMinDelta < 0
+            ? `Shorter cardio session — ${min} min, ${Math.round(cardioMinDelta)} min vs last time.`
+            : `Steady cardio session — ${min} min logged.`;
     } else if (totalVolumeDelta > 0 && progress >= regress) {
       headline = `Stronger session — +${Math.round(totalVolumePct)}% volume vs last time.`;
     } else if (totalVolumeDelta < 0) {
@@ -184,19 +195,23 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
       totalVolume: curAgg.totalVolume,
       totalSets: curAgg.totalSets,
       durationSec: curDur,
+      totalCardioMin: curAgg.totalCardioMin,
     },
     previous: prevAgg
       ? {
           totalVolume: prevAgg.totalVolume,
           totalSets: prevAgg.totalSets,
           durationSec: prevDur,
+          totalCardioMin: prevAgg.totalCardioMin,
         }
       : undefined,
     totalVolumeDelta,
     totalVolumePct,
     totalSetsDelta,
     durationDelta,
+    cardioMinDelta,
     prCount: prs,
+
     headline,
     exercises,
   };
