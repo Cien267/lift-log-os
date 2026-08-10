@@ -423,16 +423,28 @@ function ExerciseCard({
           suggestion={suggestion}
           currentWeight={workingSet?.weight}
           currentReps={workingSet?.reps}
+          currentMinutes={workingSet?.durationMin}
           onApply={onApplySuggestion}
           onDismiss={() => setDismissed(true)}
         />
       )}
 
       <div className="px-3">
-        <div className="grid grid-cols-[28px_1fr_1fr_44px_44px] items-center gap-2 pb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+        <div
+          className={
+            "grid items-center gap-2 pb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground " +
+            (cardio ? "grid-cols-[28px_1fr_44px_44px]" : "grid-cols-[28px_1fr_1fr_44px_44px]")
+          }
+        >
           <span>Set</span>
-          <span className="text-center">Weight (kg)</span>
-          <span className="text-center">Reps</span>
+          {cardio ? (
+            <span className="text-center">Minutes</span>
+          ) : (
+            <>
+              <span className="text-center">Weight (kg)</span>
+              <span className="text-center">Reps</span>
+            </>
+          )}
           <span />
           <span />
         </div>
@@ -443,6 +455,7 @@ function ExerciseCard({
               key={s.id}
               index={i + 1}
               set={s}
+              cardio={cardio}
               onChange={(patch) => updateSet(s.id, patch)}
               onComplete={() => onComplete(s)}
               onDuplicate={() => onDuplicate(s)}
@@ -450,6 +463,7 @@ function ExerciseCard({
             />
           ))}
         </ul>
+
 
         <Button
           onClick={onAdd}
