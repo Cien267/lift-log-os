@@ -162,7 +162,13 @@ interface Localized {
   deloadDrop: (pct: number) => string;
   deloadInconsistent: string;
   firstSteady: string;
+  cardioNew: string;
+  cardioFirstSteady: string;
+  cardioIncrease: (min: number) => string;
+  cardioHold: (min: number) => string;
+  cardioDeload: string;
 }
+
 
 const L: Record<"en" | "vi", Localized> = {
   en: {
