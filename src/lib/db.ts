@@ -45,8 +45,10 @@ export interface Exercise {
 export interface WorkoutSet {
   id: string;
   exerciseEntryId: string; // FK -> WorkoutExercise.id
-  weight: number; // kg
-  reps: number;
+  weight: number; // kg — always 0 for cardio exercises
+  reps: number; // always 0 for cardio exercises
+  /** Cardio only: duration of this set in minutes. */
+  durationMin?: number;
   rir?: number;
   rpe?: number;
   restTime?: number; // seconds actually taken
@@ -55,6 +57,7 @@ export interface WorkoutSet {
   notes?: string;
   timestamp: number;
 }
+
 
 export interface WorkoutExercise {
   id: string;
@@ -80,8 +83,11 @@ export interface Workout {
   mood?: 1 | 2 | 3 | 4 | 5;
   energyLevel?: 1 | 2 | 3 | 4 | 5;
   totalVolume?: number;
+  /** Total cardio minutes logged in this session. */
+  totalCardioMin?: number;
   estimatedCalories?: number;
   insight?: any;
+
 }
 
 export interface TemplateExercise {
@@ -142,7 +148,7 @@ export interface RecoveryLog {
 export interface PersonalRecord {
   id: string;
   exerciseId: string;
-  type: "weight" | "reps" | "volume" | "e1rm";
+  type: "weight" | "reps" | "volume" | "e1rm" | "duration";
   value: number;
   weight?: number;
   reps?: number;

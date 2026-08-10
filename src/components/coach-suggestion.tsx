@@ -7,9 +7,11 @@ interface Props {
   suggestion: ProgressionSuggestion;
   currentWeight?: number;
   currentReps?: number;
+  currentMinutes?: number;
   onApply: () => void;
   onDismiss: () => void;
 }
+
 
 const styleFor = (v: ProgressionVerdict) => {
   switch (v) {
@@ -65,24 +67,34 @@ export function CoachSuggestion({
   suggestion,
   currentWeight,
   currentReps,
+  currentMinutes,
   onApply,
   onDismiss,
 }: Props) {
   const { lang } = useT();
   const s = styleFor(suggestion.verdict);
   const { Icon } = s;
+  const cardio = !!suggestion.isCardio;
+  const suggestedMinutes = suggestion.minutes ?? 0;
 
-  const alreadyApplied =
-    currentWeight !== undefined &&
-    currentReps !== undefined &&
-    Math.abs(currentWeight - suggestion.weight) < 0.001 &&
-    currentReps === suggestion.reps;
+  const alreadyApplied = cardio
+    ? currentMinutes !== undefined && Math.abs(currentMinutes - suggestedMinutes) < 0.001
+    : currentWeight !== undefined &&
+      currentReps !== undefined &&
+      Math.abs(currentWeight - suggestion.weight) < 0.001 &&
+      currentReps === suggestion.reps;
 
   const applyLabel = lang === "vi" ? "Áp dụng" : "Apply";
   const dismissLabel = lang === "vi" ? "Ẩn" : "Dismiss";
   const appliedLabel = lang === "vi" ? "Đã áp dụng" : "Applied";
   const targetLabel = lang === "vi" ? "Gợi ý" : "Suggested";
   const setsWord = lang === "vi" ? "sets" : "sets";
+  const minWord = lang === "vi" ? "phút" : "min";
+
+  // Cardio targets are expressed in minutes per set, never in kg × reps.
+  const targetText = cardio
+    ? `${suggestedMinutes % 1 === 0 ? suggestedMinutes : suggestedMinutes.toFixed(1)} ${minWord} · ${suggestion.sets} ${setsWord}`
+    : `${suggestion.weight % 1 === 0 ? suggestion.weight : suggestion.weight.toFixed(1)} kg × ${suggestion.reps} · ${suggestion.sets} ${setsWord}`;
 
   return (
     <div className={`mx-3 mt-2 mb-4 rounded-xl border ${s.border} ${s.bg} px-3 py-2.5`}>
@@ -98,9 +110,7 @@ export function CoachSuggestion({
               {labelFor(suggestion.verdict, lang)}
             </p>
             <p className="num text-[11px] text-muted-foreground">
-              {targetLabel}:{" "}
-              {suggestion.weight % 1 === 0 ? suggestion.weight : suggestion.weight.toFixed(1)} kg ×{" "}
-              {suggestion.reps} · {suggestion.sets} {setsWord}
+              {targetLabel}: {targetText}
             </p>
           </div>
           <p className="mt-0.5 text-[12px] leading-snug text-foreground/85">{suggestion.reason}</p>

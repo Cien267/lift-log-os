@@ -1,6 +1,6 @@
 import { TrendingUp, TrendingDown, Minus, Trophy, Sparkles } from "lucide-react";
 import type { WorkoutInsight, ExerciseInsight } from "@/lib/insight";
-import { formatDuration, formatWeight } from "@/lib/analytics";
+import { formatDuration, formatWeight, formatSessionVolume, formatMinutes } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils";
@@ -91,14 +91,24 @@ export function InsightView({
             {t("common.volume")}
           </p>
           <p className="num text-base font-bold">
-            {formatWeight(Math.round(insight.current.totalVolume))}
+            {formatSessionVolume({
+              totalVolume: insight.current.totalVolume,
+              totalCardioMin: insight.current.totalCardioMin,
+            })}
           </p>
-          {hasPrev && (
+          {hasPrev && insight.current.totalVolume > 0 && (
             <p className={cn("num text-[11px] font-medium", volColor)}>
               {fmtPct(insight.totalVolumePct)}
             </p>
           )}
+          {hasPrev && insight.current.totalVolume === 0 && !!insight.cardioMinDelta && (
+            <p className="num text-[11px] text-muted-foreground">
+              {insight.cardioMinDelta > 0 ? "+" : ""}
+              {Math.round(insight.cardioMinDelta)}m {t("common.vsLast")}
+            </p>
+          )}
         </div>
+
         <div className="rounded-xl border border-border bg-card p-3">
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Sets</p>
           <p className="num text-base font-bold">{insight.current.totalSets}</p>
@@ -134,28 +144,47 @@ export function InsightView({
                 <p className="truncate text-sm font-semibold">{e.exerciseName}</p>
                 <VerdictIcon v={e.verdict} />
               </div>
-              <div className="mt-2 grid grid-cols-4 gap-1.5">
-                <Stat
-                  label="Top"
-                  cur={formatWeight(e.currentTopWeight)}
-                  prev={e.verdict !== "new" ? formatWeight(e.prevTopWeight) : undefined}
-                />
-                <Stat
-                  label="Sets"
-                  cur={e.currentSets}
-                  prev={e.verdict !== "new" ? e.prevSets : undefined}
-                />
-                <Stat
-                  label="Reps"
-                  cur={e.currentTotalReps}
-                  prev={e.verdict !== "new" ? e.prevTotalReps : undefined}
-                />
-                <Stat
-                  label="e1RM"
-                  cur={Math.round(e.currentBestE1rm)}
-                  prev={e.verdict !== "new" ? Math.round(e.prevBestE1rm) : undefined}
-                />
-              </div>
+              {e.isCardio ? (
+                // Cardio is summarized by minutes, not load.
+                <div className="mt-2 grid grid-cols-2 gap-1.5">
+                  <Stat
+                    label="Minutes"
+                    cur={formatMinutes(e.currentTotalMinutes ?? 0)}
+                    prev={
+                      e.verdict !== "new" ? formatMinutes(e.prevTotalMinutes ?? 0) : undefined
+                    }
+                  />
+                  <Stat
+                    label="Sets"
+                    cur={e.currentSets}
+                    prev={e.verdict !== "new" ? e.prevSets : undefined}
+                  />
+                </div>
+              ) : (
+                <div className="mt-2 grid grid-cols-4 gap-1.5">
+                  <Stat
+                    label="Top"
+                    cur={formatWeight(e.currentTopWeight)}
+                    prev={e.verdict !== "new" ? formatWeight(e.prevTopWeight) : undefined}
+                  />
+                  <Stat
+                    label="Sets"
+                    cur={e.currentSets}
+                    prev={e.verdict !== "new" ? e.prevSets : undefined}
+                  />
+                  <Stat
+                    label="Reps"
+                    cur={e.currentTotalReps}
+                    prev={e.verdict !== "new" ? e.prevTotalReps : undefined}
+                  />
+                  <Stat
+                    label="e1RM"
+                    cur={Math.round(e.currentBestE1rm)}
+                    prev={e.verdict !== "new" ? Math.round(e.prevBestE1rm) : undefined}
+                  />
+                </div>
+              )}
+
             </div>
           ))}
         </div>

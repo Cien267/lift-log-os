@@ -1,5 +1,5 @@
 import { db, type Exercise, type WorkoutSet } from "./db";
-import { e1rm } from "./analytics";
+import { e1rm, isCardioExercise } from "./analytics";
 
 export type ProgressionVerdict = "increase" | "hold" | "deload" | "new";
 
@@ -13,25 +13,36 @@ export interface SessionSnapshot {
   totalReps: number;
   bestE1rm: number;
   allSetsCompleted: boolean;
+  /** Cardio only: minutes per working set. */
+  workingMinutes: number[];
+  /** Cardio only: total minutes across working sets. */
+  totalMinutes: number;
 }
 
 export interface ProgressionSuggestion {
   verdict: ProgressionVerdict;
-  /** suggested working weight for today (kg) */
+  /** suggested working weight for today (kg) — always 0 for cardio */
   weight: number;
-  /** suggested reps per set for today */
+  /** suggested reps per set for today — always 0 for cardio */
   reps: number;
   /** suggested number of working sets */
   sets: number;
+  /** cardio only: suggested minutes per set */
+  minutes?: number;
+  /** true when the exercise is tracked in minutes instead of weight × reps */
+  isCardio?: boolean;
   /** previous session working weight (if any) */
   prevWeight?: number;
   /** previous session median reps (if any) */
   prevReps?: number;
+  /** previous session median minutes (cardio only) */
+  prevMinutes?: number;
   /** short 1-line reason, localized */
   reason: string;
   /** history depth used */
   sessionsAnalyzed: number;
 }
+
 
 const median = (xs: number[]) => {
   if (xs.length === 0) return 0;
@@ -88,6 +99,9 @@ export async function getExerciseSessionHistory(
     )
     .sort((a, b) => b.workout!.startTime - a.workout!.startTime);
 
+  const exercise = await db.exercises.get(exerciseId);
+  const cardio = isCardioExercise(exercise);
+
   const snapshots: SessionSnapshot[] = [];
   for (const r of rows) {
     if (snapshots.length >= limit) break;
@@ -95,6 +109,28 @@ export async function getExerciseSessionHistory(
     const working = sets.filter((s) => !s.isWarmup);
     const completed = working.filter((s) => s.completed);
     if (completed.length === 0) continue;
+    const allSetsCompleted = completed.length === working.length && working.length > 0;
+
+    if (cardio) {
+      const workingMinutes = completed.map((s) => s.durationMin ?? 0);
+      const totalMinutes = workingMinutes.reduce((a, m) => a + m, 0);
+      if (totalMinutes <= 0) continue;
+      snapshots.push({
+        workoutId: r.workout!.id,
+        date: r.workout!.date,
+        startTime: r.workout!.startTime,
+        workingWeight: 0,
+        workingSets: completed.length,
+        workingReps: [],
+        totalReps: 0,
+        bestE1rm: 0,
+        allSetsCompleted,
+        workingMinutes,
+        totalMinutes,
+      });
+      continue;
+    }
+
     const workingWeight = Math.max(...completed.map((s) => s.weight));
     const atWorking = completed.filter((s) => s.weight >= workingWeight - 0.001);
     const workingReps = atWorking.map((s) => s.reps);
@@ -108,9 +144,12 @@ export async function getExerciseSessionHistory(
       workingReps,
       totalReps: completed.reduce((a, s) => a + s.reps, 0),
       bestE1rm,
-      allSetsCompleted: completed.length === working.length && working.length > 0,
+      allSetsCompleted,
+      workingMinutes: [],
+      totalMinutes: 0,
     });
   }
+
   return snapshots;
 }
 
@@ -123,7 +162,13 @@ interface Localized {
   deloadDrop: (pct: number) => string;
   deloadInconsistent: string;
   firstSteady: string;
+  cardioNew: string;
+  cardioFirstSteady: string;
+  cardioIncrease: (min: number) => string;
+  cardioHold: (min: number) => string;
+  cardioDeload: string;
 }
+
 
 const L: Record<"en" | "vi", Localized> = {
   en: {
@@ -137,7 +182,13 @@ const L: Record<"en" | "vi", Localized> = {
     deloadDrop: (pct) => `Reps dropped ~${pct}% last time - hold or lighten to reset the pattern.`,
     deloadInconsistent: "Recent sessions look uneven - stay at this weight until it feels solid.",
     firstSteady: "One session on record - repeat the weight and see how it moves.",
+    cardioNew: "First cardio session for this - pick a duration you can hold comfortably.",
+    cardioFirstSteady: "One session on record - repeat the same duration and see how it feels.",
+    cardioIncrease: (min) => `You finished every interval - try ${min} min per set today.`,
+    cardioHold: (min) => `Hold ${min} min per set and finish every interval to progress.`,
+    cardioDeload: "Last session came up short - stay at this duration until it feels easy.",
   },
+
   vi: {
     new: "Lần đầu tập bài này - bắt đầu nhẹ, tập trung vào kỹ thuật.",
     increaseReady: (w) =>
@@ -148,13 +199,110 @@ const L: Record<"en" | "vi", Localized> = {
     deloadDrop: (pct) => `Reps giảm ~${pct}% buổi trước - giữ nguyên hoặc giảm để lấy lại nhịp.`,
     deloadInconsistent: "Vài buổi gần đây chưa ổn định - ở lại mức này cho đến khi thấy chắc.",
     firstSteady: "Mới có một buổi - lặp lại mức tạ này để xem tiến triển.",
+    cardioNew: "Buổi cardio đầu tiên - chọn thời lượng bạn giữ được thoải mái.",
+    cardioFirstSteady: "Mới có một buổi - lặp lại đúng thời lượng này để xem cảm giác.",
+    cardioIncrease: (min) => `Bạn hoàn thành mọi set - thử ${min} phút mỗi set hôm nay.`,
+    cardioHold: (min) => `Giữ ${min} phút mỗi set và hoàn thành hết để tiến bộ.`,
+    cardioDeload: "Buổi trước chưa trọn vẹn - giữ thời lượng này cho đến khi thấy nhẹ.",
   },
+
 };
 
 export interface ComputeOptions {
   targetSets?: number;
   lang?: "en" | "vi";
 }
+
+/** Round minutes to a friendly value (nearest 0.5 min, min 1). */
+const roundMinutes = (v: number) => Math.max(1, Math.round(v * 2) / 2);
+
+/**
+ * Cardio progression: duration-based. Increase minutes only after a session
+ * where every interval was completed; hold otherwise, and ease back when the
+ * previous session lost duration.
+ */
+function cardioSuggestion(
+  history: SessionSnapshot[],
+  loc: Localized,
+  opts: ComputeOptions,
+): ProgressionSuggestion {
+  const base: Pick<ProgressionSuggestion, "isCardio" | "weight" | "reps"> = {
+    isCardio: true,
+    weight: 0,
+    reps: 0,
+  };
+
+  if (history.length === 0) {
+    return {
+      ...base,
+      verdict: "new",
+      minutes: 10,
+      sets: opts.targetSets ?? 1,
+      reason: loc.cardioNew,
+      sessionsAnalyzed: 0,
+    };
+  }
+
+  const last = history[0];
+  const prevMinutes = roundMinutes(median(last.workingMinutes));
+  const targetSets = opts.targetSets ?? Math.max(last.workingSets, 1);
+
+  if (history.length === 1) {
+    return {
+      ...base,
+      verdict: "hold",
+      minutes: prevMinutes,
+      sets: targetSets,
+      prevMinutes,
+      reason: loc.cardioFirstSteady,
+      sessionsAnalyzed: 1,
+    };
+  }
+
+  const prev = history[1];
+  const prevTotal = prev.totalMinutes;
+  const dropPct =
+    prevTotal > 0 ? Math.max(0, Math.round(((prevTotal - last.totalMinutes) / prevTotal) * 100)) : 0;
+
+  if (!last.allSetsCompleted || dropPct >= 15) {
+    return {
+      ...base,
+      verdict: "deload",
+      minutes: prevMinutes,
+      sets: targetSets,
+      prevMinutes,
+      reason: loc.cardioDeload,
+      sessionsAnalyzed: history.length,
+    };
+  }
+
+  // Steady and complete for two sessions at the same duration → add time.
+  const prevMedian = roundMinutes(median(prev.workingMinutes));
+  const sameDuration = Math.abs(prevMedian - prevMinutes) < 0.001;
+  if (prev.allSetsCompleted && sameDuration) {
+    const nextMinutes = roundMinutes(prevMinutes + (prevMinutes >= 20 ? 5 : 2));
+    return {
+      ...base,
+      verdict: "increase",
+      minutes: nextMinutes,
+      sets: targetSets,
+      prevMinutes,
+      reason: loc.cardioIncrease(nextMinutes),
+      sessionsAnalyzed: history.length,
+    };
+  }
+
+  return {
+    ...base,
+    verdict: "hold",
+    minutes: prevMinutes,
+    sets: targetSets,
+    prevMinutes,
+    reason: loc.cardioHold(prevMinutes),
+    sessionsAnalyzed: history.length,
+  };
+}
+
 
 export function computeProgressionSuggestion(
   exercise: Exercise | undefined,
@@ -164,19 +312,24 @@ export function computeProgressionSuggestion(
   const lang = opts.lang ?? "en";
   const loc = L[lang];
   const step = progressionStep(exercise);
-  const isBodyweight = exercise?.equipment === "bodyweight" || exercise?.category === "cardio";
+  const cardio = isCardioExercise(exercise);
+  const isBodyweight = exercise?.equipment === "bodyweight" || cardio;
+
+  // Cardio progresses by duration, never by load.
+  if (cardio) return cardioSuggestion(history, loc, opts);
 
   // No history
   if (history.length === 0) {
     return {
       verdict: "new",
       weight: 0,
-      reps: exercise?.category === "cardio" ? 0 : 8,
+      reps: 8,
       sets: opts.targetSets ?? 3,
       reason: loc.new,
       sessionsAnalyzed: 0,
     };
   }
+
 
   const last = history[0];
   const prevWeight = last.workingWeight;
@@ -318,7 +471,7 @@ export async function getProgressionSuggestion(
 export async function getPreviousSessionSets(
   exerciseId: string,
   excludeWorkoutId?: string,
-): Promise<Array<{ weight: number; reps: number; isWarmup?: boolean }>> {
+): Promise<Array<{ weight: number; reps: number; durationMin?: number; isWarmup?: boolean }>> {
   const entries = await db.workoutExercises.where("exerciseId").equals(exerciseId).toArray();
   if (entries.length === 0) return [];
   const workouts = await db.workouts.bulkGet([...new Set(entries.map((e) => e.workoutId))]);
@@ -331,7 +484,14 @@ export async function getPreviousSessionSets(
     const sets = await db.workoutSets.where("exerciseEntryId").equals(r.entry.id).toArray();
     const working = sets.filter((s) => !s.isWarmup).sort((a, b) => a.timestamp - b.timestamp);
     if (working.length === 0) continue;
-    return working.map((s) => ({ weight: s.weight, reps: s.reps, isWarmup: s.isWarmup }));
+    // Cardio sets carry minutes; strength sets carry weight × reps.
+    return working.map((s) => ({
+      weight: s.weight,
+      reps: s.reps,
+      durationMin: s.durationMin,
+      isWarmup: s.isWarmup,
+    }));
   }
   return [];
 }
+

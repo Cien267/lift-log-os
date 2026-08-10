@@ -4,7 +4,15 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { ArrowLeft, Trash2, Save, Pencil } from "lucide-react";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
-import { formatDuration, formatWeight, e1rm } from "@/lib/analytics";
+import {
+  formatDuration,
+  formatWeight,
+  formatSessionVolume,
+  formatMinutes,
+  isCardioExercise,
+  e1rm,
+} from "@/lib/analytics";
+
 import { createTemplateFromWorkout, discardWorkout } from "@/lib/workout-service";
 import { useState } from "react";
 import { InsightView } from "@/components/workout-insight";
@@ -113,8 +121,9 @@ function WorkoutDetail() {
           <h1 className="text-lg font-semibold">{workout.name ?? `${workout.location} workout`}</h1>
           <p className="num text-xs text-muted-foreground">
             {formatDate(workout.date, lang)} · {formatDuration(workout.durationSec ?? 0)} ·{" "}
-            {formatWeight(Math.round(workout.totalVolume ?? 0))}
+            {formatSessionVolume(workout)}
           </p>
+
         </div>
         <Dialog open={openUpdateDate} onOpenChange={setOpenUpdateDate}>
           <DialogTrigger asChild>
@@ -199,12 +208,16 @@ function WorkoutDetail() {
       <div className="space-y-3">
         {entries.map((e) => {
           const ex = exMap.get(e.exerciseId);
+          const cardio = isCardioExercise(ex);
           const entrySets = sets
             .filter((s) => s.exerciseEntryId === e.id)
             .sort((a, b) => a.timestamp - b.timestamp);
-          const best = entrySets
-            .filter((s) => s.completed)
-            .reduce((m, s) => Math.max(m, e1rm(s.weight, s.reps)), 0);
+          const best = cardio
+            ? 0
+            : entrySets.filter((s) => s.completed).reduce((m, s) => Math.max(m, e1rm(s.weight, s.reps)), 0);
+          const totalMin = cardio
+            ? entrySets.filter((s) => s.completed).reduce((a, s) => a + (s.durationMin ?? 0), 0)
+            : 0;
           return (
             <section key={e.id} className="rounded-2xl border border-border bg-card p-3">
               <header className="mb-2 flex items-center justify-between">
@@ -212,24 +225,37 @@ function WorkoutDetail() {
                   <h2 className="text-sm font-semibold">{ex?.name}</h2>
                   <p className="text-[11px] capitalize text-muted-foreground">{ex?.muscleGroup}</p>
                 </div>
-                {best > 0 && (
-                  <span className="num text-xs text-muted-foreground">
-                    e1RM {formatWeight(Math.round(best))}
-                  </span>
-                )}
+                {cardio
+                  ? totalMin > 0 && (
+                      <span className="num text-xs text-muted-foreground">
+                        {formatMinutes(totalMin)}
+                      </span>
+                    )
+                  : best > 0 && (
+                      <span className="num text-xs text-muted-foreground">
+                        e1RM {formatWeight(Math.round(best))}
+                      </span>
+                    )}
               </header>
               <ul className="space-y-1">
                 {entrySets.map((s, i) => (
                   <li
                     key={s.id}
                     className={
-                      "num grid grid-cols-[24px_1fr_1fr] gap-2 rounded-md px-2 py-1.5 text-sm " +
+                      "num grid gap-2 rounded-md px-2 py-1.5 text-sm " +
+                      (cardio ? "grid-cols-[24px_1fr] " : "grid-cols-[24px_1fr_1fr] ") +
                       (s.isWarmup ? "bg-warning/10" : s.completed ? "bg-primary/5" : "opacity-50")
                     }
                   >
                     <span className="text-xs text-muted-foreground">{i + 1}</span>
-                    <span>{formatWeight(s.weight)}</span>
-                    <span>{s.reps} reps</span>
+                    {cardio ? (
+                      <span>{formatMinutes(s.durationMin ?? 0)}</span>
+                    ) : (
+                      <>
+                        <span>{formatWeight(s.weight)}</span>
+                        <span>{s.reps} reps</span>
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -237,6 +263,7 @@ function WorkoutDetail() {
           );
         })}
       </div>
+
     </div>
   );
 }

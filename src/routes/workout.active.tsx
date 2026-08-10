@@ -24,7 +24,13 @@ import { RestTimerBar, startRest } from "@/components/rest-timer";
 import { ExercisePicker } from "@/components/exercise-picker";
 import { InsightView } from "@/components/workout-insight";
 import type { WorkoutInsight } from "@/lib/insight";
-import { formatDuration, formatWeight } from "@/lib/analytics";
+import {
+  formatDuration,
+  formatSessionVolume,
+  formatMinutes,
+  isCardioExercise,
+} from "@/lib/analytics";
+
 import { useSettings } from "@/hooks/use-settings";
 import {
   DropdownMenu,
@@ -109,8 +115,19 @@ function ActiveWorkoutPage() {
     return <div className="p-8 text-center text-sm text-muted-foreground">Workout not found.</div>;
   }
 
-  const totalVolume = sets.filter((s) => s.completed).reduce((a, s) => a + s.weight * s.reps, 0);
-  const completedSets = sets.filter((s) => s.completed).length;
+  // Cardio entries are summarized in minutes, strength entries in kg volume.
+  const cardioEntryIds = new Set(
+    entries.filter((e) => isCardioExercise(exMap.get(e.exerciseId))).map((e) => e.id),
+  );
+  const completed = sets.filter((s) => s.completed);
+  const totalVolume = completed
+    .filter((s) => !cardioEntryIds.has(s.exerciseEntryId))
+    .reduce((a, s) => a + s.weight * s.reps, 0);
+  const totalCardioMin = completed
+    .filter((s) => cardioEntryIds.has(s.exerciseEntryId))
+    .reduce((a, s) => a + (s.durationMin ?? 0), 0);
+  const completedSets = completed.length;
+
 
   const onPick = async (exerciseId: string) => {
     await addExerciseToWorkout(id, exerciseId);
@@ -140,8 +157,9 @@ function ActiveWorkoutPage() {
             </p>
             <p className="num text-[11px] text-muted-foreground">
               {formatDuration(elapsed)} · {completedSets} sets ·{" "}
-              {formatWeight(Math.round(totalVolume))}
+              {formatSessionVolume({ totalVolume, totalCardioMin })}
             </p>
+
           </div>
           <Button size="sm" onClick={onFinish} className="gap-1.5">
             <Check className="h-4 w-4" />
@@ -274,8 +292,10 @@ function ExerciseCard({
 }) {
   const prefillRef = useRef(false);
   const { t } = useT();
+  const cardio = isCardioExercise(exercise);
   const [suggestion, setSuggestion] = useState<ProgressionSuggestion | null>(null);
   const [dismissed, setDismissed] = useState(false);
+
   useEffect(() => {
     if (prefillRef.current) return;
     prefillRef.current = true;
@@ -289,15 +309,22 @@ function ExerciseCard({
         const prevSets = await getPreviousSessionSets(entry.exerciseId, workoutId);
         if (prevSets.length > 0) {
           for (const s of prevSets) {
-            await addSet(entryId, { weight: s.weight, reps: s.reps });
+            // Cardio carries minutes forward; strength carries weight × reps.
+            await addSet(
+              entryId,
+              cardio
+                ? { durationMin: s.durationMin, weight: 0, reps: 0 }
+                : { weight: s.weight, reps: s.reps },
+            );
           }
         } else {
-          const count = Math.max(targetSets ?? 3, 1);
+          const count = Math.max(targetSets ?? (cardio ? 1 : 3), 1);
           for (let i = 0; i < count; i++) {
             await addSet(entryId, {});
           }
         }
       }
+
 
       // 2) Compute progression suggestion only if the Training Assistant is enabled.
       if (enableTrainingAssistant) {
@@ -308,7 +335,7 @@ function ExerciseCard({
         setSuggestion(sug);
       }
     })();
-  }, [entryId, workoutId, targetSets, lang, enableTrainingAssistant]);
+  }, [entryId, workoutId, targetSets, lang, enableTrainingAssistant, cardio]);
 
   const sorted = [...sets].sort((a, b) => a.timestamp - b.timestamp);
 
@@ -325,23 +352,30 @@ function ExerciseCard({
     }
   };
 
+  const setInit = (s?: WorkoutSet) => {
+    if (!s) return {};
+    return cardio ? { durationMin: s.durationMin, weight: 0, reps: 0 } : { weight: s.weight, reps: s.reps };
+  };
+
   const onAdd = async () => {
-    const last = sorted[sorted.length - 1];
-    await addSet(entryId, last ? { weight: last.weight, reps: last.reps } : {});
+    await addSet(entryId, setInit(sorted[sorted.length - 1]));
   };
 
   const onDuplicate = async (s: WorkoutSet) => {
-    await addSet(entryId, { weight: s.weight, reps: s.reps });
+    await addSet(entryId, setInit(s));
   };
 
   const onApplySuggestion = async () => {
     if (!suggestion || !enableTrainingAssistant) return;
+    const patch = cardio
+      ? { durationMin: suggestion.minutes ?? 0, weight: 0, reps: 0 }
+      : { weight: suggestion.weight, reps: suggestion.reps };
     // Only update sets that haven't been completed and aren't warmups —
     // never overwrite what the user already logged.
     const current = await db.workoutSets.where("exerciseEntryId").equals(entryId).toArray();
     const editable = current.filter((s) => !s.completed && !s.isWarmup);
     for (const s of editable) {
-      await updateSet(s.id, { weight: suggestion.weight, reps: suggestion.reps });
+      await updateSet(s.id, patch);
     }
     // If there are fewer editable sets than suggested, add the missing ones.
     const missing = Math.max(
@@ -349,12 +383,13 @@ function ExerciseCard({
       suggestion.sets - editable.length - current.filter((s) => s.completed || s.isWarmup).length,
     );
     for (let i = 0; i < missing; i++) {
-      await addSet(entryId, { weight: suggestion.weight, reps: suggestion.reps });
+      await addSet(entryId, patch);
     }
     setDismissed(true);
   };
 
   const workingSet = sorted.find((s) => !s.isWarmup);
+
 
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -388,16 +423,28 @@ function ExerciseCard({
           suggestion={suggestion}
           currentWeight={workingSet?.weight}
           currentReps={workingSet?.reps}
+          currentMinutes={workingSet?.durationMin}
           onApply={onApplySuggestion}
           onDismiss={() => setDismissed(true)}
         />
       )}
 
       <div className="px-3">
-        <div className="grid grid-cols-[28px_1fr_1fr_44px_44px] items-center gap-2 pb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+        <div
+          className={
+            "grid items-center gap-2 pb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground " +
+            (cardio ? "grid-cols-[28px_1fr_44px_44px]" : "grid-cols-[28px_1fr_1fr_44px_44px]")
+          }
+        >
           <span>Set</span>
-          <span className="text-center">Weight (kg)</span>
-          <span className="text-center">Reps</span>
+          {cardio ? (
+            <span className="text-center">Minutes</span>
+          ) : (
+            <>
+              <span className="text-center">Weight (kg)</span>
+              <span className="text-center">Reps</span>
+            </>
+          )}
           <span />
           <span />
         </div>
@@ -408,6 +455,7 @@ function ExerciseCard({
               key={s.id}
               index={i + 1}
               set={s}
+              cardio={cardio}
               onChange={(patch) => updateSet(s.id, patch)}
               onComplete={() => onComplete(s)}
               onDuplicate={() => onDuplicate(s)}
@@ -415,6 +463,7 @@ function ExerciseCard({
             />
           ))}
         </ul>
+
 
         <Button
           onClick={onAdd}
@@ -432,6 +481,7 @@ function ExerciseCard({
 function SetRow({
   index,
   set,
+  cardio = false,
   onChange,
   onComplete,
   onDuplicate,
@@ -439,6 +489,7 @@ function SetRow({
 }: {
   index: number;
   set: WorkoutSet;
+  cardio?: boolean;
   onChange: (p: Partial<WorkoutSet>) => void;
   onComplete: () => void;
   onDuplicate: () => void;
@@ -451,18 +502,32 @@ function SetRow({
   return (
     <li
       className={
-        "grid grid-cols-[28px_1fr_1fr_44px_44px] items-center gap-2 rounded-lg px-1 py-1 transition-colors " +
+        "grid items-center gap-2 rounded-lg px-1 py-1 transition-colors " +
+        (cardio ? "grid-cols-[28px_1fr_44px_44px] " : "grid-cols-[28px_1fr_1fr_44px_44px] ") +
         (isWarmup ? "bg-warning/10" : done ? "bg-primary/10" : "")
       }
     >
       <span className="num text-center text-xs font-bold text-muted-foreground">{index}</span>
-      <NumberField
-        value={set.weight}
-        onChange={(v) => onChange({ weight: v })}
-        step={2.5}
-        suffix="kg"
-      />
-      <NumberField value={set.reps} onChange={(v) => onChange({ reps: v })} step={1} />
+      {cardio ? (
+        // Cardio sets are logged in minutes — no weight, no reps.
+        <NumberField
+          value={set.durationMin ?? 0}
+          onChange={(v) => onChange({ durationMin: v })}
+          step={1}
+          suffix="min"
+        />
+      ) : (
+        <>
+          <NumberField
+            value={set.weight}
+            onChange={(v) => onChange({ weight: v })}
+            step={2.5}
+            suffix="kg"
+          />
+          <NumberField value={set.reps} onChange={(v) => onChange({ reps: v })} step={1} />
+        </>
+      )}
+
       <button
         onClick={onComplete}
         className={
