@@ -4,7 +4,15 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { ArrowLeft, Trash2, Save, Pencil } from "lucide-react";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
-import { formatDuration, formatWeight, e1rm } from "@/lib/analytics";
+import {
+  formatDuration,
+  formatWeight,
+  formatSessionVolume,
+  formatMinutes,
+  isCardioExercise,
+  e1rm,
+} from "@/lib/analytics";
+
 import { createTemplateFromWorkout, discardWorkout } from "@/lib/workout-service";
 import { useState } from "react";
 import { InsightView } from "@/components/workout-insight";
