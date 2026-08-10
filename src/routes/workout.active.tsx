@@ -309,15 +309,22 @@ function ExerciseCard({
         const prevSets = await getPreviousSessionSets(entry.exerciseId, workoutId);
         if (prevSets.length > 0) {
           for (const s of prevSets) {
-            await addSet(entryId, { weight: s.weight, reps: s.reps });
+            // Cardio carries minutes forward; strength carries weight × reps.
+            await addSet(
+              entryId,
+              cardio
+                ? { durationMin: s.durationMin, weight: 0, reps: 0 }
+                : { weight: s.weight, reps: s.reps },
+            );
           }
         } else {
-          const count = Math.max(targetSets ?? 3, 1);
+          const count = Math.max(targetSets ?? (cardio ? 1 : 3), 1);
           for (let i = 0; i < count; i++) {
             await addSet(entryId, {});
           }
         }
       }
+
 
       // 2) Compute progression suggestion only if the Training Assistant is enabled.
       if (enableTrainingAssistant) {
