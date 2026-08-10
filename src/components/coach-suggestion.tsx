@@ -116,10 +116,6 @@ export function CoachSuggestion({
           <p className="mt-0.5 text-[12px] leading-snug text-foreground/85">{suggestion.reason}</p>
         </div>
       </div>
-
-          <p className="mt-0.5 text-[12px] leading-snug text-foreground/85">{suggestion.reason}</p>
-        </div>
-      </div>
       <div className="mt-2 flex items-center justify-end gap-1.5">
         {alreadyApplied ? (
           <>
