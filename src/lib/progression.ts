@@ -1,5 +1,5 @@
 import { db, type Exercise, type WorkoutSet } from "./db";
-import { e1rm } from "./analytics";
+import { e1rm, isCardioExercise } from "./analytics";
 
 export type ProgressionVerdict = "increase" | "hold" | "deload" | "new";
 
@@ -13,25 +13,36 @@ export interface SessionSnapshot {
   totalReps: number;
   bestE1rm: number;
   allSetsCompleted: boolean;
+  /** Cardio only: minutes per working set. */
+  workingMinutes: number[];
+  /** Cardio only: total minutes across working sets. */
+  totalMinutes: number;
 }
 
 export interface ProgressionSuggestion {
   verdict: ProgressionVerdict;
-  /** suggested working weight for today (kg) */
+  /** suggested working weight for today (kg) — always 0 for cardio */
   weight: number;
-  /** suggested reps per set for today */
+  /** suggested reps per set for today — always 0 for cardio */
   reps: number;
   /** suggested number of working sets */
   sets: number;
+  /** cardio only: suggested minutes per set */
+  minutes?: number;
+  /** true when the exercise is tracked in minutes instead of weight × reps */
+  isCardio?: boolean;
   /** previous session working weight (if any) */
   prevWeight?: number;
   /** previous session median reps (if any) */
   prevReps?: number;
+  /** previous session median minutes (cardio only) */
+  prevMinutes?: number;
   /** short 1-line reason, localized */
   reason: string;
   /** history depth used */
   sessionsAnalyzed: number;
 }
+
 
 const median = (xs: number[]) => {
   if (xs.length === 0) return 0;
