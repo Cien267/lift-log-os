@@ -182,7 +182,13 @@ const L: Record<"en" | "vi", Localized> = {
     deloadDrop: (pct) => `Reps dropped ~${pct}% last time - hold or lighten to reset the pattern.`,
     deloadInconsistent: "Recent sessions look uneven - stay at this weight until it feels solid.",
     firstSteady: "One session on record - repeat the weight and see how it moves.",
+    cardioNew: "First cardio session for this - pick a duration you can hold comfortably.",
+    cardioFirstSteady: "One session on record - repeat the same duration and see how it feels.",
+    cardioIncrease: (min) => `You finished every interval - try ${min} min per set today.`,
+    cardioHold: (min) => `Hold ${min} min per set and finish every interval to progress.`,
+    cardioDeload: "Last session came up short - stay at this duration until it feels easy.",
   },
+
   vi: {
     new: "Lần đầu tập bài này - bắt đầu nhẹ, tập trung vào kỹ thuật.",
     increaseReady: (w) =>
