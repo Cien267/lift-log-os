@@ -1,5 +1,5 @@
-import { db, type Workout } from "./db";
-import { computeWorkoutAggregate, e1rm } from "./analytics";
+import { db, type Workout, type Exercise } from "./db";
+import { computeWorkoutAggregate, e1rm, isCardioExercise } from "./analytics";
 
 export type ExerciseVerdict = "progress" | "regress" | "same" | "new";
 
@@ -16,6 +16,10 @@ export interface ExerciseInsight {
   prevVolume: number;
   currentBestE1rm: number;
   prevBestE1rm: number;
+  /** Cardio exercises are compared by minutes instead of load. */
+  isCardio?: boolean;
+  currentTotalMinutes?: number;
+  prevTotalMinutes?: number;
   verdict: ExerciseVerdict;
 }
 
@@ -28,36 +32,43 @@ export interface WorkoutInsight {
     totalVolume: number;
     totalSets: number;
     durationSec: number;
+    totalCardioMin?: number;
   };
   previous?: {
     totalVolume: number;
     totalSets: number;
     durationSec: number;
+    totalCardioMin?: number;
   };
   totalVolumeDelta: number;
   totalVolumePct: number;
   totalSetsDelta: number;
   durationDelta: number;
+  cardioMinDelta?: number;
   prCount: number;
   headline: string;
   exercises: ExerciseInsight[];
 }
 
-async function summarizeEntry(entryId: string) {
+async function summarizeEntry(entryId: string, exercise?: Exercise) {
   const sets = await db.workoutSets.where("exerciseEntryId").equals(entryId).toArray();
   const completed = sets.filter((s) => s.completed && !s.isWarmup);
-  const topWeight = completed.reduce((m, s) => Math.max(m, s.weight), 0);
-  const totalReps = completed.reduce((a, s) => a + s.reps, 0);
-  const volume = completed.reduce((a, s) => a + s.weight * s.reps, 0);
-  const bestE1rm = completed.reduce((m, s) => Math.max(m, e1rm(s.weight, s.reps)), 0);
+  const cardio = isCardioExercise(exercise);
+  const topWeight = cardio ? 0 : completed.reduce((m, s) => Math.max(m, s.weight), 0);
+  const totalReps = cardio ? 0 : completed.reduce((a, s) => a + s.reps, 0);
+  const volume = cardio ? 0 : completed.reduce((a, s) => a + s.weight * s.reps, 0);
+  const bestE1rm = cardio ? 0 : completed.reduce((m, s) => Math.max(m, e1rm(s.weight, s.reps)), 0);
+  const totalMinutes = cardio ? completed.reduce((a, s) => a + (s.durationMin ?? 0), 0) : 0;
   return {
     sets: completed.length,
     topWeight,
     totalReps,
     volume,
     bestE1rm,
+    totalMinutes,
   };
 }
+
 
 function verdictFor(cur: number, prev: number): ExerciseVerdict {
   if (prev === 0) return "new";
