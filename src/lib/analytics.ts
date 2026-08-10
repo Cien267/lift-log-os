@@ -53,9 +53,13 @@ export interface WorkoutAggregate {
   workoutId: string;
   date: string;
   totalVolume: number;
+  /** Total cardio minutes (cardio exercises are not counted in totalVolume). */
+  totalCardioMin: number;
   totalSets: number;
   durationSec: number;
   muscleVolume: Partial<Record<MuscleGroup, number>>;
+  /** Cardio minutes per muscle group key (only "cardio" in practice). */
+  cardioMinutes: Partial<Record<MuscleGroup, number>>;
 }
 
 export async function computeWorkoutAggregate(workoutId: string): Promise<WorkoutAggregate> {
@@ -73,17 +77,27 @@ export async function computeWorkoutAggregate(workoutId: string): Promise<Workou
   exs.forEach((e) => e && exMap.set(e.id, e));
 
   let totalVolume = 0;
+  let totalCardioMin = 0;
   let totalSets = 0;
   const muscleVolume: Partial<Record<MuscleGroup, number>> = {};
+  const cardioMinutes: Partial<Record<MuscleGroup, number>> = {};
   for (const entry of entries) {
     const ex = exMap.get(entry.exerciseId);
     if (!ex) continue;
+    const cardio = isCardioExercise(ex);
     const entrySets = allSets.filter((s) => s.exerciseEntryId === entry.id);
     for (const s of entrySets) {
       if (!s.completed) continue;
+      totalSets += 1;
+      if (cardio) {
+        // Cardio "volume" is duration, kept out of the kg-based totals.
+        const min = setMinutes(s);
+        totalCardioMin += min;
+        cardioMinutes[ex.muscleGroup] = (cardioMinutes[ex.muscleGroup] ?? 0) + min;
+        continue;
+      }
       const vol = setVolume(s);
       totalVolume += vol;
-      totalSets += 1;
       muscleVolume[ex.muscleGroup] = (muscleVolume[ex.muscleGroup] ?? 0) + vol;
       ex.secondaryMuscles?.forEach((m) => {
         muscleVolume[m] = (muscleVolume[m] ?? 0) + vol * 0.5;
@@ -94,11 +108,14 @@ export async function computeWorkoutAggregate(workoutId: string): Promise<Workou
     workoutId,
     date: workout?.date ?? "",
     totalVolume,
+    totalCardioMin,
     totalSets,
     durationSec: workout?.durationSec ?? 0,
     muscleVolume,
+    cardioMinutes,
   };
 }
+
 
 export function getWeekStart(d = new Date()) {
   const x = new Date(d);
