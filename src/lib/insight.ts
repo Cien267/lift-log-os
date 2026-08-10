@@ -114,16 +114,21 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
 
   const exercises: ExerciseInsight[] = [];
   for (const entry of curEntries) {
-    const cur = await summarizeEntry(entry.id);
+    const ex = exMap.get(entry.exerciseId);
+    const cardio = isCardioExercise(ex);
+    const cur = await summarizeEntry(entry.id, ex);
     if (cur.sets === 0) continue;
     const prevEntryId = prevEntryByExId.get(entry.exerciseId);
     const prevSum = prevEntryId
-      ? await summarizeEntry(prevEntryId)
-      : { sets: 0, topWeight: 0, totalReps: 0, volume: 0, bestE1rm: 0 };
-    const verdict = verdictFor(cur.bestE1rm || cur.volume, prevSum.bestE1rm || prevSum.volume);
+      ? await summarizeEntry(prevEntryId, ex)
+      : { sets: 0, topWeight: 0, totalReps: 0, volume: 0, bestE1rm: 0, totalMinutes: 0 };
+    // Cardio progress is judged on minutes, strength on e1RM/volume.
+    const verdict = cardio
+      ? verdictFor(cur.totalMinutes, prevSum.totalMinutes)
+      : verdictFor(cur.bestE1rm || cur.volume, prevSum.bestE1rm || prevSum.volume);
     exercises.push({
       exerciseId: entry.exerciseId,
-      exerciseName: exMap.get(entry.exerciseId)?.name ?? "Exercise",
+      exerciseName: ex?.name ?? "Exercise",
       currentSets: cur.sets,
       prevSets: prevSum.sets,
       currentTopWeight: cur.topWeight,
@@ -134,9 +139,13 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
       prevVolume: prevSum.volume,
       currentBestE1rm: cur.bestE1rm,
       prevBestE1rm: prevSum.bestE1rm,
+      isCardio: cardio || undefined,
+      currentTotalMinutes: cardio ? cur.totalMinutes : undefined,
+      prevTotalMinutes: cardio ? prevSum.totalMinutes : undefined,
       verdict,
     });
   }
+
 
   // PR count: PRs whose workoutId matches current
   const prs = (await db.prs.toArray()).filter((p) => p.workoutId === workoutId).length;
