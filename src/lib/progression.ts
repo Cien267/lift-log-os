@@ -221,19 +221,24 @@ export function computeProgressionSuggestion(
   const lang = opts.lang ?? "en";
   const loc = L[lang];
   const step = progressionStep(exercise);
-  const isBodyweight = exercise?.equipment === "bodyweight" || exercise?.category === "cardio";
+  const cardio = isCardioExercise(exercise);
+  const isBodyweight = exercise?.equipment === "bodyweight" || cardio;
+
+  // Cardio progresses by duration, never by load.
+  if (cardio) return cardioSuggestion(history, loc, opts);
 
   // No history
   if (history.length === 0) {
     return {
       verdict: "new",
       weight: 0,
-      reps: exercise?.category === "cardio" ? 0 : 8,
+      reps: 8,
       sets: opts.targetSets ?? 3,
       reason: loc.new,
       sessionsAnalyzed: 0,
     };
   }
+
 
   const last = history[0];
   const prevWeight = last.workingWeight;
