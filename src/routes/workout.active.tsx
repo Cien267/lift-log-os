@@ -157,8 +157,9 @@ function ActiveWorkoutPage() {
             </p>
             <p className="num text-[11px] text-muted-foreground">
               {formatDuration(elapsed)} · {completedSets} sets ·{" "}
-              {formatWeight(Math.round(totalVolume))}
+              {formatSessionVolume({ totalVolume, totalCardioMin })}
             </p>
+
           </div>
           <Button size="sm" onClick={onFinish} className="gap-1.5">
             <Check className="h-4 w-4" />
