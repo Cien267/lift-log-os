@@ -471,7 +471,7 @@ export async function getProgressionSuggestion(
 export async function getPreviousSessionSets(
   exerciseId: string,
   excludeWorkoutId?: string,
-): Promise<Array<{ weight: number; reps: number; isWarmup?: boolean }>> {
+): Promise<Array<{ weight: number; reps: number; durationMin?: number; isWarmup?: boolean }>> {
   const entries = await db.workoutExercises.where("exerciseId").equals(exerciseId).toArray();
   if (entries.length === 0) return [];
   const workouts = await db.workouts.bulkGet([...new Set(entries.map((e) => e.workoutId))]);
@@ -484,7 +484,14 @@ export async function getPreviousSessionSets(
     const sets = await db.workoutSets.where("exerciseEntryId").equals(r.entry.id).toArray();
     const working = sets.filter((s) => !s.isWarmup).sort((a, b) => a.timestamp - b.timestamp);
     if (working.length === 0) continue;
-    return working.map((s) => ({ weight: s.weight, reps: s.reps, isWarmup: s.isWarmup }));
+    // Cardio sets carry minutes; strength sets carry weight × reps.
+    return working.map((s) => ({
+      weight: s.weight,
+      reps: s.reps,
+      durationMin: s.durationMin,
+      isWarmup: s.isWarmup,
+    }));
   }
   return [];
 }
+
