@@ -99,6 +99,9 @@ export async function getExerciseSessionHistory(
     )
     .sort((a, b) => b.workout!.startTime - a.workout!.startTime);
 
+  const exercise = await db.exercises.get(exerciseId);
+  const cardio = isCardioExercise(exercise);
+
   const snapshots: SessionSnapshot[] = [];
   for (const r of rows) {
     if (snapshots.length >= limit) break;
@@ -106,6 +109,28 @@ export async function getExerciseSessionHistory(
     const working = sets.filter((s) => !s.isWarmup);
     const completed = working.filter((s) => s.completed);
     if (completed.length === 0) continue;
+    const allSetsCompleted = completed.length === working.length && working.length > 0;
+
+    if (cardio) {
+      const workingMinutes = completed.map((s) => s.durationMin ?? 0);
+      const totalMinutes = workingMinutes.reduce((a, m) => a + m, 0);
+      if (totalMinutes <= 0) continue;
+      snapshots.push({
+        workoutId: r.workout!.id,
+        date: r.workout!.date,
+        startTime: r.workout!.startTime,
+        workingWeight: 0,
+        workingSets: completed.length,
+        workingReps: [],
+        totalReps: 0,
+        bestE1rm: 0,
+        allSetsCompleted,
+        workingMinutes,
+        totalMinutes,
+      });
+      continue;
+    }
+
     const workingWeight = Math.max(...completed.map((s) => s.weight));
     const atWorking = completed.filter((s) => s.weight >= workingWeight - 0.001);
     const workingReps = atWorking.map((s) => s.reps);
@@ -119,9 +144,12 @@ export async function getExerciseSessionHistory(
       workingReps,
       totalReps: completed.reduce((a, s) => a + s.reps, 0),
       bestE1rm,
-      allSetsCompleted: completed.length === working.length && working.length > 0,
+      allSetsCompleted,
+      workingMinutes: [],
+      totalMinutes: 0,
     });
   }
+
   return snapshots;
 }
 
