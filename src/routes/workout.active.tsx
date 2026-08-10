@@ -24,7 +24,13 @@ import { RestTimerBar, startRest } from "@/components/rest-timer";
 import { ExercisePicker } from "@/components/exercise-picker";
 import { InsightView } from "@/components/workout-insight";
 import type { WorkoutInsight } from "@/lib/insight";
-import { formatDuration, formatWeight } from "@/lib/analytics";
+import {
+  formatDuration,
+  formatSessionVolume,
+  formatMinutes,
+  isCardioExercise,
+} from "@/lib/analytics";
+
 import { useSettings } from "@/hooks/use-settings";
 import {
   DropdownMenu,
@@ -109,8 +115,19 @@ function ActiveWorkoutPage() {
     return <div className="p-8 text-center text-sm text-muted-foreground">Workout not found.</div>;
   }
 
-  const totalVolume = sets.filter((s) => s.completed).reduce((a, s) => a + s.weight * s.reps, 0);
-  const completedSets = sets.filter((s) => s.completed).length;
+  // Cardio entries are summarized in minutes, strength entries in kg volume.
+  const cardioEntryIds = new Set(
+    entries.filter((e) => isCardioExercise(exMap.get(e.exerciseId))).map((e) => e.id),
+  );
+  const completed = sets.filter((s) => s.completed);
+  const totalVolume = completed
+    .filter((s) => !cardioEntryIds.has(s.exerciseEntryId))
+    .reduce((a, s) => a + s.weight * s.reps, 0);
+  const totalCardioMin = completed
+    .filter((s) => cardioEntryIds.has(s.exerciseEntryId))
+    .reduce((a, s) => a + (s.durationMin ?? 0), 0);
+  const completedSets = completed.length;
+
 
   const onPick = async (exerciseId: string) => {
     await addExerciseToWorkout(id, exerciseId);
