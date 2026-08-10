@@ -213,6 +213,97 @@ export interface ComputeOptions {
   lang?: "en" | "vi";
 }
 
+/** Round minutes to a friendly value (nearest 0.5 min, min 1). */
+const roundMinutes = (v: number) => Math.max(1, Math.round(v * 2) / 2);
+
+/**
+ * Cardio progression: duration-based. Increase minutes only after a session
+ * where every interval was completed; hold otherwise, and ease back when the
+ * previous session lost duration.
+ */
+function cardioSuggestion(
+  history: SessionSnapshot[],
+  loc: Localized,
+  opts: ComputeOptions,
+): ProgressionSuggestion {
+  const base: Pick<ProgressionSuggestion, "isCardio" | "weight" | "reps"> = {
+    isCardio: true,
+    weight: 0,
+    reps: 0,
+  };
+
+  if (history.length === 0) {
+    return {
+      ...base,
+      verdict: "new",
+      minutes: 10,
+      sets: opts.targetSets ?? 1,
+      reason: loc.cardioNew,
+      sessionsAnalyzed: 0,
+    };
+  }
+
+  const last = history[0];
+  const prevMinutes = roundMinutes(median(last.workingMinutes));
+  const targetSets = opts.targetSets ?? Math.max(last.workingSets, 1);
+
+  if (history.length === 1) {
+    return {
+      ...base,
+      verdict: "hold",
+      minutes: prevMinutes,
+      sets: targetSets,
+      prevMinutes,
+      reason: loc.cardioFirstSteady,
+      sessionsAnalyzed: 1,
+    };
+  }
+
+  const prev = history[1];
+  const prevTotal = prev.totalMinutes;
+  const dropPct =
+    prevTotal > 0 ? Math.max(0, Math.round(((prevTotal - last.totalMinutes) / prevTotal) * 100)) : 0;
+
+  if (!last.allSetsCompleted || dropPct >= 15) {
+    return {
+      ...base,
+      verdict: "deload",
+      minutes: prevMinutes,
+      sets: targetSets,
+      prevMinutes,
+      reason: loc.cardioDeload,
+      sessionsAnalyzed: history.length,
+    };
+  }
+
+  // Steady and complete for two sessions at the same duration → add time.
+  const prevMedian = roundMinutes(median(prev.workingMinutes));
+  const sameDuration = Math.abs(prevMedian - prevMinutes) < 0.001;
+  if (prev.allSetsCompleted && sameDuration) {
+    const nextMinutes = roundMinutes(prevMinutes + (prevMinutes >= 20 ? 5 : 2));
+    return {
+      ...base,
+      verdict: "increase",
+      minutes: nextMinutes,
+      sets: targetSets,
+      prevMinutes,
+      reason: loc.cardioIncrease(nextMinutes),
+      sessionsAnalyzed: history.length,
+    };
+  }
+
+  return {
+    ...base,
+    verdict: "hold",
+    minutes: prevMinutes,
+    sets: targetSets,
+    prevMinutes,
+    reason: loc.cardioHold(prevMinutes),
+    sessionsAnalyzed: history.length,
+  };
+}
+
+
 export function computeProgressionSuggestion(
   exercise: Exercise | undefined,
   history: SessionSnapshot[],
