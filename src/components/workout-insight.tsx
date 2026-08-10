@@ -1,6 +1,6 @@
 import { TrendingUp, TrendingDown, Minus, Trophy, Sparkles } from "lucide-react";
 import type { WorkoutInsight, ExerciseInsight } from "@/lib/insight";
-import { formatDuration, formatWeight } from "@/lib/analytics";
+import { formatDuration, formatWeight, formatSessionVolume, formatMinutes } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils";
