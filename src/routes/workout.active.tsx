@@ -335,7 +335,7 @@ function ExerciseCard({
         setSuggestion(sug);
       }
     })();
-  }, [entryId, workoutId, targetSets, lang, enableTrainingAssistant]);
+  }, [entryId, workoutId, targetSets, lang, enableTrainingAssistant, cardio]);
 
   const sorted = [...sets].sort((a, b) => a.timestamp - b.timestamp);
 
@@ -352,23 +352,30 @@ function ExerciseCard({
     }
   };
 
+  const setInit = (s?: WorkoutSet) => {
+    if (!s) return {};
+    return cardio ? { durationMin: s.durationMin, weight: 0, reps: 0 } : { weight: s.weight, reps: s.reps };
+  };
+
   const onAdd = async () => {
-    const last = sorted[sorted.length - 1];
-    await addSet(entryId, last ? { weight: last.weight, reps: last.reps } : {});
+    await addSet(entryId, setInit(sorted[sorted.length - 1]));
   };
 
   const onDuplicate = async (s: WorkoutSet) => {
-    await addSet(entryId, { weight: s.weight, reps: s.reps });
+    await addSet(entryId, setInit(s));
   };
 
   const onApplySuggestion = async () => {
     if (!suggestion || !enableTrainingAssistant) return;
+    const patch = cardio
+      ? { durationMin: suggestion.minutes ?? 0, weight: 0, reps: 0 }
+      : { weight: suggestion.weight, reps: suggestion.reps };
     // Only update sets that haven't been completed and aren't warmups —
     // never overwrite what the user already logged.
     const current = await db.workoutSets.where("exerciseEntryId").equals(entryId).toArray();
     const editable = current.filter((s) => !s.completed && !s.isWarmup);
     for (const s of editable) {
-      await updateSet(s.id, { weight: suggestion.weight, reps: suggestion.reps });
+      await updateSet(s.id, patch);
     }
     // If there are fewer editable sets than suggested, add the missing ones.
     const missing = Math.max(
@@ -376,12 +383,13 @@ function ExerciseCard({
       suggestion.sets - editable.length - current.filter((s) => s.completed || s.isWarmup).length,
     );
     for (let i = 0; i < missing; i++) {
-      await addSet(entryId, { weight: suggestion.weight, reps: suggestion.reps });
+      await addSet(entryId, patch);
     }
     setDismissed(true);
   };
 
   const workingSet = sorted.find((s) => !s.isWarmup);
+
 
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-card">
