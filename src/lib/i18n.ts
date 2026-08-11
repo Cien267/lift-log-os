@@ -84,6 +84,8 @@ const dict = {
     "workout.insight": "Your session insight",
     "workout.unmarkWarmup": "Unmark warmup",
     "workout.markAsWarmup": "Mark as warmup",
+    "workout.incompleteFinishMessage": "You have incomplete sets. Are you sure you want to finish?",
+    "workout.finishWorkout": "Finish workout",
 
     // history
     "history.empty": "No completed workouts yet.",
@@ -286,6 +288,9 @@ const dict = {
     "workout.insight": "Thông tin chi tiết buổi tập của bạn",
     "workout.unmarkWarmup": "Bỏ đánh dấu khởi động",
     "workout.markAsWarmup": "Đánh dấu là khởi động",
+    "workout.incompleteFinishMessage":
+      "Bạn có các set chưa hoàn thành. Bạn có chắc chắn muốn kết thúc không?",
+    "workout.finishWorkout": "Hoàn thành buổi tập",
 
     // history
     "history.empty": "Chưa có buổi tập nào được hoàn thành.",

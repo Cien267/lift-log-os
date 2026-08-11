@@ -74,6 +74,7 @@ function ActiveWorkoutPage() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [insight, setInsight] = useState<WorkoutInsight | null>(null);
+  const [openIncompleteDialog, setOpenIncompleteDialog] = useState(false);
 
   const workout = useLiveQuery(async () => {
     const w = await db.workouts.get(id);
@@ -128,9 +129,19 @@ function ActiveWorkoutPage() {
     .reduce((a, s) => a + (s.durationMin ?? 0), 0);
   const completedSets = completed.length;
 
-
   const onPick = async (exerciseId: string) => {
     await addExerciseToWorkout(id, exerciseId);
+  };
+
+  const onPreFinish = async () => {
+    // check if workout is complete
+    const working = sets.filter((s) => !s.isWarmup);
+    const incomplete = working.filter((s) => !s.completed).length;
+    if (working.length > 0 && incomplete > 0) {
+      setOpenIncompleteDialog(true);
+    } else {
+      onFinish();
+    }
   };
 
   const onFinish = async () => {
@@ -159,12 +170,25 @@ function ActiveWorkoutPage() {
               {formatDuration(elapsed)} · {completedSets} sets ·{" "}
               {formatSessionVolume({ totalVolume, totalCardioMin })}
             </p>
-
           </div>
-          <Button size="sm" onClick={onFinish} className="gap-1.5">
+          <Button size="sm" onClick={onPreFinish} className="gap-1.5">
             <Check className="h-4 w-4" />
             {t("common.finish")}
           </Button>
+          <AlertDialog open={openIncompleteDialog} onOpenChange={setOpenIncompleteDialog}>
+            <AlertDialogContent className="w-[95%]">
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("workout.finishWorkout")}?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("workout.incompleteFinishMessage")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("workout.keepTraining")}</AlertDialogCancel>
+                <AlertDialogAction onClick={onFinish}>{t("common.finish")}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button size="icon" variant="ghost">
@@ -325,7 +349,6 @@ function ExerciseCard({
         }
       }
 
-
       // 2) Compute progression suggestion only if the Training Assistant is enabled.
       if (enableTrainingAssistant) {
         const sug = await getProgressionSuggestion(entry.exerciseId, workoutId, {
@@ -354,7 +377,9 @@ function ExerciseCard({
 
   const setInit = (s?: WorkoutSet) => {
     if (!s) return {};
-    return cardio ? { durationMin: s.durationMin, weight: 0, reps: 0 } : { weight: s.weight, reps: s.reps };
+    return cardio
+      ? { durationMin: s.durationMin, weight: 0, reps: 0 }
+      : { weight: s.weight, reps: s.reps };
   };
 
   const onAdd = async () => {
@@ -389,7 +414,6 @@ function ExerciseCard({
   };
 
   const workingSet = sorted.find((s) => !s.isWarmup);
-
 
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -463,7 +487,6 @@ function ExerciseCard({
             />
           ))}
         </ul>
-
 
         <Button
           onClick={onAdd}

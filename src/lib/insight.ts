@@ -69,7 +69,6 @@ async function summarizeEntry(entryId: string, exercise?: Exercise) {
   };
 }
 
-
 function verdictFor(cur: number, prev: number): ExerciseVerdict {
   if (prev === 0) return "new";
   const diff = (cur - prev) / prev;
@@ -145,7 +144,6 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
       verdict,
     });
   }
-
 
   // PR count: PRs whose workoutId matches current
   const prs = (await db.prs.toArray()).filter((p) => p.workoutId === workoutId).length;
