@@ -169,7 +169,7 @@ function SortableTemplate({
 }
 
 function TemplatesPage() {
-  const { t } = useT();
+  const { t, lang } = useT();
   const rawTemplates = useLiveQuery(() => db.templates.toArray());
   const templates = useMemo(() => rawTemplates ?? [], [rawTemplates]);
   const groupedTemplates = useMemo(() => {
@@ -243,7 +243,7 @@ function TemplatesPage() {
   const create = () => {
     const t: WorkoutTemplate = {
       id: uid(),
-      name: "New plan",
+      name: lang === "vi" ? "Buổi tập mới" : "New workout",
       location: "gym",
       exercises: [],
       createdAt: Date.now(),

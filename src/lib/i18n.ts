@@ -130,6 +130,7 @@ const dict = {
     "exercise.category": "Category",
     "exercise.deleteDescription":
       "This removes the exercise from your library. Past workout history that references it is kept, but the name may no longer display correctly.",
+    "exercise.guideImage": "Guide image",
 
     // notifications
     "notifications.markAllRead": "Mark all read",
@@ -337,6 +338,7 @@ const dict = {
     "exercise.category": "Thể loại",
     "exercise.deleteDescription":
       "Điều này sẽ xóa bài tập khỏi thư viện của bạn. Lịch sử tập luyện trước đó tham chiếu đến nó sẽ được giữ lại, nhưng tên có thể không còn hiển thị chính xác.",
+    "exercise.guideImage": "Hình ảnh hướng dẫn",
 
     // notifications
     "notifications.markAllRead": "Đánh dấu tất cả đã đọc",

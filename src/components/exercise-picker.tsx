@@ -334,9 +334,17 @@ export function ExercisePicker({
                     }}
                     className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left"
                   >
-                    <div className="grid h-9 w-9 place-items-center rounded-lg bg-secondary text-xs font-bold uppercase text-muted-foreground">
-                      {ex.muscleGroup.slice(0, 2)}
-                    </div>
+                    {ex.guideImage ? (
+                      <img
+                        src={ex.guideImage}
+                        alt={ex.muscleGroup}
+                        className="h-9 w-9 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="grid h-9 w-9 place-items-center rounded-lg bg-secondary text-xs font-bold uppercase text-muted-foreground">
+                        {ex.muscleGroup.slice(0, 2)}
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{ex.name}</p>
                       <p className="text-xs capitalize text-muted-foreground">
@@ -486,7 +494,7 @@ export function ExercisePicker({
               </Select>
             </div>
             <div>
-              <Label className="mb-1 block text-xs">Guide image</Label>
+              <Label className="mb-1 block text-xs">{t("exercise.guideImage")}</Label>
               {draft.guideImage ? (
                 <div className="relative overflow-hidden rounded-md border border-border">
                   <img
@@ -513,7 +521,7 @@ export function ExercisePicker({
                     className="flex-1 gap-1.5"
                     onClick={() => cameraInputRef.current?.click()}
                   >
-                    <Camera className="h-4 w-4" /> Camera
+                    <Camera className="h-4 w-4" /> {t("photoShare.camera")}
                   </Button>
                   <Button
                     type="button"
@@ -522,7 +530,7 @@ export function ExercisePicker({
                     className="flex-1 gap-1.5"
                     onClick={() => galleryInputRef.current?.click()}
                   >
-                    <ImageIcon className="h-4 w-4" /> Gallery
+                    <ImageIcon className="h-4 w-4" /> {t("photoShare.gallery")}
                   </Button>
                 </div>
               )}
