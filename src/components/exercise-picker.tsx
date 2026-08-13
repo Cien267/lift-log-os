@@ -140,7 +140,7 @@ export function ExercisePicker({
   selectedExerciseIds?: string[];
 }) {
   const exercises = useLiveQuery(() => db.exercises.toArray()) ?? [];
-  const { t } = useT();
+  const { t, lang } = useT();
   const [q, setQ] = useState("");
   const [group, setGroup] = useState<"all" | MuscleGroup>("all");
   const [editorOpen, setEditorOpen] = useState(false);
@@ -424,7 +424,11 @@ export function ExercisePicker({
       </Sheet>
 
       <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
-        <DialogContent>
+        <DialogContent
+          onOpenAutoFocus={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader>
             <DialogTitle>
               {editingId ? t("common.edit") : t("common.new")} {t("common.exercise")}
@@ -436,7 +440,7 @@ export function ExercisePicker({
               <Input
                 value={draft.name}
                 onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                placeholder="e.g. Bulgarian split squat"
+                placeholder={`${lang === "vi" ? "Ví dụ: Đẩy ngực ghế dốc" : "e.g. Bulgarian split squat"}`}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
