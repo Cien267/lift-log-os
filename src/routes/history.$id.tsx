@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
-import { ArrowLeft, Trash2, Save, Pencil } from "lucide-react";
+import { ArrowLeft, Trash2, Save, CalendarCog } from "lucide-react";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import {
@@ -123,12 +123,11 @@ function WorkoutDetail() {
             {formatDate(workout.date, lang)} · {formatDuration(workout.durationSec ?? 0)} ·{" "}
             {formatSessionVolume(workout)}
           </p>
-
         </div>
         <Dialog open={openUpdateDate} onOpenChange={setOpenUpdateDate}>
           <DialogTrigger asChild>
             <Button size="icon" variant="ghost">
-              <Pencil className="h-4 w-4" />
+              <CalendarCog className="h-4 w-4" />
             </Button>
           </DialogTrigger>
           <DialogContent className="w-[95%]">
@@ -214,7 +213,9 @@ function WorkoutDetail() {
             .sort((a, b) => a.timestamp - b.timestamp);
           const best = cardio
             ? 0
-            : entrySets.filter((s) => s.completed).reduce((m, s) => Math.max(m, e1rm(s.weight, s.reps)), 0);
+            : entrySets
+                .filter((s) => s.completed)
+                .reduce((m, s) => Math.max(m, e1rm(s.weight, s.reps)), 0);
           const totalMin = cardio
             ? entrySets.filter((s) => s.completed).reduce((a, s) => a + (s.durationMin ?? 0), 0)
             : 0;
@@ -263,7 +264,6 @@ function WorkoutDetail() {
           );
         })}
       </div>
-
     </div>
   );
 }
