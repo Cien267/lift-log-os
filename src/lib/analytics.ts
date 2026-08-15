@@ -48,7 +48,6 @@ export function estimateCalories(durationSec: number, totalVolume: number) {
   return Math.round(minutes * 5 + totalVolume * 0.04);
 }
 
-
 export interface WorkoutAggregate {
   workoutId: string;
   date: string;
@@ -115,7 +114,6 @@ export async function computeWorkoutAggregate(workoutId: string): Promise<Workou
     cardioMinutes,
   };
 }
-
 
 export function getWeekStart(d = new Date()) {
   const x = new Date(d);
