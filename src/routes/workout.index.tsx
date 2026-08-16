@@ -19,10 +19,14 @@ export const Route = createFileRoute("/workout/")({
   component: WorkoutLanding,
 });
 
+type ActiveCheck = { status: "checking" } | { status: "none" } | { status: "active"; id: string };
+
 function WorkoutLanding() {
   const { t } = useT();
   const nav = useNavigate();
-  const [active, setActive] = useState<string | null>(null);
+  const [activeCheck, setActiveCheck] = useState<ActiveCheck>({
+    status: "checking",
+  });
   const rawTemplates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray());
   const templates = useMemo(() => rawTemplates ?? [], [rawTemplates]);
   const groupedTemplates = useMemo(() => {
@@ -39,15 +43,26 @@ function WorkoutLanding() {
   useEffect(() => {
     const id = getActiveWorkoutId();
     if (id) {
-      nav({ to: "/workout/active", search: { id } as any });
+      setActiveCheck({ status: "active", id });
+
+      nav({
+        to: "/workout/active",
+        search: { id } as any,
+      });
     } else {
-      setActive(null);
+      setActiveCheck({ status: "none" });
     }
-  }, []);
+  }, [nav]);
 
   const begin = async (opts: { location: "gym" | "home"; templateId?: string }) => {
+    if (activeCheck.status !== "none") return;
+
     const id = await startWorkout(opts);
-    nav({ to: "/workout/active", search: { id } as any });
+
+    nav({
+      to: "/workout/active",
+      search: { id } as any,
+    });
   };
 
   return (
@@ -55,6 +70,7 @@ function WorkoutLanding() {
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <button
+            disabled={activeCheck.status !== "none"}
             onClick={() => begin({ location: "gym" })}
             className="group rounded-2xl border border-border bg-gradient-to-br from-primary/15 to-card p-4 text-left transition-transform active:scale-95"
           >
@@ -63,6 +79,7 @@ function WorkoutLanding() {
             <p className="text-xs text-muted-foreground">{t("workout.startFresh")}</p>
           </button>
           <button
+            disabled={activeCheck.status !== "none"}
             onClick={() => begin({ location: "home" })}
             className="group rounded-2xl border border-border bg-gradient-to-br from-accent/15 to-card p-4 text-left transition-transform active:scale-95"
           >
@@ -88,6 +105,7 @@ function WorkoutLanding() {
                   {templates.map((temp) => (
                     <li key={temp.id}>
                       <button
+                        disabled={activeCheck.status !== "none"}
                         onClick={() =>
                           begin({ location: temp.location as "gym" | "home", templateId: temp.id })
                         }

@@ -35,6 +35,11 @@ function clearRestTimer() {
 export async function startWorkout(
   opts: { location?: Workout["location"]; templateId?: string; name?: string } = {},
 ) {
+  const existingId = getActiveWorkoutId();
+  if (existingId) {
+    return existingId;
+  }
+
   const id = uid();
   const now = Date.now();
   const w: Workout = {
