@@ -3,6 +3,7 @@ import { db, type Settings } from "@/lib/db";
 import { seedDatabase } from "@/lib/seed";
 
 let seeded = false;
+const EXPORT_KEY = "forge.exportDate";
 
 export function useSettings() {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -42,5 +43,18 @@ export function useSettings() {
     setSettings(next);
   };
 
-  return { settings, update };
+  const getLastExportDate = () =>
+    typeof localStorage !== "undefined" ? localStorage.getItem(EXPORT_KEY) : null;
+
+  const setLastExportDate = (date: Date | null) => {
+    if (typeof localStorage !== "undefined") {
+      if (date) {
+        localStorage.setItem(EXPORT_KEY, date.toISOString());
+      } else {
+        localStorage.removeItem(EXPORT_KEY);
+      }
+    }
+  };
+
+  return { settings, update, getLastExportDate, setLastExportDate };
 }

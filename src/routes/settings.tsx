@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useSettings } from "@/hooks/use-settings";
 import { exportAll, importAll } from "@/lib/workout-service";
 import { db } from "@/lib/db";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsPage() {
-  const { settings, update } = useSettings();
+  const { settings, update, getLastExportDate, setLastExportDate } = useSettings();
   const { t } = useT();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -45,6 +45,7 @@ function SettingsPage() {
     a.download = `forge-backup-${settings.userName ?? "unknown"}-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    setLastExportDate(new Date());
   };
 
   const doImport = async (file: File) => {
@@ -238,6 +239,14 @@ function SettingsPage() {
         </Section>
 
         <Section title={t("settings.data")}>
+          <div className="text-[11px] text-muted-foreground pb-1">
+            {t("settings.lastExport")}:{" "}
+            {getLastExportDate() ? (
+              formatDate(getLastExportDate() ?? "", lang)
+            ) : (
+              <span className="text-warning">{t("settings.neverExport")}</span>
+            )}
+          </div>
           <Button onClick={doExport} variant="secondary" className="w-full justify-start gap-2">
             <Download className="h-4 w-4" /> {t("settings.export")}
           </Button>
