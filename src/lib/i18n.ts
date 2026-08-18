@@ -139,6 +139,7 @@ const dict = {
     "notifications.emptyTitle": "You're all caught up",
     "notifications.emptyMessage":
       " Weekly summaries, PR alerts, and app updates will show up here.",
+    "notifications.roomToGrow": "Room to grow",
 
     // muscle distribution
     "muscleDistribution.empty": "No training data for this week.",
@@ -349,6 +350,7 @@ const dict = {
     "notifications.emptyTitle": "Bạn đã xem tất cả thông báo",
     "notifications.emptyMessage":
       "Các tóm tắt hàng tuần, thông báo PR và cập nhật ứng dụng sẽ xuất hiện ở đây.",
+    "notifications.roomToGrow": "Điểm cần cải thiện",
 
     // muscle distribution
     "muscleDistribution.empty": "Chưa có dữ liệu tập luyện cho tuần này.",

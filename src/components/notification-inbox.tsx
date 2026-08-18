@@ -12,6 +12,7 @@ import { formatWeight, formatDuration } from "@/lib/analytics";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/utils";
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
@@ -186,7 +187,7 @@ function WeeklySummaryBody({ payload }: { payload: WeeklySummaryPayload }) {
         <Insights
           icon={AlertCircle}
           tone="warn"
-          title="Room to grow"
+          title={t("notifications.roomToGrow")}
           items={payload.improvements}
         />
       )}
@@ -244,7 +245,7 @@ function Insights({
   );
 }
 
-function relativeTime(ts: number, lang = "en") {
+function relativeTime(ts: number, lang: "en" | "vi" = "en") {
   const diff = Date.now() - ts;
   const m = Math.floor(diff / 60_000);
   if (m < 1) return lang === "en" ? "just now" : "vừa xong";
@@ -253,5 +254,5 @@ function relativeTime(ts: number, lang = "en") {
   if (h < 24) return lang === "en" ? `${h}h ago` : `${h} giờ trước`;
   const d = Math.floor(h / 24);
   if (d < 7) return lang === "en" ? `${d}d ago` : `${d} ngày trước`;
-  return new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  return formatDate(new Date(ts), lang);
 }
