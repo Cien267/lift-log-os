@@ -159,7 +159,7 @@ function SortableTemplate({
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">{template.name}</p>
           <p className="text-xs capitalize text-muted-foreground">
-            {template.location} · {exerciseCount} {exercisesLabel}
+            {exerciseCount} {exercisesLabel}
           </p>
         </div>
         <ChevronRight className="h-4 w-4 text-muted-foreground" />

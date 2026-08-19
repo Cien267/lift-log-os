@@ -117,7 +117,7 @@ function WorkoutLanding() {
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-semibold">{temp.name}</p>
                           <p className="text-xs text-muted-foreground lowercase">
-                            {temp.exercises.length} {t("common.exercises")} · {temp.location}
+                            {temp.exercises.length} {t("common.exercises")}
                           </p>
                         </div>
                         <span className="rounded-md bg-secondary px-3 py-1.5 text-xs font-medium">
