@@ -147,6 +147,8 @@ const dict = {
       "Start your first workout to build your muscle distribution.",
     "muscleDistribution.totalVolume": "total",
     "muscleDistribution.muscleGroup": "groups",
+    "muscleDistribution.session": "session",
+    "muscleDistribution.sessions": "sessions",
 
     // photo-share
     "photoShare.camera": "Camera",
