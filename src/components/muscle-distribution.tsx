@@ -38,7 +38,9 @@ const ORDER: Bucket[] = ["legs", "back", "chest", "shoulders", "arms", "core", "
 
 export function MuscleDistribution() {
   const { t } = useT();
-  const [data, setData] = useState<{ bucket: Bucket; value: number }[] | null>(null);
+  const [data, setData] = useState<{ bucket: Bucket; value: number; sessions: number }[] | null>(
+    null,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -47,17 +49,30 @@ export function MuscleDistribution() {
       const workouts = await db.workouts.where("startTime").aboveOrEqual(weekStart).toArray();
       const done = workouts.filter((w) => w.endTime);
       const totals: Partial<Record<Bucket, number>> = {};
+      const sessionIds: Partial<Record<Bucket, Set<string>>> = {};
       for (const w of done) {
         const agg = await computeWorkoutAggregate(w.id);
+        const trainedBuckets = new Set<Bucket>();
+        for (const mg of Object.keys(agg.muscleVolume)) {
+          trainedBuckets.add(GROUP[mg as MuscleGroup]);
+        }
+        for (const mg of Object.keys(agg.cardioMinutes)) {
+          trainedBuckets.add(GROUP[mg as MuscleGroup]);
+        }
+        for (const b of trainedBuckets) {
+          (sessionIds[b] ??= new Set()).add(w.id);
+        }
         for (const [mg, vol] of Object.entries(agg.muscleVolume)) {
           const b = GROUP[mg as MuscleGroup];
           totals[b] = (totals[b] ?? 0) + (vol ?? 0);
         }
       }
       if (cancelled) return;
-      const arr = ORDER.map((b) => ({ bucket: b, value: Math.round(totals[b] ?? 0) })).filter(
-        (d) => d.value > 0,
-      );
+      const arr = ORDER.map((b) => ({
+        bucket: b,
+        value: Math.round(totals[b] ?? 0),
+        sessions: sessionIds[b]?.size ?? 0,
+      })).filter((d) => d.value > 0 || d.sessions > 0);
       setData(arr);
     })();
     return () => {
