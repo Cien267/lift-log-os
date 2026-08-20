@@ -164,10 +164,7 @@ export function MuscleDistribution() {
                     <div className="num flex flex-col items-end text-right">
                       <span className="text-sm font-medium tabular-nums">{pct}%</span>
                       <span className="text-[10px] leading-4 text-muted-foreground tabular-nums">
-                        {formatWeight(d.value)}
-                      </span>
-                      <span className="text-[10px] leading-4 text-muted-foreground tabular-nums">
-                        {d.sessions}{" "}
+                        {formatWeight(d.value)} | {d.sessions}{" "}
                         {d.sessions === 1
                           ? t("muscleDistribution.session")
                           : t("muscleDistribution.sessions")}
