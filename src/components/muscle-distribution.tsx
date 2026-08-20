@@ -161,12 +161,18 @@ export function MuscleDistribution() {
                       }}
                     />
                     <span className="flex-1 truncate text-sm text-foreground/90">{c.label}</span>
-                    <span className="num w-9 text-right text-sm font-medium tabular-nums">
-                      {pct}%
-                    </span>
-                    <span className="num w-16 text-right text-[11px] text-muted-foreground tabular-nums">
-                      {formatWeight(d.value)}
-                    </span>
+                    <div className="num flex flex-col items-end text-right">
+                      <span className="text-sm font-medium tabular-nums">{pct}%</span>
+                      <span className="text-[10px] leading-4 text-muted-foreground tabular-nums">
+                        {formatWeight(d.value)}
+                      </span>
+                      <span className="text-[10px] leading-4 text-muted-foreground tabular-nums">
+                        {d.sessions}{" "}
+                        {d.sessions === 1
+                          ? t("muscleDistribution.session")
+                          : t("muscleDistribution.sessions")}
+                      </span>
+                    </div>
                   </li>
                 );
               })}
