@@ -1,6 +1,7 @@
 import { db, uid, type AppNotification, type NotificationType, type MuscleGroup } from "./db";
 import { computeWorkoutAggregate, getWeekStart, formatWeight, formatDuration } from "./analytics";
 import { format, parseISO } from "date-fns";
+import { formatDate } from "./utils";
 
 // Bump this when publishing new features that should show a "What's New" card.
 export const APP_VERSION = "1.1.0";
@@ -167,7 +168,7 @@ function fmtISO(d: Date) {
 
 async function buildWeeklySummary(
   weekStart: Date,
-  lang: string,
+  lang: "vi" | "en",
 ): Promise<WeeklySummaryPayload | null> {
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 6);
@@ -316,7 +317,7 @@ async function buildWeeklySummary(
   };
 }
 
-async function ensureWeeklySummary(lang = "en") {
+async function ensureWeeklySummary(lang: "vi" | "en" = "en") {
   // Generate the summary for LAST week, once, at the start of the current week.
   const currentWeek = getWeekStart();
   const lastWeek = new Date(currentWeek);
@@ -328,20 +329,20 @@ async function ensureWeeklySummary(lang = "en") {
 
   const payload = await buildWeeklySummary(lastWeek, lang);
   if (!payload) return; // no activity — skip
-  const rangeLabel = `${format(parseISO(payload.weekStart), "MMM d")} – ${format(parseISO(payload.weekEnd), "MMM d")}`;
+  const rangeLabel = `${formatDate(payload.weekStart, lang)} – ${formatDate(payload.weekEnd, lang)}`;
 
   await createNotification({
     type: "weekly_summary",
     key,
     title: lang === "en" ? "Last week in review" : "Xem lại tuần trước",
-    subtitle: `${rangeLabel} · ${payload.sessions} session${payload.sessions > 1 ? "s" : ""} · ${formatWeight(payload.totalVolume)} · ${formatDuration(payload.totalDurationSec)}`,
+    subtitle: `${rangeLabel} · ${payload.sessions} ${lang === "en" ? "session" : "buổi"}${payload.sessions > 1 && lang === "en" ? "s" : ""} · ${formatWeight(payload.totalVolume)} · ${formatDuration(payload.totalDurationSec)}`,
     payload,
   });
 }
 
 // Called once from the app root on mount.
 let ran = false;
-export async function runNotificationJobs(lang = "en") {
+export async function runNotificationJobs(lang: "vi" | "en" = "en") {
   if (ran) return;
   ran = true;
   try {
