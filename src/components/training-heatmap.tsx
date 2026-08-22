@@ -41,12 +41,14 @@ const iso = (d: Date) => {
 const mondayIndex = (d: Date) => (d.getDay() + 6) % 7;
 
 export function TrainingHeatmap() {
-  const { t } = useT();
+  const { t, lang } = useT();
   const navigate = useNavigate();
   const [range, setRange] = useState<RangeKey>("12m");
   const [active, setActive] = useState<string | null>(null);
 
   const workouts = useLiveQuery(() => db.workouts.orderBy("startTime").toArray()) ?? [];
+
+  const locale = lang === "vi" ? "vi-VN" : "en-US";
 
   const { weeks, monthLabels, levels, total } = useMemo(() => {
     const months = RANGES.find((r) => r.key === range)!.months;
@@ -107,19 +109,23 @@ export function TrainingHeatmap() {
 
     const labels: { col: number; label: string }[] = [];
     let lastMonth = -1;
+    let lastLabelCol = -99;
     cols.forEach((c, i) => {
       const first = c[0];
       if (!first) return;
-      const m = new Date(`${first.date}T00:00:00`).getMonth();
-      if (m !== lastMonth) {
-        lastMonth = m;
-        labels.push({
-          col: i,
-          label: new Date(`${first.date}T00:00:00`).toLocaleDateString(undefined, {
-            month: "short",
-          }),
-        });
-      }
+      const d = new Date(`${first.date}T00:00:00`);
+      const m = d.getMonth();
+      if (m === lastMonth) return;
+      lastMonth = m;
+      // only label a column when the month actually starts inside that week,
+      // and keep enough spacing so labels never collide
+      if (d.getDate() > 7) return;
+      if (i - lastLabelCol < 4) return;
+      lastLabelCol = i;
+      labels.push({
+        col: i,
+        label: d.toLocaleDateString(locale, { month: "short" }),
+      });
     });
 
     return {
@@ -128,7 +134,7 @@ export function TrainingHeatmap() {
       levels: thresholds,
       total: cells.reduce((a, c) => a + c.sessions, 0),
     };
-  }, [workouts, range]);
+  }, [workouts, range, locale]);
 
   const levelOf = (cell: DayCell) => {
     if (cell.load <= 0) return 0;
@@ -244,7 +250,7 @@ export function TrainingHeatmap() {
           {activeCell ? (
             <div className="rounded-lg border border-border bg-popover px-2 py-1.5">
               <p className="font-semibold">
-                {new Date(`${activeCell.date}T00:00:00`).toLocaleDateString(undefined, {
+                {new Date(`${activeCell.date}T00:00:00`).toLocaleDateString(locale, {
                   weekday: "short",
                   month: "short",
                   day: "numeric",
