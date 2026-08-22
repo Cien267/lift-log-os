@@ -15,6 +15,7 @@ import { db, type MuscleGroup } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
 import { e1rm, formatWeight, getWeekStart, setVolume } from "@/lib/analytics";
 import { useT } from "@/lib/i18n";
+import { TrainingHeatmap } from "@/components/training-heatmap";
 
 export const Route = createFileRoute("/analytics")({
   head: () => ({
@@ -135,6 +136,8 @@ function AnalyticsPage() {
           <Mini label={t("common.volume")} value={formatWeight(Math.round(totalVolume))} />
           <Mini label={t("analytics.consistency")} value={`${consistency}%`} />
         </div>
+
+        <TrainingHeatmap />
 
         <Card title={t("analytics.weeklyVolume")} subtitle={t("analytics.last12Weeks")}>
           <ResponsiveContainer width="100%" height={170}>

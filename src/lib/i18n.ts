@@ -110,6 +110,11 @@ const dict = {
     "analytics.insightStrongWeek": "Strong week —",
     "analytics.insightSessionCompleted": "sessions completed.",
     "analytics.insightNotTrain": "Not trained this month:",
+    "analytics.heatmap": "Training heatmap",
+    "analytics.heatmapSessions": "sessions",
+    "analytics.heatmapHint": "Tap a day for details",
+    "analytics.heatmapLess": "Less",
+    "analytics.heatmapMore": "More",
 
     // body
     "body.createMeasurement": "New measurement",
@@ -323,6 +328,11 @@ const dict = {
     "analytics.insightStrongWeek": "Tuần tập năng suất —",
     "analytics.insightSessionCompleted": "buổi tập đã hoàn thành.",
     "analytics.insightNotTrain": "Chưa tập luyện trong tháng này:",
+    "analytics.heatmap": "Bản đồ nhiệt tập luyện",
+    "analytics.heatmapSessions": "buổi tập",
+    "analytics.heatmapHint": "Chạm vào một ngày để xem chi tiết",
+    "analytics.heatmapLess": "Ít",
+    "analytics.heatmapMore": "Nhiều",
 
     // body
     "body.createMeasurement": "Ghi lại số đo mới",
