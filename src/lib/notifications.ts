@@ -68,6 +68,18 @@ const WHATS_NEW = (lang = "en"): WhatsNewEntry[] => [
         ? "Forge now supports Cardio as a dedicated training type. Cardio exercises use minutes instead of reps and no longer require weight, making it easier to track running, cycling, walking, and other time-based cardio sessions."
         : "Forge giờ đây hỗ trợ Cardio như một loại hình tập luyện riêng. Các bài Cardio sử dụng số phút thay vì số reps và không yêu cầu mức tạ, giúp bạn dễ dàng theo dõi chạy bộ, đạp xe, đi bộ và các bài tập Cardio dựa trên thời gian.",
   },
+  {
+    version: "1.2.4",
+    title: lang === "en" ? "Training heatmap is here" : "Đã có Bản đồ nhiệt tập luyện",
+    subtitle:
+      lang === "en"
+        ? "Visualize your consistency over time"
+        : "Trực quan hóa sự kiên trì và tần suất tập luyện",
+    body:
+      lang === "en"
+        ? "Track your workout consistency at a glance with the new training heatmap. Filter activity by 3, 6, or 12 months, view total volume and sessions per day, and stay motivated as you build your routine. Check it out now in the Statistics tab."
+        : "Theo dõi tần suất và sự kiên trì tập luyện trực quan hơn với bản đồ nhiệt mới. Dễ dàng lọc theo 3, 6 hoặc 12 tháng, chạm để xem chi tiết số buổi tập và khối lượng tạ (volume) từng ngày để duy trì động lực. Xem ngay trong trang Thống kê",
+  },
 ];
 
 export async function createNotification(

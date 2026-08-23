@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { db } from "@/lib/db";
 import { formatWeight, formatMinutes } from "@/lib/analytics";
 import { useT } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 
 type RangeKey = "3m" | "6m" | "12m";
 
@@ -90,8 +90,7 @@ export function TrainingHeatmap() {
       const key = iso(cursor);
       const found = byDate.get(key);
       const cell: DayCell =
-        found ??
-        ({ date: key, sessions: 0, volume: 0, cardioMin: 0, sets: 0, load: 0 } as DayCell);
+        found ?? ({ date: key, sessions: 0, volume: 0, cardioMin: 0, sets: 0, load: 0 } as DayCell);
       cell.load = cell.volume + cell.cardioMin * 100;
       col.push(cell);
       cells.push(cell);
@@ -103,7 +102,10 @@ export function TrainingHeatmap() {
     }
     if (col.length) cols.push(col);
 
-    const loads = cells.filter((c) => c.load > 0).map((c) => c.load).sort((a, b) => a - b);
+    const loads = cells
+      .filter((c) => c.load > 0)
+      .map((c) => c.load)
+      .sort((a, b) => a - b);
     const q = (p: number) => (loads.length ? loads[Math.floor((loads.length - 1) * p)] : 0);
     const thresholds = [q(0.25), q(0.5), q(0.75)];
 
@@ -204,10 +206,7 @@ export function TrainingHeatmap() {
           <div className="flex gap-[3px]">
             <div className="mr-1 flex w-5 flex-col gap-[3px] pt-[1px]">
               {["M", "", "W", "", "F", "", "S"].map((d, i) => (
-                <span
-                  key={i}
-                  className="h-[12px] text-[9px] leading-[12px] text-muted-foreground"
-                >
+                <span key={i} className="h-[12px] text-[9px] leading-[12px] text-muted-foreground">
                   {d}
                 </span>
               ))}
@@ -221,10 +220,11 @@ export function TrainingHeatmap() {
                       key={cell.date}
                       type="button"
                       aria-label={cell.date}
-                      onMouseEnter={() => setActive(cell.date)}
-                      onMouseLeave={() => setActive((p) => (p === cell.date ? null : p))}
-                      onClick={() => (cell.sessions ? openDay(cell) : onPick(cell))}
-                      onTouchStart={() => onPick(cell)}
+                      // onMouseEnter={() => setActive(cell.date)}
+                      // onMouseLeave={() => setActive((p) => (p === cell.date ? null : p))}
+                      // onClick={() => (cell.sessions ? openDay(cell) : onPick(cell))}
+                      // onTouchStart={() => onPick(cell)}
+                      onClick={() => setActive(cell.date)}
                       className={cn(
                         "size-[12px] shrink-0 rounded-[3px] transition-transform",
                         active === cell.date && "ring-1 ring-ring",
@@ -248,15 +248,11 @@ export function TrainingHeatmap() {
       <div className="mt-3 flex items-center justify-between gap-2">
         <div className="min-h-[34px] flex-1 text-[11px]">
           {activeCell ? (
-            <div className="rounded-lg border border-border bg-popover px-2 py-1.5">
-              <p className="font-semibold">
-                {new Date(`${activeCell.date}T00:00:00`).toLocaleDateString(locale, {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </p>
+            <div
+              className="rounded-lg border border-border bg-popover px-2 py-1.5"
+              onClick={() => (activeCell.sessions ? openDay(activeCell) : onPick(activeCell))}
+            >
+              <p className="font-semibold">{formatDate(activeCell.date, lang)}</p>
               <p className="text-muted-foreground">
                 {activeCell.sessions} {t("analytics.heatmapSessions")}
                 {activeCell.volume > 0 && ` · ${formatWeight(Math.round(activeCell.volume))}`}
