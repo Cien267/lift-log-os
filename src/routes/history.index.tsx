@@ -133,8 +133,7 @@ function HistoryPage() {
 
                                   <p className="num text-xs text-muted-foreground">
                                     {formatDate(w.date, lang)} ·{" "}
-                                    {formatDuration(w.durationSec ?? 0)} ·{" "}
-                                    {formatSessionVolume(w)}
+                                    {formatDuration(w.durationSec ?? 0)} · {formatSessionVolume(w)}
                                   </p>
                                 </div>
 

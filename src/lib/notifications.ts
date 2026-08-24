@@ -78,7 +78,7 @@ const WHATS_NEW = (lang = "en"): WhatsNewEntry[] => [
     body:
       lang === "en"
         ? "Track your workout consistency at a glance with the new training heatmap. Filter activity by 3, 6, or 12 months, view total volume and sessions per day, and stay motivated as you build your routine. Check it out now in the Statistics tab."
-        : "Theo dõi tần suất và sự kiên trì tập luyện trực quan hơn với bản đồ nhiệt mới. Dễ dàng lọc theo 3, 6 hoặc 12 tháng, chạm để xem chi tiết số buổi tập và khối lượng tạ (volume) từng ngày để duy trì động lực. Xem ngay trong trang Thống kê",
+        : "Theo dõi tần suất và sự kiên trì tập luyện trực quan hơn với bản đồ nhiệt mới. Dễ dàng lọc theo 3, 6 hoặc 12 tháng, chạm để xem chi tiết số buổi tập và khối lượng tạ (volume) từng ngày để duy trì động lực. Xem ngay trong trang Thống kê.",
   },
 ];
 

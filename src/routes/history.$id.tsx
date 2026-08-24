@@ -60,7 +60,14 @@ function WorkoutDetail() {
   const lang = settings?.language ?? "en";
   const { id } = Route.useParams();
   const nav = useNavigate();
-  const workout = useLiveQuery(() => db.workouts.get(id), [id]);
+  const workout = useLiveQuery(async () => {
+    const w = await db.workouts.get(id);
+    if (!w) return undefined;
+    return {
+      ...w,
+      template: w.templateId ? await db.templates.get(w.templateId) : undefined,
+    };
+  }, [id]);
   const [form, setForm] = useState({
     date: "",
   });
@@ -118,7 +125,10 @@ function WorkoutDetail() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-lg font-semibold">{workout.name ?? `${workout.location} workout`}</h1>
+          <h1 className="text-lg font-semibold">
+            {workout.name ?? workout.template?.name ?? "Workout"}{" "}
+            <span className="text-xs text-muted-foreground capitalize">({workout.location})</span>
+          </h1>
           <p className="num text-xs text-muted-foreground">
             {formatDate(workout.date, lang)} · {formatDuration(workout.durationSec ?? 0)} ·{" "}
             {formatSessionVolume(workout)}
