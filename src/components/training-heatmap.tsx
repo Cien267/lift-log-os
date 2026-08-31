@@ -253,11 +253,13 @@ export function TrainingHeatmap() {
               onClick={() => (activeCell.sessions ? openDay(activeCell) : onPick(activeCell))}
             >
               <p className="font-semibold">{formatDate(activeCell.date, lang)}</p>
-              <p className="text-muted-foreground">
+              {
+                activeCell.sessions > 0 ? (<p className="text-muted-foreground">
                 {activeCell.sessions} {t("analytics.heatmapSessions")}
                 {activeCell.volume > 0 && ` · ${formatWeight(Math.round(activeCell.volume))}`}
                 {activeCell.cardioMin > 0 && ` · ${formatMinutes(activeCell.cardioMin)}`}
-              </p>
+              </p>) : (<p className="text-muted-foreground">{t("analytics.heatmapNoSessions")}</p>)
+              }
             </div>
           ) : (
             <span className="text-muted-foreground">{t("analytics.heatmapHint")}</span>

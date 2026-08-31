@@ -115,6 +115,7 @@ const dict = {
     "analytics.heatmapHint": "Tap a day for details",
     "analytics.heatmapLess": "Less",
     "analytics.heatmapMore": "More",
+    "analytics.heatmapNoSessions": "No sessions logged.",
 
     // body
     "body.createMeasurement": "New measurement",
@@ -333,6 +334,7 @@ const dict = {
     "analytics.heatmapHint": "Chạm vào một ngày để xem chi tiết",
     "analytics.heatmapLess": "Ít",
     "analytics.heatmapMore": "Nhiều",
+    "analytics.heatmapNoSessions": "Không có buổi tập nào được ghi lại.",
 
     // body
     "body.createMeasurement": "Ghi lại số đo mới",
