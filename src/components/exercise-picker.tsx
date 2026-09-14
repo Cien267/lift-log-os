@@ -332,33 +332,37 @@ export function ExercisePicker({
                       handleAnimation(e);
                       onSelect(ex.id);
                     }}
-                    className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left"
+                    className="flex min-w-0 flex-1 items-start gap-3 px-4 py-3 flex-col"
                   >
-                    {ex.guideImage ? (
-                      <img
-                        src={ex.guideImage}
-                        alt={ex.muscleGroup}
-                        className="h-9 w-9 rounded-lg object-cover"
-                      />
-                    ) : (
-                      <div className="grid h-9 w-9 place-items-center rounded-lg bg-secondary text-xs font-bold uppercase text-muted-foreground">
-                        {ex.muscleGroup.slice(0, 2)}
+                    <div className="flex min-w-0 flex-1 items-start gap-3 px-4 py-3 text-left">
+                      {ex.guideImage ? (
+                        <img
+                          src={ex.guideImage}
+                          alt={ex.muscleGroup}
+                          className="h-10 w-10 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="grid h-10 w-10 place-items-center rounded-lg bg-secondary text-xs font-bold uppercase text-muted-foreground">
+                          {ex.muscleGroup.slice(0, 2)}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium">{ex.name}</p>
+                        <p className="text-xs capitalize text-muted-foreground">
+                          {ex.muscleGroup} · {ex.equipment}
+                        </p>
+                        <div className="mt-2 flex gap-1">
+                          {ex.custom && (
+                            <Badge variant="secondary" className="text-[9px]">
+                              Custom
+                            </Badge>
+                          )}
+                          <Badge variant="outline" className="text-[9px]">
+                            {ex.category}
+                          </Badge>
+                        </div>
                       </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{ex.name}</p>
-                      <p className="text-xs capitalize text-muted-foreground">
-                        {ex.muscleGroup} · {ex.equipment}
-                      </p>
                     </div>
-                    {ex.custom && (
-                      <Badge variant="secondary" className="text-[10px]">
-                        Custom
-                      </Badge>
-                    )}
-                    <Badge variant="outline" className="text-[10px]">
-                      {ex.category}
-                    </Badge>
                   </button>
                   {effects.map((effect) => (
                     <motion.div
