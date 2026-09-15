@@ -194,7 +194,7 @@ export function ExercisePicker({
       const dataUrl = await fileToCompressedDataUrl(file);
       setDraft((d) => ({ ...d, guideImage: dataUrl }));
     } catch {
-      toast.error("Could not load image");
+      toast.error(lang === "vi" ? "Không thể tải ảnh" : "Could not load image");
     }
   };
 
@@ -210,7 +210,7 @@ export function ExercisePicker({
         guideImage: draft.guideImage,
       });
       setEditorOpen(false);
-      toast.success("Exercise updated");
+      toast.success(lang === "vi" ? "Bài tập đã được cập nhật" : "Exercise updated");
     } else {
       const ex: Exercise = {
         id: uid(),
@@ -230,7 +230,7 @@ export function ExercisePicker({
   const deleteExercise = async (ex: Exercise) => {
     await db.exercises.delete(ex.id);
     setConfirmDelete(null);
-    toast.success(`Deleted "${ex.name}"`);
+    toast.success(lang === "vi" ? `Đã xóa "${ex.name}"` : `Deleted "${ex.name}"`);
   };
 
   const handleAnimation = (e: React.MouseEvent<HTMLButtonElement>) => {

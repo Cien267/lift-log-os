@@ -94,7 +94,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
     try {
       setImg(await loadImageFromFile(file));
     } catch {
-      toast.error("Could not load that photo");
+      toast.error(lang === "vi" ? "Không thể tải ảnh" : "Could not load that photo");
     }
   };
 
@@ -116,10 +116,13 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
         await nav.share({ files: [file], title: stats?.name ?? "Forge workout" });
       } else {
         download(blob);
-        toast.success("Image saved — ready to post");
+        toast.success(
+          lang === "vi" ? "Đã lưu ảnh — sẵn sàng để đăng" : "Image saved — ready to post",
+        );
       }
     } catch (e: any) {
-      if (e?.name !== "AbortError") toast.error("Sharing failed");
+      if (e?.name !== "AbortError")
+        toast.error(lang === "vi" ? "Chia sẻ thất bại" : "Sharing failed");
     } finally {
       setBusy(false);
     }
@@ -130,7 +133,7 @@ function PhotoOverlayEditor({ workoutId, onClose }: { workoutId: string; onClose
     const blob = await exportBlob();
     if (blob) {
       download(blob);
-      toast.success("Saved to your device");
+      toast.success(lang === "vi" ? "Đã lưu ảnh vào thiết bị" : "Image saved to your device");
     }
     setBusy(false);
   };
