@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useNavigate } from "@tanstack/react-router";
 import { db } from "@/lib/db";
@@ -45,8 +45,21 @@ export function TrainingHeatmap() {
   const navigate = useNavigate();
   const [range, setRange] = useState<RangeKey>("12m");
   const [active, setActive] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const workouts = useLiveQuery(() => db.workouts.orderBy("startTime").toArray()) ?? [];
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const observer = new ResizeObserver(() => {
+      el.scrollLeft = el.scrollWidth;
+    });
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const locale = lang === "vi" ? "vi-VN" : "en-US";
 
@@ -188,7 +201,10 @@ export function TrainingHeatmap() {
         </div>
       </div>
 
-      <div className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div
+        ref={scrollRef}
+        className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
         <div className="min-w-max">
           <div className="mb-1 flex gap-[3px] pl-6">
             {weeks.map((_, i) => {
@@ -253,13 +269,15 @@ export function TrainingHeatmap() {
               onClick={() => (activeCell.sessions ? openDay(activeCell) : onPick(activeCell))}
             >
               <p className="font-semibold">{formatDate(activeCell.date, lang)}</p>
-              {
-                activeCell.sessions > 0 ? (<p className="text-muted-foreground">
-                {activeCell.sessions} {t("analytics.heatmapSessions")}
-                {activeCell.volume > 0 && ` · ${formatWeight(Math.round(activeCell.volume))}`}
-                {activeCell.cardioMin > 0 && ` · ${formatMinutes(activeCell.cardioMin)}`}
-              </p>) : (<p className="text-muted-foreground">{t("analytics.heatmapNoSessions")}</p>)
-              }
+              {activeCell.sessions > 0 ? (
+                <p className="text-muted-foreground">
+                  {activeCell.sessions} {t("analytics.heatmapSessions")}
+                  {activeCell.volume > 0 && ` · ${formatWeight(Math.round(activeCell.volume))}`}
+                  {activeCell.cardioMin > 0 && ` · ${formatMinutes(activeCell.cardioMin)}`}
+                </p>
+              ) : (
+                <p className="text-muted-foreground">{t("analytics.heatmapNoSessions")}</p>
+              )}
             </div>
           ) : (
             <span className="text-muted-foreground">{t("analytics.heatmapHint")}</span>
