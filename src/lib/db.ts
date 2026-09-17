@@ -58,7 +58,6 @@ export interface WorkoutSet {
   timestamp: number;
 }
 
-
 export interface WorkoutExercise {
   id: string;
   workoutId: string;
@@ -87,7 +86,6 @@ export interface Workout {
   totalCardioMin?: number;
   estimatedCalories?: number;
   insight?: any;
-
 }
 
 export interface TemplateExercise {

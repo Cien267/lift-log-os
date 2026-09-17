@@ -23,6 +23,7 @@ const dict = {
     "title.plans": "Plans",
     "title.settings": "Settings",
     "title.notifications": "Notifications",
+    "title.historyFilters": "History Filters",
 
     // settings
     "settings.appearance": "Appearance",
@@ -219,6 +220,8 @@ const dict = {
     "common.coachNote": "Coach note",
     "common.session": "sessions",
     "common.date": "Date",
+    "common.refresh": "Refresh",
+    "common.filter": "Filter",
   },
   vi: {
     // bottom nav
@@ -239,6 +242,7 @@ const dict = {
     "title.plans": "Kế hoạch",
     "title.settings": "Cài đặt",
     "title.notifications": "Thông báo",
+    "title.historyFilters": "Bộ lọc lịch sử",
 
     // settings
     "settings.appearance": "Giao diện",
@@ -438,6 +442,8 @@ const dict = {
     "common.coachNote": "Ghi chú của huấn luyện viên",
     "common.session": "buổi",
     "common.date": "Ngày",
+    "common.refresh": "Làm mới",
+    "common.filter": "Lọc",
   },
 } as const;
 

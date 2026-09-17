@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
 import { format } from "date-fns";
+import { HistoryFilter } from "@/components/history-filter";
 
 export const Route = createFileRoute("/history/")({
   head: () => ({
@@ -64,7 +65,14 @@ function HistoryPage() {
   const isEmpty = groups.size === 0;
 
   return (
-    <AppShell title={t("title.history")}>
+    <AppShell
+      header={
+        <div className="flex items-center justify-between px-4 py-3">
+          <h1 className="text-lg font-semibold tracking-tight">{t("title.history")}</h1>
+          {/* <HistoryFilter /> */}
+        </div>
+      }
+    >
       {isEmpty ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
           {t("history.empty")}
