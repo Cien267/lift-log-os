@@ -85,7 +85,7 @@ function HistoryPage() {
       header={
         <div className="flex items-center justify-between px-4 py-3">
           <h1 className="text-lg font-semibold tracking-tight">{t("title.history")}</h1>
-          {/* <HistoryFilter filters={filters} setFilters={setFilters} /> */}
+          <HistoryFilter filters={filters} setFilters={setFilters} />
         </div>
       }
     >

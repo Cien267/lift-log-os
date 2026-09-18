@@ -80,6 +80,18 @@ const WHATS_NEW = (lang = "en"): WhatsNewEntry[] => [
         ? "Track your workout consistency at a glance with the new training heatmap. Filter activity by 3, 6, or 12 months, view total volume and sessions per day, and stay motivated as you build your routine. Check it out now in the Statistics tab."
         : "Theo dõi tần suất và sự kiên trì tập luyện trực quan hơn với bản đồ nhiệt mới. Dễ dàng lọc theo 3, 6 hoặc 12 tháng, chạm để xem chi tiết số buổi tập và khối lượng tạ (volume) từng ngày để duy trì động lực. Xem ngay trong trang Thống kê.",
   },
+  {
+    version: "1.2.5",
+    title: lang === "en" ? "History filters are here" : "Đã có bộ lọc lịch sử tập luyện",
+    subtitle:
+      lang === "en"
+        ? "Find the workouts you're looking for faster"
+        : "Tìm lại buổi tập bạn cần nhanh hơn",
+    body:
+      lang === "en"
+        ? "You can now filter your workout history by date, template, and location. Whether you're looking for a specific workout or reviewing your training over a certain period, History Filters make it easier to find and follow your progress."
+        : "Giờ đây bạn có thể lọc lịch sử tập luyện theo thời gian, mẫu và địa điểm. Dù bạn đang tìm một buổi tập cụ thể hay muốn xem lại quá trình tập luyện trong một khoảng thời gian, Bộ Lọc Lịch Sử giúp bạn tìm kiếm và theo dõi tiến trình dễ dàng hơn.",
+  },
 ];
 
 export async function createNotification(
