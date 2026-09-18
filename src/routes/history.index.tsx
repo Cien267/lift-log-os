@@ -9,6 +9,8 @@ import { formatDate } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
 import { format } from "date-fns";
 import { HistoryFilter } from "@/components/history-filter";
+import { readHistoryFilter, type IHistoryFilter } from "@/lib/history-filter";
+import { useState } from "react";
 
 export const Route = createFileRoute("/history/")({
   head: () => ({
@@ -25,10 +27,24 @@ function HistoryPage() {
   const { settings } = useSettings();
   const lang = settings?.language ?? "en";
 
+  const [filters, setFilters] = useState<IHistoryFilter>(() => readHistoryFilter());
+
   const groups =
     useLiveQuery(async () => {
       const workouts = await db.workouts.orderBy("startTime").reverse().toArray();
-      const done = workouts.filter((w) => w.endTime);
+      let done = workouts.filter((w) => w.endTime);
+      if (filters.startDate) {
+        done = done.filter((w) => w.date >= filters.startDate!);
+      }
+      if (filters.endDate) {
+        done = done.filter((w) => w.date <= filters.endDate!);
+      }
+      if (filters.templateId) {
+        done = done.filter((w) => w.templateId === filters.templateId);
+      }
+      if (filters.location && filters.location.length > 0) {
+        done = done.filter((w) => w.location && filters.location.includes(w.location));
+      }
       const templateIds = [
         ...new Set(done.map((w) => w.templateId).filter((id): id is string => !!id)),
       ];
@@ -61,7 +77,7 @@ function HistoryPage() {
       }
 
       return grouped;
-    }, []) ?? new Map();
+    }, [filters]) ?? new Map();
   const isEmpty = groups.size === 0;
 
   return (
@@ -69,7 +85,7 @@ function HistoryPage() {
       header={
         <div className="flex items-center justify-between px-4 py-3">
           <h1 className="text-lg font-semibold tracking-tight">{t("title.history")}</h1>
-          {/* <HistoryFilter /> */}
+          {/* <HistoryFilter filters={filters} setFilters={setFilters} /> */}
         </div>
       }
     >

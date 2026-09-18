@@ -12,20 +12,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
-  readHistoryFilter,
   writeHistoryFilter,
   isHistoryFilterEmpty,
   clearHistoryFilter,
   defaultFilter,
-  type HistoryFilter,
+  type IHistoryFilter,
 } from "@/lib/history-filter";
 import { Label } from "./ui/label";
+import { cn } from "@/lib/utils";
+import { format, parseISO, isValid } from "date-fns";
 
-export function HistoryFilter() {
+export function HistoryFilter({
+  filters,
+  setFilters,
+}: {
+  filters: IHistoryFilter;
+  setFilters: React.Dispatch<React.SetStateAction<IHistoryFilter>>;
+}) {
   const [open, setOpen] = useState(false);
   const { t } = useT();
-  const [filters, setFilters] = useState<HistoryFilter>(() => readHistoryFilter());
   const isEmpty = useMemo(() => isHistoryFilterEmpty(filters), [filters]);
 
   return (
@@ -50,7 +59,7 @@ export function HistoryFilter() {
             <Filters filters={filters} setFilters={setFilters} />
           </div>
           <div className="shrink-0 pb-8">
-            <ActionButtons setFilters={setFilters} />
+            <ActionButtons setFilters={setFilters} onClose={() => setOpen(false)} />
           </div>
         </div>
       </SheetContent>
@@ -62,38 +71,95 @@ function Filters({
   filters,
   setFilters,
 }: {
-  filters: HistoryFilter;
-  setFilters: React.Dispatch<React.SetStateAction<HistoryFilter>>;
+  filters: IHistoryFilter;
+  setFilters: React.Dispatch<React.SetStateAction<IHistoryFilter>>;
 }) {
   const { t } = useT();
   const rawTemplates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray());
   const templates = useMemo(() => rawTemplates ?? [], [rawTemplates]);
+
+  const parseDateString = (dateStr: string | null): Date | undefined => {
+    if (!dateStr) return undefined;
+    const parsed = parseISO(dateStr);
+    return isValid(parsed) ? parsed : undefined;
+  };
 
   return (
     <div className="space-y-4">
       <div>
         <Label className="mb-3 block text-xs">{t("common.date")}</Label>
         <div className="flex gap-2">
-          <input
-            type="date"
-            value={filters.startDate ?? ""}
-            onChange={(e) => {
-              const newFilter = { ...filters, startDate: e.target.value || null };
-              setFilters(newFilter);
-              writeHistoryFilter(newFilter);
-            }}
-            className="flex-1 rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-          />
-          <input
-            type="date"
-            value={filters.endDate ?? ""}
-            onChange={(e) => {
-              const newFilter = { ...filters, endDate: e.target.value || null };
-              setFilters(newFilter);
-              writeHistoryFilter(newFilter);
-            }}
-            className="flex-1 rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "flex-1 justify-start text-left font-normal bg-card border-border",
+                  !filters.startDate && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {filters.startDate
+                  ? format(parseISO(filters.startDate), "PP")
+                  : t("common.fromDate")}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={parseDateString(filters.startDate)}
+                onSelect={(date) => {
+                  const dateStr = date ? format(date, "yyyy-MM-dd") : null;
+
+                  let newEndDate = filters.endDate;
+                  if (dateStr && newEndDate && dateStr > newEndDate) {
+                    newEndDate = null;
+                  }
+
+                  const newFilter = { ...filters, startDate: dateStr, endDate: newEndDate };
+                  setFilters(newFilter);
+                  writeHistoryFilter(newFilter);
+                }}
+                disabled={(date) => {
+                  if (!filters.endDate) return false;
+                  return date > parseISO(filters.endDate);
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "flex-1 justify-start text-left font-normal bg-card border-border",
+                  !filters.endDate && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {filters.endDate ? format(parseISO(filters.endDate), "PP") : t("common.toDate")}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={parseDateString(filters.endDate)}
+                onSelect={(date) => {
+                  const dateStr = date ? format(date, "yyyy-MM-dd") : null;
+                  const newFilter = { ...filters, endDate: dateStr };
+                  setFilters(newFilter);
+                  writeHistoryFilter(newFilter);
+                }}
+                disabled={(date) => {
+                  if (!filters.startDate) return false;
+                  return date < parseISO(filters.startDate);
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
       <div>
@@ -147,14 +213,17 @@ function Filters({
 
 function ActionButtons({
   setFilters,
+  onClose,
 }: {
-  setFilters: React.Dispatch<React.SetStateAction<HistoryFilter>>;
+  setFilters: React.Dispatch<React.SetStateAction<IHistoryFilter>>;
+  onClose: () => void;
 }) {
   const { t } = useT();
 
   const handleRefreshHistoryFilter = () => {
     clearHistoryFilter();
     setFilters(defaultFilter());
+    onClose();
   };
 
   return (
@@ -162,7 +231,7 @@ function ActionButtons({
       <Button className="w-full" variant="outline" size="lg" onClick={handleRefreshHistoryFilter}>
         {t("common.refresh")}
       </Button>
-      <Button className="w-full" size="lg">
+      <Button className="w-full" size="lg" onClick={onClose}>
         {t("common.filter")}
       </Button>
     </div>

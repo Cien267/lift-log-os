@@ -4,7 +4,6 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { Play, Home, Building2 } from "lucide-react";
 import { db, WorkoutTemplate } from "@/lib/db";
 import { AppShell } from "@/components/app-shell";
-import { Button } from "@/components/ui/button";
 import { getActiveWorkoutId, startWorkout } from "@/lib/workout-service";
 import { useSettings } from "@/hooks/use-settings";
 import { useT } from "@/lib/i18n";

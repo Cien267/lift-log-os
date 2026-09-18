@@ -2,14 +2,14 @@ const FILTER_KEY = "forge.historyFilter";
 
 type HistoryFilterLocation = "gym" | "home" | "outdoor" | null;
 
-export interface HistoryFilter {
+export interface IHistoryFilter {
   startDate: string | null;
   endDate: string | null;
   templateId: string | null;
   location: HistoryFilterLocation[];
 }
 
-export function defaultFilter(): HistoryFilter {
+export function defaultFilter(): IHistoryFilter {
   return {
     startDate: null,
     endDate: null,
@@ -18,7 +18,7 @@ export function defaultFilter(): HistoryFilter {
   };
 }
 
-export function readHistoryFilter(): HistoryFilter {
+export function readHistoryFilter(): IHistoryFilter {
   if (typeof localStorage === "undefined") return defaultFilter();
   try {
     const raw = localStorage.getItem(FILTER_KEY);
@@ -28,7 +28,7 @@ export function readHistoryFilter(): HistoryFilter {
   }
 }
 
-export function writeHistoryFilter(filter: HistoryFilter) {
+export function writeHistoryFilter(filter: IHistoryFilter) {
   if (typeof localStorage === "undefined") return;
   localStorage.setItem(FILTER_KEY, JSON.stringify(filter));
 }
@@ -38,6 +38,6 @@ export function clearHistoryFilter() {
   localStorage.removeItem(FILTER_KEY);
 }
 
-export function isHistoryFilterEmpty(filter: HistoryFilter): boolean {
+export function isHistoryFilterEmpty(filter: IHistoryFilter): boolean {
   return !filter.startDate && !filter.endDate && !filter.templateId && filter.location.length === 0;
 }

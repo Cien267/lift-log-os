@@ -222,6 +222,8 @@ const dict = {
     "common.date": "Date",
     "common.refresh": "Refresh",
     "common.filter": "Filter",
+    "common.fromDate": "From date",
+    "common.toDate": "To date",
   },
   vi: {
     // bottom nav
@@ -444,6 +446,8 @@ const dict = {
     "common.date": "Ngày",
     "common.refresh": "Làm mới",
     "common.filter": "Lọc",
+    "common.fromDate": "Từ ngày",
+    "common.toDate": "Đến ngày",
   },
 } as const;
 
