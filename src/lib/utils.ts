@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { format } from "date-fns";
+import { format, parseISO, isValid } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
 import { getAudioCtx } from "@/lib/audioCtx";
 
@@ -61,4 +61,10 @@ export const schoolBellSound = () => {
   } catch (e) {
     console.error("school bell error:", e);
   }
+};
+
+export const parseDateString = (dateStr: string | null): Date | undefined => {
+  if (!dateStr) return undefined;
+  const parsed = parseISO(dateStr);
+  return isValid(parsed) ? parsed : undefined;
 };

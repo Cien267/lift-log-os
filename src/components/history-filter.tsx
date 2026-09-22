@@ -23,8 +23,8 @@ import {
   type IHistoryFilter,
 } from "@/lib/history-filter";
 import { Label } from "./ui/label";
-import { cn } from "@/lib/utils";
-import { format, parseISO, isValid } from "date-fns";
+import { cn, parseDateString } from "@/lib/utils";
+import { format, parseISO } from "date-fns";
 
 export function HistoryFilter({
   filters,
@@ -77,12 +77,6 @@ function Filters({
   const { t } = useT();
   const rawTemplates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray());
   const templates = useMemo(() => rawTemplates ?? [], [rawTemplates]);
-
-  const parseDateString = (dateStr: string | null): Date | undefined => {
-    if (!dateStr) return undefined;
-    const parsed = parseISO(dateStr);
-    return isValid(parsed) ? parsed : undefined;
-  };
 
   return (
     <div className="space-y-4">

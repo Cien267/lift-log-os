@@ -16,13 +16,17 @@ import { AppShell } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format, parseISO } from "date-fns";
+import { vi } from "react-day-picker/locale";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -35,8 +39,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useT } from "@/lib/i18n";
-import { formatDate } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
+import { formatDate, parseDateString } from "@/lib/utils";
 
 export const Route = createFileRoute("/body")({
   head: () => ({
@@ -77,6 +81,7 @@ function BodyPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<BodyMeasurement>>(emptyForm());
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [openCalendar, setOpenCalendar] = useState(false);
 
   const openNew = () => {
     setEditingId(null);
@@ -144,11 +149,30 @@ function BodyPage() {
           <div className="space-y-3">
             <div>
               <Label className="mb-1 block text-xs">{t("common.date")}</Label>
-              <Input
-                type="date"
-                value={form.date as string}
-                onChange={(e) => setForm({ ...form, date: e.target.value })}
-              />
+              <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={"font-normal border-border w-full"}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formatDate(form.date, lang)}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    locale={lang === "vi" ? vi : undefined}
+                    weekStartsOn={lang === "vi" ? 1 : undefined}
+                    selected={form.date ? new Date(form.date) : undefined}
+                    onSelect={(date) => {
+                      setForm({
+                        ...form,
+                        date: date ? format(date, "yyyy-MM-dd") : "",
+                      });
+                      setOpenCalendar(false);
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {FIELDS(lang).map((f) => (
