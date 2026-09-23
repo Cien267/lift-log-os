@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { vi } from "react-day-picker/locale";
 import {
   Dialog,
@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useT } from "@/lib/i18n";
 import { useSettings } from "@/hooks/use-settings";
-import { formatDate, parseDateString } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/body")({
   head: () => ({

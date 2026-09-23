@@ -25,6 +25,8 @@ import {
 import { Label } from "./ui/label";
 import { cn, parseDateString } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
+import { vi } from "react-day-picker/locale";
+import { formatDate } from "@/lib/utils";
 
 export function HistoryFilter({
   filters,
@@ -74,7 +76,9 @@ function Filters({
   filters: IHistoryFilter;
   setFilters: React.Dispatch<React.SetStateAction<IHistoryFilter>>;
 }) {
-  const { t } = useT();
+  const { t, lang } = useT();
+  const [openCalendarStartDate, setOpenCalendarStartDate] = useState(false);
+  const [openCalendarEndDate, setOpenCalendarEndDate] = useState(false);
   const rawTemplates = useLiveQuery(() => db.templates.orderBy("updatedAt").reverse().toArray());
   const templates = useMemo(() => rawTemplates ?? [], [rawTemplates]);
 
@@ -82,8 +86,8 @@ function Filters({
     <div className="space-y-4">
       <div>
         <Label className="mb-3 block text-xs">{t("common.date")}</Label>
-        <div className="flex gap-2">
-          <Popover>
+        <div className="flex gap-2 justify-between">
+          <Popover open={openCalendarStartDate} onOpenChange={setOpenCalendarStartDate}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -93,15 +97,15 @@ function Filters({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {filters.startDate
-                  ? format(parseISO(filters.startDate), "PP")
-                  : t("common.fromDate")}
+                {filters.startDate ? formatDate(filters.startDate, lang) : t("common.fromDate")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={parseDateString(filters.startDate)}
+                locale={lang === "vi" ? vi : undefined}
+                weekStartsOn={lang === "vi" ? 1 : undefined}
+                selected={filters.startDate ? new Date(filters.startDate) : undefined}
                 onSelect={(date) => {
                   const dateStr = date ? format(date, "yyyy-MM-dd") : null;
 
@@ -113,6 +117,7 @@ function Filters({
                   const newFilter = { ...filters, startDate: dateStr, endDate: newEndDate };
                   setFilters(newFilter);
                   writeHistoryFilter(newFilter);
+                  setOpenCalendarStartDate(false);
                 }}
                 disabled={(date) => {
                   if (!filters.endDate) return false;
@@ -123,7 +128,7 @@ function Filters({
             </PopoverContent>
           </Popover>
 
-          <Popover>
+          <Popover open={openCalendarEndDate} onOpenChange={setOpenCalendarEndDate}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -133,18 +138,21 @@ function Filters({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {filters.endDate ? format(parseISO(filters.endDate), "PP") : t("common.toDate")}
+                {filters.endDate ? formatDate(filters.endDate, lang) : t("common.toDate")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={parseDateString(filters.endDate)}
+                locale={lang === "vi" ? vi : undefined}
+                weekStartsOn={lang === "vi" ? 1 : undefined}
+                selected={filters.endDate ? new Date(filters.endDate) : undefined}
                 onSelect={(date) => {
                   const dateStr = date ? format(date, "yyyy-MM-dd") : null;
                   const newFilter = { ...filters, endDate: dateStr };
                   setFilters(newFilter);
                   writeHistoryFilter(newFilter);
+                  setOpenCalendarEndDate(false);
                 }}
                 disabled={(date) => {
                   if (!filters.startDate) return false;
