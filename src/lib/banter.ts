@@ -179,7 +179,11 @@ export function banter(trigger: BanterTrigger, ctx: Ctx = {}, lang: string = "en
   lastFired[trigger] = now;
   const msg = pick(trigger, ctx, lang);
   if (!msg) return;
-  toast(msg, { duration: 3000, position: "bottom-right" });
+  toast(msg, {
+    duration: 3000,
+    position: "top-right",
+    style: { top: "4rem" },
+  });
 }
 
 /** Register additional messages at runtime (for future extensions). */
