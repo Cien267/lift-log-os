@@ -59,7 +59,7 @@ export function TrainingHeatmap() {
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [range]);
 
   const locale = lang === "vi" ? "vi-VN" : "en-US";
 
