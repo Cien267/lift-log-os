@@ -29,6 +29,7 @@ import {
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
+import { forgeMeta } from "@/lib/seo";
 
 import { parseISO, set } from "date-fns";
 
@@ -46,10 +47,7 @@ function changeDateKeepTime(timestamp: number, newDate: string) {
 
 export const Route = createFileRoute("/history/$id")({
   head: ({ params }) => ({
-    meta: [
-      { title: `Workout | Forge` },
-      { name: "description", content: `Workout session details for ${params.id}` },
-    ],
+    meta: forgeMeta("Workout | Forge", `Workout session details for ${params.id}`),
   }),
   component: WorkoutDetail,
 });

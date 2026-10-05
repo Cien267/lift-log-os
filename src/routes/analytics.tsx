@@ -16,16 +16,14 @@ import { AppShell } from "@/components/app-shell";
 import { e1rm, formatWeight, getWeekStart, setVolume } from "@/lib/analytics";
 import { useT } from "@/lib/i18n";
 import { TrainingHeatmap } from "@/components/training-heatmap";
+import { forgeMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/analytics")({
   head: () => ({
-    meta: [
-      { title: "Analytics | Forge" },
-      {
-        name: "description",
-        content: "Strength progression, volume trends, muscle balance, and insights.",
-      },
-    ],
+    meta: forgeMeta(
+      "Analytics | Forge",
+      "Strength progression, volume trends, muscle balance, and insights.",
+    ),
   }),
   component: AnalyticsPage,
 });

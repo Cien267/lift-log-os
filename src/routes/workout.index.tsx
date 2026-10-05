@@ -7,13 +7,14 @@ import { AppShell } from "@/components/app-shell";
 import { getActiveWorkoutId, startWorkout } from "@/lib/workout-service";
 import { useSettings } from "@/hooks/use-settings";
 import { useT } from "@/lib/i18n";
+import { forgeMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/workout/")({
   head: () => ({
-    meta: [
-      { title: "Workout | Forge" },
-      { name: "description", content: "Start a new workout from a template or empty session." },
-    ],
+    meta: forgeMeta(
+      "Workout | Forge",
+      "Start a new workout from a template or empty session.",
+    ),
   }),
   component: WorkoutLanding,
 });

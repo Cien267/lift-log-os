@@ -166,6 +166,33 @@
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
   }
+
+  .workout-completion-progress {
+    appearance: none;
+    border: 0;
+    background: transparent;
+  }
+
+  .workout-completion-progress::-webkit-progress-bar {
+    background: transparent;
+  }
+
+  .workout-completion-progress::-webkit-progress-value {
+    background: var(--color-primary);
+    transition: width 300ms ease-out;
+  }
+
+  .workout-completion-progress::-moz-progress-bar {
+    background: var(--color-primary);
+    transition: width 300ms ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workout-completion-progress::-webkit-progress-value,
+  .workout-completion-progress::-moz-progress-bar {
+    transition: none;
+  }
 }
 
 @theme {
