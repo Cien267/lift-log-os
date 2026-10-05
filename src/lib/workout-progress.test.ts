@@ -1,20 +1,13 @@
-import { describe, expect, it } from "vitest";
 import { getWorkoutCompletionProgress } from "./workout-progress";
 
-describe("getWorkoutCompletionProgress", () => {
-  it("starts at zero before any set is complete", () => {
-    expect(getWorkoutCompletionProgress(0, 3)).toBe(0);
-  });
+function expectProgress(completedSets: number, totalSets: number, expected: number) {
+  const actual = getWorkoutCompletionProgress(completedSets, totalSets);
+  if (actual !== expected) {
+    throw new Error(`Expected ${expected}% progress, received ${actual}%`);
+  }
+}
 
-  it("fills in proportion to completed sets", () => {
-    expect(getWorkoutCompletionProgress(1, 4)).toBe(25);
-  });
-
-  it("reaches full progress when every set is complete", () => {
-    expect(getWorkoutCompletionProgress(3, 3)).toBe(100);
-  });
-
-  it("recalculates when the total set count changes", () => {
-    expect(getWorkoutCompletionProgress(2, 4)).toBe(50);
-  });
-});
+expectProgress(0, 3, 0);
+expectProgress(1, 4, 25);
+expectProgress(3, 3, 100);
+expectProgress(2, 4, 50);
