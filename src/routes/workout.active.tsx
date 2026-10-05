@@ -52,6 +52,7 @@ import {
 import { Lang, useT } from "@/lib/i18n";
 import { ExercisePreview } from "@/components/exercise-preview";
 import { WorkoutPhotoShare } from "@/components/workout-photo-share";
+import { getWorkoutCompletionProgress } from "@/lib/workout-progress";
 
 const search = z.object({ id: z.string() });
 
@@ -128,6 +129,7 @@ function ActiveWorkoutPage() {
     .filter((s) => cardioEntryIds.has(s.exerciseEntryId))
     .reduce((a, s) => a + (s.durationMin ?? 0), 0);
   const completedSets = completed.length;
+  const completionProgress = getWorkoutCompletionProgress(completedSets, sets.length);
 
   const onPick = async (exerciseId: string) => {
     await addExerciseToWorkout(id, exerciseId);
@@ -171,7 +173,21 @@ function ActiveWorkoutPage() {
               {formatSessionVolume({ totalVolume, totalCardioMin })}
             </p>
           </div>
-          <Button size="sm" onClick={onPreFinish} className="gap-1.5">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onPreFinish}
+            className={
+              "relative isolate overflow-hidden bg-transparent shadow-none hover:bg-transparent " +
+              (completionProgress === 100 ? "text-primary-foreground" : "text-foreground")
+            }
+          >
+            <progress
+              aria-hidden="true"
+              className="workout-completion-progress absolute inset-0 -z-10 h-full w-full"
+              value={completedSets}
+              max={Math.max(sets.length, 1)}
+            />
             <Check className="h-4 w-4" />
             {t("common.finish")}
           </Button>
