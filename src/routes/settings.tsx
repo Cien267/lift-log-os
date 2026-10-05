@@ -13,13 +13,14 @@ import { useT } from "@/lib/i18n";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DEFAULT_SETTINGS } from "@/lib/seed";
+import { forgeMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
-    meta: [
-      { title: "Settings | Forge" },
-      { name: "description", content: "Customize units, rest timer, theme, and manage your data." },
-    ],
+    meta: forgeMeta(
+      "Settings | Forge",
+      "Customize units, rest timer, theme, and manage your data.",
+    ),
   }),
   component: SettingsPage,
 });

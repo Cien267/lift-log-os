@@ -41,13 +41,11 @@ import {
 } from "@/components/ui/select";
 import { ExercisePicker } from "@/components/exercise-picker";
 import { useT } from "@/lib/i18n";
+import { forgeMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/templates")({
   head: () => ({
-    meta: [
-      { title: "Plans | Forge" },
-      { name: "description", content: "Build and manage workout templates." },
-    ],
+    meta: forgeMeta("Plans | Forge", "Build and manage workout templates."),
   }),
   component: TemplatesPage,
 });

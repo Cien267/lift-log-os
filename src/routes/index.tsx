@@ -10,16 +10,14 @@ import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/use-settings";
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils";
+import { forgeMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { title: "Dashboard | Forge" },
-      {
-        name: "description",
-        content: "Your training overview: streaks, PRs, weekly volume, and what's next.",
-      },
-    ],
+    meta: forgeMeta(
+      "Dashboard | Forge",
+      "Your training overview: streaks, PRs, weekly volume, and what's next.",
+    ),
   }),
   component: Dashboard,
 });

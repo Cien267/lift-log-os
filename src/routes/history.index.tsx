@@ -11,13 +11,11 @@ import { format } from "date-fns";
 import { HistoryFilter } from "@/components/history-filter";
 import { readHistoryFilter, type IHistoryFilter } from "@/lib/history-filter";
 import { useState } from "react";
+import { forgeMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/history/")({
   head: () => ({
-    meta: [
-      { title: "History | Forge" },
-      { name: "description", content: "Browse every workout you've completed." },
-    ],
+    meta: forgeMeta("History | Forge", "Browse every workout you've completed."),
   }),
   component: HistoryPage,
 });

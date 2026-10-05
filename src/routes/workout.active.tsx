@@ -53,16 +53,17 @@ import { Lang, useT } from "@/lib/i18n";
 import { ExercisePreview } from "@/components/exercise-preview";
 import { WorkoutPhotoShare } from "@/components/workout-photo-share";
 import { getWorkoutCompletionProgress } from "@/lib/workout-progress";
+import { forgeMeta } from "@/lib/seo";
 
 const search = z.object({ id: z.string() });
 
 export const Route = createFileRoute("/workout/active")({
   validateSearch: (s) => search.parse(s),
   head: () => ({
-    meta: [
-      { title: "Active workout | Forge" },
-      { name: "description", content: "Log sets, rest, and crush PRs in live workout mode." },
-    ],
+    meta: forgeMeta(
+      "Active workout | Forge",
+      "Log sets, rest, and crush PRs in live workout mode.",
+    ),
   }),
   component: ActiveWorkoutPage,
 });

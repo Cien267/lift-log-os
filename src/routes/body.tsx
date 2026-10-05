@@ -41,13 +41,11 @@ import {
 import { useT } from "@/lib/i18n";
 import { useSettings } from "@/hooks/use-settings";
 import { formatDate } from "@/lib/utils";
+import { forgeMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/body")({
   head: () => ({
-    meta: [
-      { title: "Body | Forge" },
-      { name: "description", content: "Track bodyweight, measurements, and progression." },
-    ],
+    meta: forgeMeta("Body | Forge", "Track bodyweight, measurements, and progression."),
   }),
   component: BodyPage,
 });
