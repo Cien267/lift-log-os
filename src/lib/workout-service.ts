@@ -110,7 +110,15 @@ export async function toggleSupersetWithPrevious(entryId: string): Promise<numbe
 
   // Already paired with the previous entry → unpair.
   if (entry.supersetGroup != null && entry.supersetGroup === prev.supersetGroup) {
+    const group = entry.supersetGroup;
     await db.workoutExercises.update(entryId, { supersetGroup: undefined });
+    // A superset needs at least two members — dissolve a now-lonely group.
+    const remaining = siblings.filter((e) => e.id !== entryId && e.supersetGroup === group);
+    if (remaining.length <= 1) {
+      for (const e of remaining) {
+        await db.workoutExercises.update(e.id, { supersetGroup: undefined });
+      }
+    }
     return null;
   }
 
