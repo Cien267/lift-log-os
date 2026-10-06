@@ -12,6 +12,7 @@ import {
   discardWorkout,
   finishWorkout,
   removeExerciseFromWorkout,
+  toggleSupersetWithPrevious,
   updateSet,
 } from "@/lib/workout-service";
 import {
@@ -241,7 +242,7 @@ function ActiveWorkoutPage() {
           </div>
         )}
 
-        {entries.map((entry) => {
+        {entries.map((entry, idx) => {
           const ex = exMap.get(entry.exerciseId);
           const entrySets = sets.filter((s) => s.exerciseEntryId === entry.id);
           return (
@@ -253,8 +254,11 @@ function ActiveWorkoutPage() {
               sets={entrySets}
               defaultRest={entry.restPreset ?? settings?.defaultRest ?? 120}
               targetSets={entry.targetSets}
+              supersetGroup={entry.supersetGroup}
+              canSuperset={idx > 0}
               enableTrainingAssistant={settings?.trainingAssistant ?? false}
               lang={lang}
+              onToggleSuperset={() => toggleSupersetWithPrevious(entry.id)}
               onRemove={() => removeExerciseFromWorkout(entry.id, lang)}
             />
           );
