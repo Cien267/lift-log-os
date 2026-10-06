@@ -12,6 +12,7 @@ import {
   discardWorkout,
   finishWorkout,
   removeExerciseFromWorkout,
+  toggleSupersetWithPrevious,
   updateSet,
 } from "@/lib/workout-service";
 import {
@@ -241,7 +242,7 @@ function ActiveWorkoutPage() {
           </div>
         )}
 
-        {entries.map((entry) => {
+        {entries.map((entry, idx) => {
           const ex = exMap.get(entry.exerciseId);
           const entrySets = sets.filter((s) => s.exerciseEntryId === entry.id);
           return (
@@ -253,8 +254,11 @@ function ActiveWorkoutPage() {
               sets={entrySets}
               defaultRest={entry.restPreset ?? settings?.defaultRest ?? 120}
               targetSets={entry.targetSets}
+              supersetGroup={entry.supersetGroup}
+              canSuperset={idx > 0}
               enableTrainingAssistant={settings?.trainingAssistant ?? false}
               lang={lang}
+              onToggleSuperset={() => toggleSupersetWithPrevious(entry.id)}
               onRemove={() => removeExerciseFromWorkout(entry.id, lang)}
             />
           );
@@ -317,8 +321,11 @@ function ExerciseCard({
   sets,
   defaultRest,
   targetSets,
+  supersetGroup,
+  canSuperset,
   enableTrainingAssistant,
   lang,
+  onToggleSuperset,
   onRemove,
 }: {
   workoutId: string;
@@ -327,8 +334,11 @@ function ExerciseCard({
   sets: WorkoutSet[];
   defaultRest: number;
   targetSets?: number;
+  supersetGroup?: number;
+  canSuperset: boolean;
   enableTrainingAssistant: boolean;
   lang: Lang;
+  onToggleSuperset: () => void;
   onRemove: () => void;
 }) {
   const prefillRef = useRef(false);
@@ -441,9 +451,16 @@ function ExerciseCard({
             {exercise?.guideImage && <ExercisePreview exercise={exercise} />}
           </h3>
 
-          {exercise?.muscleGroup && (
-            <p className="text-[11px] capitalize text-muted-foreground">{exercise.muscleGroup}</p>
-          )}
+          <div className="flex items-center gap-1.5">
+            {exercise?.muscleGroup && (
+              <p className="text-[11px] capitalize text-muted-foreground">{exercise.muscleGroup}</p>
+            )}
+            {supersetGroup != null && (
+              <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                SS{supersetGroup}
+              </span>
+            )}
+          </div>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -452,6 +469,14 @@ function ExerciseCard({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {canSuperset && (
+              <DropdownMenuItem onClick={onToggleSuperset}>
+                <Flame className="mr-2 h-4 w-4" />
+                {supersetGroup != null
+                  ? t("workout.removeFromSuperset")
+                  : t("workout.supersetWithPrevious")}
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={onRemove} className="text-destructive">
               <Trash2 className="mr-2 h-4 w-4" /> {t("common.remove")} {t("common.exercise")}
             </DropdownMenuItem>

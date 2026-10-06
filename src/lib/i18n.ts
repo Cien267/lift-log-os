@@ -89,6 +89,9 @@ const dict = {
     "workout.markAsWarmup": "Mark as warmup",
     "workout.incompleteFinishMessage": "You have incomplete sets. Are you sure you want to finish?",
     "workout.finishWorkout": "Finish workout",
+    "workout.supersetWithPrevious": "Superset with previous exercise",
+    "workout.removeFromSuperset": "Remove from superset",
+    "workout.superset": "Superset",
 
     // history
     "history.empty": "No completed workouts yet.",
@@ -310,6 +313,9 @@ const dict = {
     "workout.markAsWarmup": "Đánh dấu là khởi động",
     "workout.incompleteFinishMessage":
       "Bạn có các set chưa hoàn thành. Bạn có chắc chắn muốn kết thúc không?",
+    "workout.supersetWithPrevious": "Ghép superset với bài trước",
+    "workout.removeFromSuperset": "Gỡ khỏi superset",
+    "workout.superset": "Superset",
     "workout.finishWorkout": "Hoàn thành buổi tập",
 
     // history

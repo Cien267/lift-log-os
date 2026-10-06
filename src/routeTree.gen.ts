@@ -9,35 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TemplatesRouteImport } from './routes/templates'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as BodyRouteImport } from './routes/body'
-import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WorkoutIndexRouteImport } from './routes/workout.index'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as BodyRouteImport } from './routes/body'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as HistoryIndexRouteImport } from './routes/history.index'
-import { Route as WorkoutActiveRouteImport } from './routes/workout.active'
 import { Route as HistoryIdRouteImport } from './routes/history.$id'
+import { Route as WorkoutIndexRouteImport } from './routes/workout.index'
+import { Route as WorkoutActiveRouteImport } from './routes/workout.active'
 
-const TemplatesRoute = TemplatesRouteImport.update({
-  id: '/templates',
-  path: '/templates',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BodyRoute = BodyRouteImport.update({
-  id: '/body',
-  path: '/body',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalyticsRoute = AnalyticsRouteImport.update({
@@ -45,14 +30,24 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const BodyRoute = BodyRouteImport.update({
+  id: '/body',
+  path: '/body',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkoutIndexRoute = WorkoutIndexRouteImport.update({
-  id: '/workout/',
-  path: '/workout/',
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TemplatesRoute = TemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryIndexRoute = HistoryIndexRouteImport.update({
@@ -60,14 +55,19 @@ const HistoryIndexRoute = HistoryIndexRouteImport.update({
   path: '/history/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkoutActiveRoute = WorkoutActiveRouteImport.update({
-  id: '/workout/active',
-  path: '/workout/active',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const HistoryIdRoute = HistoryIdRouteImport.update({
   id: '/history/$id',
   path: '/history/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkoutIndexRoute = WorkoutIndexRouteImport.update({
+  id: '/workout/',
+  path: '/workout/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkoutActiveRoute = WorkoutActiveRouteImport.update({
+  id: '/workout/active',
+  path: '/workout/active',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -162,32 +162,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/templates': {
-      id: '/templates'
-      path: '/templates'
-      fullPath: '/templates'
-      preLoaderRoute: typeof TemplatesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/body': {
-      id: '/body'
-      path: '/body'
-      fullPath: '/body'
-      preLoaderRoute: typeof BodyRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analytics': {
@@ -197,18 +176,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/body': {
+      id: '/body'
+      path: '/body'
+      fullPath: '/body'
+      preLoaderRoute: typeof BodyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/workout/': {
-      id: '/workout/'
-      path: '/workout'
-      fullPath: '/workout/'
-      preLoaderRoute: typeof WorkoutIndexRouteImport
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/templates': {
+      id: '/templates'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof TemplatesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history/': {
@@ -218,18 +211,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/workout/active': {
-      id: '/workout/active'
-      path: '/workout/active'
-      fullPath: '/workout/active'
-      preLoaderRoute: typeof WorkoutActiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/history/$id': {
       id: '/history/$id'
       path: '/history/$id'
       fullPath: '/history/$id'
       preLoaderRoute: typeof HistoryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workout/': {
+      id: '/workout/'
+      path: '/workout'
+      fullPath: '/workout/'
+      preLoaderRoute: typeof WorkoutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workout/active': {
+      id: '/workout/active'
+      path: '/workout/active'
+      fullPath: '/workout/active'
+      preLoaderRoute: typeof WorkoutActiveRouteImport
       parentRoute: typeof rootRouteImport
     }
   }

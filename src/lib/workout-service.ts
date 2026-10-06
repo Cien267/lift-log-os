@@ -94,6 +94,45 @@ export async function addExerciseToWorkout(workoutId: string, exerciseId: string
   return entry;
 }
 
+/**
+ * Toggle superset pairing between an exercise entry and the entry right
+ * before it in the workout. Returns the shared superset group number when
+ * paired, or null when the entry was unpaired.
+ */
+export async function toggleSupersetWithPrevious(entryId: string): Promise<number | null> {
+  const entry = await db.workoutExercises.get(entryId);
+  if (!entry) return null;
+  const siblings = (await db.workoutExercises.where("workoutId").equals(entry.workoutId).toArray())
+    .sort((a, b) => a.order - b.order);
+  const idx = siblings.findIndex((e) => e.id === entryId);
+  if (idx <= 0) return null;
+  const prev = siblings[idx - 1];
+
+  // Already paired with the previous entry → unpair.
+  if (entry.supersetGroup != null && entry.supersetGroup === prev.supersetGroup) {
+    const group = entry.supersetGroup;
+    await db.workoutExercises.update(entryId, { supersetGroup: undefined });
+    // A superset needs at least two members — dissolve a now-lonely group.
+    const remaining = siblings.filter((e) => e.id !== entryId && e.supersetGroup === group);
+    if (remaining.length <= 1) {
+      for (const e of remaining) {
+        await db.workoutExercises.update(e.id, { supersetGroup: undefined });
+      }
+    }
+    return null;
+  }
+
+  // Reuse the previous entry's group, or start a fresh one.
+  const group =
+    prev.supersetGroup ??
+    Math.max(0, ...siblings.map((e) => e.supersetGroup ?? 0)) + 1;
+  if (prev.supersetGroup == null) {
+    await db.workoutExercises.update(prev.id, { supersetGroup: group });
+  }
+  await db.workoutExercises.update(entryId, { supersetGroup: group });
+  return group;
+}
+
 export async function removeExerciseFromWorkout(entryId: string, lang: string = "en") {
   const entry = await db.workoutExercises.get(entryId);
   const ex = entry ? await db.exercises.get(entry.exerciseId) : null;
