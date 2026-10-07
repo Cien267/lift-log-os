@@ -231,7 +231,14 @@ function WorkoutDetail() {
             <section key={e.id} className="rounded-2xl border border-border bg-card p-3">
               <header className="mb-2 flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-semibold">{ex?.name}</h2>
+                  <h2 className="text-sm font-semibold">
+                    {ex?.name}{" "}
+                    {e.supersetGroup != null && (
+                      <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                        SS{e.supersetGroup}
+                      </span>
+                    )}
+                  </h2>
                   <p className="text-[11px] capitalize text-muted-foreground">{ex?.muscleGroup}</p>
                 </div>
                 {cardio

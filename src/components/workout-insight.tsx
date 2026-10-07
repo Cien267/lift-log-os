@@ -54,6 +54,7 @@ export function InsightView({
   insight: WorkoutInsight;
   compact?: boolean;
 }) {
+  console.log({ insight });
   const { t } = useT();
   const { settings } = useSettings();
   const lang = settings?.language ?? "en";
@@ -141,7 +142,14 @@ export function InsightView({
           {insight.exercises.map((e) => (
             <div key={e.exerciseId} className="rounded-xl border border-border bg-card p-3">
               <div className="flex items-center justify-between gap-2">
-                <p className="truncate text-sm font-semibold">{e.exerciseName}</p>
+                <p className="truncate text-sm font-semibold">
+                  {e.exerciseName}{" "}
+                  {e.supersetGroup != null && (
+                    <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                      SS{e.supersetGroup}
+                    </span>
+                  )}
+                </p>
                 <VerdictIcon v={e.verdict} />
               </div>
               {e.isCardio ? (
@@ -150,9 +158,7 @@ export function InsightView({
                   <Stat
                     label="Minutes"
                     cur={formatMinutes(e.currentTotalMinutes ?? 0)}
-                    prev={
-                      e.verdict !== "new" ? formatMinutes(e.prevTotalMinutes ?? 0) : undefined
-                    }
+                    prev={e.verdict !== "new" ? formatMinutes(e.prevTotalMinutes ?? 0) : undefined}
                   />
                   <Stat
                     label="Sets"
@@ -184,7 +190,6 @@ export function InsightView({
                   />
                 </div>
               )}
-
             </div>
           ))}
         </div>

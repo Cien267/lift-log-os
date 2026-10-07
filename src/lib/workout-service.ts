@@ -102,8 +102,9 @@ export async function addExerciseToWorkout(workoutId: string, exerciseId: string
 export async function toggleSupersetWithPrevious(entryId: string): Promise<number | null> {
   const entry = await db.workoutExercises.get(entryId);
   if (!entry) return null;
-  const siblings = (await db.workoutExercises.where("workoutId").equals(entry.workoutId).toArray())
-    .sort((a, b) => a.order - b.order);
+  const siblings = (
+    await db.workoutExercises.where("workoutId").equals(entry.workoutId).toArray()
+  ).sort((a, b) => a.order - b.order);
   const idx = siblings.findIndex((e) => e.id === entryId);
   if (idx <= 0) return null;
   const prev = siblings[idx - 1];
@@ -123,9 +124,7 @@ export async function toggleSupersetWithPrevious(entryId: string): Promise<numbe
   }
 
   // Reuse the previous entry's group, or start a fresh one.
-  const group =
-    prev.supersetGroup ??
-    Math.max(0, ...siblings.map((e) => e.supersetGroup ?? 0)) + 1;
+  const group = prev.supersetGroup ?? Math.max(0, ...siblings.map((e) => e.supersetGroup ?? 0)) + 1;
   if (prev.supersetGroup == null) {
     await db.workoutExercises.update(prev.id, { supersetGroup: group });
   }

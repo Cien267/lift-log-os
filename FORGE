@@ -1,0 +1,621 @@
+# FORGE — PERSONAL TRAINING OS
+
+Forge là một ứng dụng quản lý và theo dõi quá trình tập luyện cá nhân, với định hướng trở thành một “Personal Training OS” — hệ điều hành cho quá trình phát triển thể chất của một người.
+
+Forge không đơn thuần là một app ghi lại workout.
+
+Mục tiêu của Forge là giúp người dùng:
+
+- Lên kế hoạch tập luyện
+- Thực hiện workout một cách nhanh chóng
+- Ghi lại chính xác những gì đã tập
+- Theo dõi progression theo thời gian
+- Nhận hỗ trợ trong quá trình tăng mức tạ / reps
+- Theo dõi consistency
+- Theo dõi sự phát triển của cơ thể và hiệu suất
+- Có động lực duy trì việc tập luyện
+- Xây dựng thành tích cá nhân
+- Có thể chia sẻ thành tích và quá trình tập luyện
+
+Triết lý cốt lõi:
+
+WORKOUT → TRACK → PROGRESS → ACHIEVE → SHOW OFF
+
+Forge phải khiến việc mở app trong lúc đang tập trở nên cực kỳ nhanh và hữu ích. Workout là tính năng quan trọng nhất và là core loop của toàn bộ sản phẩm.
+
+==================================================
+1. WORKOUT
+==================================================
+
+Đây là tính năng trung tâm của Forge.
+
+Người dùng có thể bắt đầu một workout và thực hiện các bài tập theo workout/template đã tạo.
+
+Mỗi workout có thể bao gồm nhiều exercise.
+
+Mỗi exercise có:
+
+- Tên bài tập
+- Muscle group
+- Các set
+- Weight
+- Reps
+- Trạng thái hoàn thành
+- Warm-up set nếu có
+- Gợi ý progression từ Training Assistant
+- Các thao tác bổ sung thông qua menu
+
+Trong lúc tập, người dùng có thể:
+
+- Thêm set
+- Xóa set
+- Thay đổi weight
+- Thay đổi reps
+- Đánh dấu set hoàn thành
+- Thêm exercise
+- Xóa exercise
+- Thay đổi cấu hình exercise
+- Ghép Superset
+- Xem suggestion từ Training Assistant
+
+Forge ưu tiên tốc độ thao tác.
+
+Khi người dùng tập lại một exercise đã từng tập, Forge có thể tự động prefill weight/reps từ lần tập trước để người dùng không phải nhập lại từ đầu.
+
+Ví dụ:
+
+Lần trước:
+24kg × 10
+24kg × 10
+24kg × 10
+
+Lần này Forge tự động điền:
+24kg × 10
+24kg × 10
+24kg × 10
+
+Người dùng chỉ cần điều chỉnh nếu cần.
+
+==================================================
+2. SUPERSET
+==================================================
+
+Forge hỗ trợ Superset ngay trong quá trình workout.
+
+Người dùng có thể chọn một exercise để ghép với exercise ngay phía trước nó.
+
+Ví dụ:
+
+Goblet Squat
+Romanian Deadlift
+
+Ở exercise thứ hai, người dùng mở menu “⋮” và chọn:
+
+“Ghép superset với bài trước”
+
+Hai exercise sau đó trở thành một nhóm Superset.
+
+Mục tiêu của tính năng này là giúp người dùng thực hiện các bài liên tiếp mà không cần phải tạo workout structure phức tạp trước khi bắt đầu tập.
+
+Superset phải được xem là một phần tự nhiên của workout flow.
+
+==================================================
+3. TRAINING ASSISTANT / PROGRESSIVE OVERLOAD
+==================================================
+
+Forge có Training Assistant giúp người dùng progression trong tập luyện.
+
+Training Assistant không tự động thay đổi workout của người dùng.
+
+Nó đóng vai trò như một coach đưa ra suggestion.
+
+Ví dụ:
+
+“TĂNG LÊN
+Gợi ý: 27.5kg × 5 × 2 sets
+
+Giữ cùng mức tạ 5 buổi - có thể tăng nhẹ để tiến bộ.”
+
+Người dùng có thể:
+
+- Ẩn suggestion
+- Áp dụng suggestion
+
+Quan trọng:
+
+Suggestion không được tự động overwrite dữ liệu workout.
+
+Dữ liệu prefill từ workout trước và progression suggestion là hai cơ chế riêng biệt.
+
+Logic progression ưu tiên Double Progression:
+
+Ví dụ:
+
+24kg × 8
+→ 24kg × 10
+→ 24kg × 12
+→ tăng lên 26kg
+→ reset reps về khoảng thấp hơn
+
+Không nên tăng weight quá nhanh.
+
+Training Assistant cần xem xét:
+
+- Performance trước đó
+- Số set hoàn thành
+- Reps
+- Weight
+- Adherence
+- Mức độ ổn định qua nhiều buổi
+
+Mục tiêu là đưa ra progression hợp lý và an toàn thay vì liên tục ép người dùng tăng tạ.
+
+==================================================
+4. CARDIO
+==================================================
+
+Forge không chỉ dành cho weight training.
+
+Cardio là một loại activity/muscle category riêng.
+
+Cardio có cách tracking khác với strength exercise.
+
+Thay vì:
+
+Weight + Reps + Sets
+
+Cardio sử dụng:
+
+Duration / Minutes
+
+Ví dụ:
+
+Running — 20 minutes
+Cycling — 30 minutes
+
+Cardio minutes được sử dụng trong:
+
+- Workout tracking
+- Analytics
+- Challenges
+- Badges
+
+Đặc biệt:
+
+Cardio challenge phải tính thời lượng cardio thực tế.
+
+Ví dụ:
+
+Một workout kéo dài 60 phút nhưng chỉ có 20 phút cardio:
+
+→ Challenge chỉ cộng 20 cardio minutes.
+
+Không được cộng toàn bộ 60 phút workout.
+
+==================================================
+5. WORKOUT HISTORY
+==================================================
+
+Forge lưu lại lịch sử workout để người dùng xem lại quá trình tập luyện.
+
+History cho phép filter theo:
+
+- Date from
+- Date to
+- Workout template
+- Location
+
+Location hiện có thể gồm:
+
+- Gym
+- Home
+- Outdoor
+
+Người dùng có thể refresh/filter dữ liệu để tìm lại những workout cụ thể.
+
+History không chỉ để xem lại workout mà còn là nguồn dữ liệu cho:
+
+- Progression
+- Analytics
+- PR
+- Challenges
+- Badges
+- Consistency
+
+==================================================
+6. ANALYTICS
+==================================================
+
+Forge biến dữ liệu workout thành những insight dễ hiểu.
+
+Analytics có thể bao gồm:
+
+- Tổng số workouts
+- Tổng volume
+- Consistency
+- Weekly volume
+- Muscle volume
+- Top lifts
+- Workout activity
+- Training distribution
+
+Forge có GitHub-style contribution heatmap để biểu diễn activity trong khoảng một năm.
+
+Mỗi ngày có thể thể hiện:
+
+- Có workout hay không
+- Mức độ activity
+- Session count
+- Volume
+
+Mục tiêu của heatmap là giúp người dùng nhìn thấy consistency của mình theo thời gian.
+
+==================================================
+7. MUSCLE DISTRIBUTION
+==================================================
+
+Forge theo dõi mức độ phân bổ training giữa các muscle groups.
+
+Ví dụ trên Home:
+
+“Muscle Distribution in 7 days”
+
+Cho biết trong tuần hiện tại người dùng đã tập mỗi muscle group bao nhiêu lần.
+
+Một muscle group nên được tính theo số workout/session có tập muscle đó, thay vì cộng từng set/exercise một cách đơn giản.
+
+Ví dụ:
+
+Chest được tập trong 3 workout khác nhau:
+
+→ Chest = 3 sessions
+
+Điều này giúp người dùng dễ nhìn thấy sự cân bằng trong training.
+
+==================================================
+8. HOME DASHBOARD
+==================================================
+
+Home là nơi người dùng nhìn thấy trạng thái training hiện tại.
+
+Home có thể hiển thị:
+
+- Greeting
+- Start Workout
+- Weekly sessions
+- Weekly goal
+- Weekly volume
+- Last workout
+- Current bodyweight
+- Muscle distribution
+- Recent activity
+- Recent PRs
+- Progress/achievement liên quan
+
+Ví dụ:
+
+“Train with intent.”
+
+Home phải khiến người dùng biết ngay:
+
+- Hôm nay mình đã tập chưa?
+- Tuần này đã tập bao nhiêu buổi?
+- Mình đang tiến bộ thế nào?
+- Lần tập gần nhất là khi nào?
+- Cơ nào đang được tập nhiều/ít?
+
+Weekly goal là mục tiêu số buổi tập mỗi tuần.
+
+==================================================
+9. PERSONAL RECORDS
+==================================================
+
+Forge theo dõi Personal Records (PR).
+
+PR được sử dụng để:
+
+- Hiển thị achievement
+- Phân tích progression
+- Tạo động lực
+- Tiến tới các Progress Challenges
+- Có thể được sử dụng trong Badge System
+
+PR không chỉ là một con số.
+
+Nó là một phần của progression loop:
+
+Train → Improve → PR → Achievement.
+
+==================================================
+10. PHOTO SHARE
+==================================================
+
+Forge có tính năng chia sẻ workout dưới dạng hình ảnh.
+
+Sau khi hoàn thành workout hoặc từ History, người dùng có thể tạo một workout achievement card.
+
+Card có thể bao gồm:
+
+- Workout date
+- Time
+- Workout name
+- Muscle groups
+- Duration
+- Volume
+- Sets
+- Exercises
+- Forge branding
+
+Người dùng có thể:
+
+- Chụp ảnh
+- Chọn ảnh từ thư viện
+- Download ảnh
+- Share ảnh
+
+Có nhiều style:
+
+- Premium
+- Minimal
+- Bold
+- Poster
+- Story
+
+Aspect ratio:
+
+- 4:5
+- 1:1
+- 9:16
+
+Overlay position:
+
+- Top
+- Middle
+- Bottom
+
+Có thể tùy chỉnh:
+
+- Text color
+- Text size
+- Overlay position
+
+Có thêm tùy chọn Gym Boost để enhancement hình ảnh.
+
+Photo Share có vai trò quan trọng trong social/achievement loop của Forge.
+
+Ví dụ:
+
+Workout completed
+→ Badge unlocked
+→ Achievement card
+→ Share to social media.
+
+==================================================
+11. NOTIFICATION SYSTEM
+==================================================
+
+Forge có notification inbox để thông báo cho người dùng.
+
+Notification không chỉ dành cho system update.
+
+Có thể có:
+
+WHAT'S NEW
+
+Thông báo những tính năng mới của Forge.
+
+Ví dụ:
+
+- Notifications
+- Adductors
+- Cardio
+- Photo Share
+- History Filtering
+- Heatmap
+- Superset
+
+Notification nên vừa giới thiệu tính năng vừa hướng dẫn người dùng cách sử dụng.
+
+Ví dụ với Superset:
+
+“Muốn ghép 2 bài tập thành một nhóm?
+Trong lúc tập, nhấn ⋮ ở bài tập thứ hai và chọn ‘Ghép superset với bài trước’.”
+
+Forge cũng có thể tạo những notification nhẹ nhàng/hài hước dựa trên workout behavior.
+
+Ví dụ:
+
+- Xóa exercise
+- Xóa set
+- Incomplete sets
+- Skip exercise
+- Workout quá ngắn
+- Thoát workout sớm
+- Weight/reps thấp hơn baseline nhiều
+- Giảm số set
+
+Những notification này không được mang tính phán xét hay tạo cảm giác tội lỗi.
+
+Phong cách nên nhẹ nhàng, vui vẻ và khuyến khích người dùng quay lại tập.
+
+Forge cũng có weekly summary.
+
+Ví dụ mỗi tuần:
+
+- Số workout
+- Muscle distribution
+- Achievement
+- Những điểm chưa tốt
+- Overall commentary
+
+==================================================
+12. SETTINGS
+==================================================
+
+Forge có Settings để người dùng cấu hình trải nghiệm.
+
+Các setting liên quan đến training có thể bao gồm:
+
+DEFAULT REST
+
+Thời gian nghỉ mặc định giữa các set.
+
+WEEKLY GOAL
+
+Số workout mục tiêu mỗi tuần.
+
+TARGET WEIGHT
+
+Mục tiêu bodyweight của người dùng.
+
+TRAINING ASSISTANT
+
+Bật/tắt Progressive Overload Assistant.
+
+Người dùng có thể chủ động tắt assistant nếu muốn tự quản lý progression.
+
+==================================================
+13. BODYWEIGHT
+==================================================
+
+Forge theo dõi bodyweight của người dùng.
+
+Bodyweight được sử dụng để:
+
+- Hiển thị trên Home
+- Theo dõi quá trình thay đổi cân nặng
+- So sánh với Target Weight
+- Có thể sử dụng trong các analytics/progress feature trong tương lai
+
+==================================================
+14. LOCATIONS
+==================================================
+
+Workout có thể được gắn location.
+
+Các location chính:
+
+- Gym
+- Home
+- Outdoor
+
+Location được sử dụng trong:
+
+- History filtering
+- Analytics
+- Challenges
+- Variety badges
+
+==================================================
+15. CORE PRODUCT LOOP
+==================================================
+
+Toàn bộ Forge cần xoay quanh một loop đơn giản:
+
+1. Người dùng mở Forge
+2. Start Workout
+3. Forge prefill dữ liệu từ lần trước
+4. Người dùng tập và ghi lại từng set
+5. Training Assistant đưa progression suggestion nếu cần
+6. Người dùng hoàn thành workout
+7. Dữ liệu được lưu vào History
+8. Analytics cập nhật
+9. Challenge progress cập nhật
+10. Badge có thể được unlock
+11. Người dùng có thể tạo Photo Share
+12. Người dùng quay lại workout tiếp theo
+
+Loop này tạo thành:
+
+TRAIN
+↓
+TRACK
+↓
+PROGRESS
+↓
+ACHIEVE
+↓
+SHARE
+↓
+RETURN
+
+==================================================
+16. PRODUCT PHILOSOPHY
+==================================================
+
+Forge không muốn trở thành một app fitness có hàng trăm tính năng nhưng người dùng rất ít sử dụng.
+
+Core principle:
+
+WORKOUT FIRST.
+
+Trong tất cả các feature, workout experience phải luôn được ưu tiên.
+
+Trong lúc đang tập, người dùng không nên phải thao tác phức tạp.
+
+Mọi thứ cần:
+
+- Nhanh
+- Rõ ràng
+- Ít friction
+- Dễ hiểu
+- Có giá trị ngay lập tức
+
+Các feature khác như:
+
+Analytics
+Challenges
+Badges
+Photo Share
+Notifications
+
+đều phải quay trở lại phục vụ core loop:
+
+GIÚP NGƯỜI DÙNG TẬP LUYỆN ĐỀU ĐẶN HƠN VÀ TIẾN BỘ HƠN.
+
+==================================================
+17. TONE & BRAND
+==================================================
+
+Forge có visual style:
+
+- Dark UI
+- Green accent
+- Modern
+- Technical
+- Minimal
+- Premium
+- Performance-oriented
+
+Forge không nên mang cảm giác:
+
+- Một app fitness quá màu mè
+- Một social network
+- Một game mobile
+- Một app bodybuilding cổ điển
+
+Nó nên mang cảm giác như:
+
+“Personal Training Operating System.”
+
+Một công cụ mà người dùng nghiêm túc về việc phát triển thể chất có thể mở mỗi ngày.
+
+==================================================
+18. TƯ DUY KHI PHÁT TRIỂN TÍNH NĂNG MỚI
+==================================================
+
+Mỗi khi đề xuất hoặc thiết kế một feature mới cho Forge, hãy luôn đánh giá nó dựa trên các câu hỏi:
+
+1. Feature này giải quyết vấn đề gì?
+2. Nó có giúp workout tốt hơn không?
+3. Nó có giảm friction không?
+4. Nó có giúp người dùng progress không?
+5. Nó có tạo motivation/retention không?
+6. Nó có kết nối được với existing Forge ecosystem không?
+7. Nó có làm sản phẩm phức tạp không cần thiết không?
+
+Không nên thêm feature chỉ vì “app khác cũng có”.
+
+Forge cần ưu tiên những feature có khả năng tạo thành một hệ thống hoàn chỉnh thay vì một collection of unrelated features.
+
+Hãy ghi nhớ toàn bộ context trên khi phân tích, thiết kế, code hoặc đề xuất bất kỳ tính năng nào cho Forge.

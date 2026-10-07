@@ -16,6 +16,7 @@ export interface ExerciseInsight {
   prevVolume: number;
   currentBestE1rm: number;
   prevBestE1rm: number;
+  supersetGroup?: number;
   /** Cardio exercises are compared by minutes instead of load. */
   isCardio?: boolean;
   currentTotalMinutes?: number;
@@ -138,6 +139,7 @@ export async function computeWorkoutInsight(workoutId: string): Promise<WorkoutI
       prevVolume: prevSum.volume,
       currentBestE1rm: cur.bestE1rm,
       prevBestE1rm: prevSum.bestE1rm,
+      supersetGroup: entry.supersetGroup ?? undefined,
       isCardio: cardio || undefined,
       currentTotalMinutes: cardio ? cur.totalMinutes : undefined,
       prevTotalMinutes: cardio ? prevSum.totalMinutes : undefined,

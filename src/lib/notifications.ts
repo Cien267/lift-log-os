@@ -92,6 +92,18 @@ const WHATS_NEW = (lang = "en"): WhatsNewEntry[] => [
         ? "You can now filter your workout history by date, template, and location. Whether you're looking for a specific workout or reviewing your training over a certain period, History Filters make it easier to find and follow your progress."
         : "Giờ đây bạn có thể lọc lịch sử tập luyện theo thời gian, mẫu và địa điểm. Dù bạn đang tìm một buổi tập cụ thể hay muốn xem lại quá trình tập luyện trong một khoảng thời gian, Bộ Lọc Lịch Sử giúp bạn tìm kiếm và theo dõi tiến trình dễ dàng hơn.",
   },
+  {
+    version: "1.2.6",
+    title: lang === "en" ? "Superset training is here" : "Đã có Superset Training",
+    subtitle:
+      lang === "en"
+        ? "Combine exercises for back-to-back training"
+        : "Ghép các bài tập để thực hiện liên tiếp",
+    body:
+      lang === "en"
+        ? "Combine exercises for back-to-back training. During a workout, open the ⋮ menu on an exercise and choose “Superset with previous exercise”. The exercise will be grouped with the one above it. You can group multiple consecutive exercises to create a superset chain."
+        : "Ghép các bài tập để thực hiện liên tiếp. Trong lúc tập, mở menu ⋮ ở một bài tập và chọn “Ghép superset với bài trước”. Bài tập sẽ được nhóm với bài tập ngay phía trên nó. Bạn có thể nhóm nhiều bài tập liên tiếp để tạo chuỗi superset.",
+  },
 ];
 
 export async function createNotification(
