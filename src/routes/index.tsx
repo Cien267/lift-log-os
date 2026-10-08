@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Flame, TrendingUp, Calendar, Dumbbell, Play } from "lucide-react";
 import { MuscleDistribution } from "@/components/muscle-distribution";
@@ -27,6 +27,7 @@ function Dashboard() {
   useSettings();
   const { settings } = useSettings();
   const lang = settings?.language ?? "en";
+  const navigate = useNavigate();
   const workouts =
     useLiveQuery(async () => {
       const ws = await db.workouts.orderBy("startTime").reverse().limit(50).toArray();
@@ -138,7 +139,11 @@ function Dashboard() {
           ) : (
             <ul className="divide-y divide-border">
               {workouts.slice(0, 6).map((w) => (
-                <li key={w.id} className="flex items-center gap-3 py-3">
+                <li
+                  key={w.id}
+                  className="flex items-center gap-3 py-3 cursor-pointer"
+                  onClick={() => navigate({ to: "/history/$id", params: { id: w.id } })}
+                >
                   <div className="grid h-9 w-9 place-items-center rounded-lg bg-secondary text-foreground/80">
                     <Dumbbell className="h-4 w-4" />
                   </div>
