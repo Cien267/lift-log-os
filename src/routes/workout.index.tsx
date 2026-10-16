@@ -11,10 +11,7 @@ import { forgeMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/workout/")({
   head: () => ({
-    meta: forgeMeta(
-      "Workout | Forge",
-      "Start a new workout from a template or empty session.",
-    ),
+    meta: forgeMeta("Workout | Forge", "Start a new workout from a template or empty session."),
   }),
   component: WorkoutLanding,
 });
