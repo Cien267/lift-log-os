@@ -94,7 +94,7 @@ export function RestTimerBar() {
         try {
           schoolBellSound();
         } catch (e: any) {
-          console.error("error: ", e);
+          console.error(e);
         }
         // auto-close after brief moment so user notices it hit zero
         setTimeout(() => stopRest(), 600);
