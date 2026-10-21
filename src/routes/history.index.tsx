@@ -9,8 +9,8 @@ import { formatDate } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
 import { format } from "date-fns";
 import { HistoryFilter } from "@/components/history-filter";
-import { readHistoryFilter, type IHistoryFilter } from "@/lib/history-filter";
-import { useState } from "react";
+import { readHistoryFilter, isHistoryFilterEmpty, type IHistoryFilter } from "@/lib/history-filter";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { forgeMeta } from "@/lib/seo";
 
 export const Route = createFileRoute("/history/")({
@@ -26,7 +26,8 @@ function HistoryPage() {
   const lang = settings?.language ?? "en";
 
   const [filters, setFilters] = useState<IHistoryFilter>(() => readHistoryFilter());
-
+  const [filterText, setFilterText] = useState("");
+  const isEmptyFilter = useMemo(() => isHistoryFilterEmpty(filters), [filters]);
   const groups =
     useLiveQuery(async () => {
       const workouts = await db.workouts.orderBy("startTime").reverse().toArray();
@@ -78,6 +79,46 @@ function HistoryPage() {
     }, [filters]) ?? new Map();
   const isEmpty = groups.size === 0;
 
+  const generateFilterText = useCallback(
+    async (filters: IHistoryFilter) => {
+      const parts: string[] = [];
+
+      if (filters.startDate) {
+        parts.push(`${t("common.fromDate")}: ${formatDate(filters.startDate, lang)}`);
+      }
+      if (filters.endDate) {
+        parts.push(`${t("common.toDate")}: ${formatDate(filters.endDate, lang)}`);
+      }
+      if (filters.templateId) {
+        const template = await db.templates.get(filters.templateId);
+        if (template) {
+          parts.push(`${t("photoShare.template")}: ${template.name}`);
+        }
+      }
+      if (filters.location && filters.location.length > 0) {
+        parts.push(`${t("common.location")}: ${filters.location.join(", ")}`);
+      }
+
+      return parts.join("; ");
+    },
+    [lang, t],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    const updateFilterText = async () => {
+      const text = await generateFilterText(filters);
+      if (!cancelled) {
+        setFilterText(text);
+      }
+    };
+    updateFilterText();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [filters, lang, t, generateFilterText]);
+
   return (
     <AppShell
       header={
@@ -87,6 +128,12 @@ function HistoryPage() {
         </div>
       }
     >
+      {!isEmptyFilter && (
+        <div className="mb-3 pb-3 border-b">
+          <span className="text-sm font-semibold">{t("history.filtering")} </span>
+          <span className="text-xs text-primary">{filterText}</span>
+        </div>
+      )}
       {isEmpty ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
           {t("history.empty")}

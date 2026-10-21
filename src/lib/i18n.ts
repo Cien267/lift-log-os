@@ -99,6 +99,7 @@ const dict = {
     "history.saveAsNewPlanPlaceholder": "Plan name",
     "history.sessionInsight": "Session insight",
     "history.updateSessionDate": "Update session date",
+    "history.filtering": "Filtering",
 
     // analytics
     "analytics.workouts": "Workouts",
@@ -324,6 +325,7 @@ const dict = {
     "history.saveAsNewPlanPlaceholder": "Tên kế hoạch",
     "history.sessionInsight": "Thông tin chi tiết buổi tập",
     "history.updateSessionDate": "Cập nhật ngày tập",
+    "history.filtering": "Đang lọc",
 
     // analytics
     "analytics.empty": "Chưa có dữ liệu phân tích.",
