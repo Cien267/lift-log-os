@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useLiveQuery } from "dexie-react-hooks";
-import { ArrowLeft, Trash2, Save, CalendarCog } from "lucide-react";
+import { ArrowLeft, Trash2, Save, CalendarCog, Calendar as CalendarIcon } from "lucide-react";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,12 +26,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
 import { forgeMeta } from "@/lib/seo";
-
-import { parseISO, set } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { parseISO, set, format } from "date-fns";
+import { vi } from "react-day-picker/locale";
 
 function changeDateKeepTime(timestamp: number, newDate: string) {
   const old = new Date(timestamp);
@@ -58,6 +60,7 @@ function WorkoutDetail() {
   const lang = settings?.language ?? "en";
   const { id } = Route.useParams();
   const nav = useNavigate();
+  const [openCalendar, setOpenCalendar] = useState(false);
   const workout = useLiveQuery(async () => {
     const w = await db.workouts.get(id);
     if (!w) return undefined;
@@ -142,16 +145,30 @@ function WorkoutDetail() {
             <DialogHeader>
               <DialogTitle>{t("history.updateSessionDate")}</DialogTitle>
             </DialogHeader>
-            <Input
-              type="date"
-              value={form.date}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  date: e.target.value,
-                }))
-              }
-            />
+            <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={"font-normal border-border w-full"}>
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {formatDate(form.date, lang)}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  locale={lang === "vi" ? vi : undefined}
+                  weekStartsOn={lang === "vi" ? 1 : undefined}
+                  selected={form.date ? new Date(form.date) : undefined}
+                  onSelect={(date) => {
+                    setForm({
+                      ...form,
+                      date: date ? format(date, "yyyy-MM-dd") : "",
+                    });
+                    setOpenCalendar(false);
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
             <DialogFooter>
               <Button onClick={() => handleSave()}>{t("common.save")}</Button>
             </DialogFooter>
