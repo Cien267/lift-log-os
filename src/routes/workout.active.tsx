@@ -25,12 +25,7 @@ import { RestTimerBar, startRest } from "@/components/rest-timer";
 import { ExercisePicker } from "@/components/exercise-picker";
 import { InsightView } from "@/components/workout-insight";
 import type { WorkoutInsight } from "@/lib/insight";
-import {
-  formatDuration,
-  formatSessionVolume,
-  formatMinutes,
-  isCardioExercise,
-} from "@/lib/analytics";
+import { formatDuration, formatSessionVolume, isCardioExercise } from "@/lib/analytics";
 
 import { useSettings } from "@/hooks/use-settings";
 import {
@@ -55,6 +50,7 @@ import { ExercisePreview } from "@/components/exercise-preview";
 import { WorkoutPhotoShare } from "@/components/workout-photo-share";
 import { getWorkoutCompletionProgress } from "@/lib/workout-progress";
 import { forgeMeta } from "@/lib/seo";
+import { toast } from "sonner";
 
 const search = z.object({ id: z.string() });
 
@@ -78,6 +74,7 @@ function ActiveWorkoutPage() {
   const [elapsed, setElapsed] = useState(0);
   const [insight, setInsight] = useState<WorkoutInsight | null>(null);
   const [openIncompleteDialog, setOpenIncompleteDialog] = useState(false);
+  const completionToastShownFor = useRef<string | null>(null);
 
   const workout = useLiveQuery(async () => {
     const w = await db.workouts.get(id);
@@ -115,6 +112,20 @@ function ActiveWorkoutPage() {
     return () => clearInterval(t);
   }, [workout?.startTime]);
 
+  const completedSets = sets.filter((s) => s.completed).length;
+  const completionProgress = getWorkoutCompletionProgress(completedSets, sets.length);
+
+  useEffect(() => {
+    if (completionProgress === 100) {
+      if (completionToastShownFor.current !== id) {
+        toast.success(t("workout.completionToast"));
+        completionToastShownFor.current = id;
+      }
+    } else if (completionToastShownFor.current === id) {
+      completionToastShownFor.current = null;
+    }
+  }, [id, completionProgress]);
+
   if (!workout) {
     return <div className="p-8 text-center text-sm text-muted-foreground">Workout not found.</div>;
   }
@@ -130,8 +141,6 @@ function ActiveWorkoutPage() {
   const totalCardioMin = completed
     .filter((s) => cardioEntryIds.has(s.exerciseEntryId))
     .reduce((a, s) => a + (s.durationMin ?? 0), 0);
-  const completedSets = completed.length;
-  const completionProgress = getWorkoutCompletionProgress(completedSets, sets.length);
 
   const onPick = async (exerciseId: string) => {
     await addExerciseToWorkout(id, exerciseId);

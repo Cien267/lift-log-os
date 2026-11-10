@@ -92,6 +92,7 @@ const dict = {
     "workout.supersetWithPrevious": "Superset with previous exercise",
     "workout.removeFromSuperset": "Remove from superset",
     "workout.superset": "Superset",
+    "workout.completionToast": "All sets completed!",
 
     // history
     "history.empty": "No completed workouts yet.",
@@ -318,6 +319,7 @@ const dict = {
     "workout.removeFromSuperset": "Gỡ khỏi superset",
     "workout.superset": "Superset",
     "workout.finishWorkout": "Hoàn thành buổi tập",
+    "workout.completionToast": "Tất cả các set đã hoàn thành!",
 
     // history
     "history.empty": "Chưa có buổi tập nào được hoàn thành.",
