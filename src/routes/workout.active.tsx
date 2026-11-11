@@ -118,7 +118,11 @@ function ActiveWorkoutPage() {
   useEffect(() => {
     if (completionProgress === 100) {
       if (completionToastShownFor.current !== id) {
-        toast.success(t("workout.completionToast"));
+        toast.success(t("workout.completionToast"), {
+          duration: 3000,
+          position: "top-right",
+          style: { top: "4rem" },
+        });
         completionToastShownFor.current = id;
       }
     } else if (completionToastShownFor.current === id) {
